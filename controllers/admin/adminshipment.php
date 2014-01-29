@@ -1,0 +1,161 @@
+<?php
+
+if (!defined('_PS_VERSION_'))
+  exit;
+
+/**
+ * The name of the controller is used for naming conventions.
+ * If you want to override the standard templates used for this controller,
+ * you must place them in the following path:
+ * /modules/yourmodule/templates/admin/shipment/**** (ie. form/form.tpl)
+ * The 'admin/shipment' part is built from the controller name.
+ * So if you had 'AdminLceShipment' controller, it would probably be
+ * something like admin/lce/shipment. Keep that in mind when trying to do
+ * some overrides!
+ * 
+ */
+class AdminShipmentController extends ModuleAdminController
+{
+
+  /**
+   * Constructor
+   */
+  public function __construct()
+  {
+      // The below attributes are used for many automatic naming conventions
+      $this->table     = 'lce_shipments'; // Table containing the records
+      $this->className  = 'LceShipment'; // Class of the object managed by this controller
+      $this->context = Context::getContext();
+      $this->identifier = 'id_shipment'; // The unique identifier column for the corresponding object
+      
+      $this->fields_list = array(
+              'id_shipment' => array(
+                      'title' => '#'
+              ),
+              'shipper_name' => array(
+                  'title' => 'Shipper'
+              )
+      );
+      
+      $this->actions = array('delete');
+      
+      parent::__construct();
+
+  }
+
+  public function renderView()
+  {
+    $shipment = new LceShipment((int)Tools::getValue('id_shipment'));
+    if (!Validate::isLoadedObject($shipment))
+      throw new PrestaShopException('object can\'t be loaded');
+        
+    $order = new Order((int)$shipment->order_id);
+    // Smarty assign
+    $this->tpl_view_vars = array(
+      'order' => $order,
+      'link_order' => $this->context->link->getAdminLink('AdminOrders')."&vieworder&id_order=".$order->id,
+      'shipment' => $shipment,
+      'shipper_country' => Country::getNameById((int)Context::getContext()->language->id, Country::getByIso($shipment->shipper_country)),
+      'recipient_country' => Country::getNameById((int)Context::getContext()->language->id, Country::getByIso($shipment->recipient_country)),
+    );
+    
+    return parent::renderView();
+  }
+
+  public function renderForm()
+  {
+    $this->multiple_fieldsets = true;
+    $this->fields_form = array();    
+    $this->fields_form[] = array('form' => array(
+            'legend' => array(
+                    'title' => $this->l('Shipper'),
+                    'image' => '../img/admin/cog.gif'
+            ),
+            'input' => array(
+                    array('type' => 'hidden', 'name' => 'order_id', 'size' => 40),
+                    array('type' => 'date', 'label' => $this->l('Pickup date (if applicable):'), 'name' => 'collection_date', 'size' => 20, 'maxlength' => 10, 'desc' => $this->l('Format: 2014-02-23')),
+                    array('type' => 'text', 'label' => $this->l('Shipper name:'), 'name' => 'shipper_name', 'size' => 40, 'desc' => $this->l('Name of contact person.')),
+                    array('type' => 'text', 'label' => $this->l('Shipper company (your shop):'), 'name' => 'shipper_company_name', 'size' => 40, 'desc' => $this->l('Name of your shop.')),
+                    array('type' => 'textarea', 'label' => $this->l('Pickup address:'), 'name' => 'shipper_street', 'cols' => 38, 'rows' => 3, 'desc' => $this->l('Street information.')),
+                    array('type' => 'text', 'label' => $this->l('City:'), 'name' => 'shipper_city', 'size' => 40),
+                    array('type' => 'text', 'label' => $this->l('Postal code:'), 'name' => 'shipper_postal_code', 'size' => 40),
+                    array('type' => 'text', 'label' => $this->l('State:'), 'name' => 'shipper_state', 'size' => 40, 'desc' => $this->l('Only if necessary.')),
+                    array('type' => 'text', 'label' => $this->l('Country:'), 'name' => 'shipper_country', 'size' => 2, 'desc' => $this->l('Country code on two letters, e.g. FR, UK.')),
+            ),
+            'submit' => array(
+                    'title' => $this->l('Save'),
+                    'class' => 'button'
+            )
+          ));
+
+    $this->fields_form[] = array('form' => array(
+            'legend' => array(
+                    'title' => $this->l('Recipient'),
+                    'image' => '../img/admin/cog.gif'
+            ),
+            'input' => array(
+                    array('type' => 'text', 'label' => $this->l('Recipient name:'), 'name' => 'recipient_name', 'size' => 40, 'desc' => $this->l('Name of contact person.')),
+                    array('type' => 'text', 'label' => $this->l('Recipient company:'), 'name' => 'recipient_company_name', 'size' => 40, 'desc' => $this->l('Name of your shop.')),
+                    array('type' => 'textarea', 'label' => $this->l('Delivery address:'), 'name' => 'recipient_street', 'cols' => 38, 'rows' => 3, 'size' => '40', 'desc' => $this->l('Street information.')),
+                    array('type' => 'text', 'label' => $this->l('City:'), 'name' => 'recipient_city', 'size' => 40),
+                    array('type' => 'text', 'label' => $this->l('Postal code:'), 'name' => 'recipient_postal_code', 'size' => 40),
+                    array('type' => 'text', 'label' => $this->l('State:'), 'name' => 'recipient_state', 'size' => 40, 'desc' => $this->l('Only if necessary.')),
+                    array('type' => 'text', 'label' => $this->l('Country:'), 'name' => 'recipient_country', 'size' => 2, 'desc' => $this->l('Country code on two letters, e.g. FR, UK.')),
+            ),
+            'submit' => array(
+                    'title' => $this->l('Save'),
+                    'class' => 'button'
+            )
+          ));
+
+    // Loading object, if possible; returning empty object otherwise
+    if (!($obj = $this->loadObject(true)))
+      return;
+  
+    // If we have a new object, we initialize default values
+    if (!$obj->id) {
+      $order = new Order((int)Tools::getValue('order_id'));
+      $customer = new Customer((int)$order->id_customer);
+      $delivery_address = new Address((int)$order->id_address_delivery);
+      
+      $this->fields_value['order_id'] = $order->id;
+      $this->fields_value['shipper_name'] = Configuration::get('MOD_LCE_DEFAULT_SHIPPER_NAME');
+      $this->fields_value['shipper_company_name'] = Configuration::get('MOD_LCE_DEFAULT_SHIPPER_COMPANY');
+      $this->fields_value['shipper_street'] = Configuration::get('MOD_LCE_DEFAULT_STREET');
+      $this->fields_value['shipper_city'] = Configuration::get('MOD_LCE_DEFAULT_CITY');
+      $this->fields_value['shipper_postal_code'] = Configuration::get('MOD_LCE_DEFAULT_POSTAL_CODE');
+      $this->fields_value['shipper_state'] = Configuration::get('MOD_LCE_DEFAULT_STATE');
+      $this->fields_value['shipper_country'] = Configuration::get('MOD_LCE_DEFAULT_COUNTRY');
+      $this->fields_value['shipper_phone'] = Configuration::get('MOD_LCE_DEFAULT_PHONE');
+      $this->fields_value['shipper_email'] = Configuration::get('MOD_LCE_DEFAULT_EMAIL');
+      
+      $this->fields_value['recipient_name'] = $customer->firstname.' '.$customer->lastname;
+      $this->fields_value['recipient_company_name'] = $customer->company;
+      
+      $address_street = $delivery_address->address1;
+      if ($delivery_address->address2)
+        $address_street = $address_street."\n".$delivery_address->address2;
+      $this->fields_value['recipient_street'] = $address_street;
+      $this->fields_value['recipient_city'] = $delivery_address->city;
+      $this->fields_value['recipient_postal_code'] = $delivery_address->postcode;
+      
+      if ($delivery_address->id_state) {
+        $state = new State((int)$delivery_address->id_state);
+        $this->fields_value['recipient_state'] = $state->name;
+      }
+      
+      $country = new Country((int)$delivery_address->id_country);
+      $this->fields_value['recipient_country'] = $country->iso_code;
+    }
+
+    return parent::renderForm();
+  }
+
+  public function postProcess()
+  {
+    // Redirecting to Order view after saving the shipment
+    if (parent::postProcess())
+      Tools::redirectAdmin($this->context->link->getAdminLink('AdminOrders')."&vieworder&id_order=".$this->object->order_id);
+      
+  }
+}
