@@ -1,0 +1,3 @@
+[submodule "lib/php-lce"]
+	path = lib/php-lce
+	url = https://github.com/lce/php-lce.git
