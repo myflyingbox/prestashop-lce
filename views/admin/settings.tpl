@@ -59,3 +59,21 @@
     </p>
   </form>
 </fieldset>
+
+<fieldset>
+  <legend>{l s='LCE Products'}</legend>
+  
+  {foreach from=$carriers key=k item=c}
+    <li>{$c->name}</li>
+  {/foreach}
+  
+  <form method="post">
+    <p>
+      <label for="shipper_country">{l s='From which country do you ship your goods:' mod='lowcostexpress'}</label>
+      <input id="shipper_country" name="shipper_country" type="text" value="{$MOD_LCE_DEFAULT_COUNTRY}" />
+    </p>
+    <p>
+      <label>&nbsp;</label>
+      <input id="submit_{$module_name}_refresh_products" name="submit_{$module_name}_refresh_products" type="submit" value="{l s='Initialize/refresh products'}" class="button" />
+    </p>
+  </form>

@@ -2,6 +2,9 @@
 if (!defined('_PS_VERSION_'))
   exit;
 
+// Loading LCE php library
+require_once(_PS_MODULE_DIR_ . 'lowcostexpress/lib/php-lce/bootstrap.php');
+
 // Loading Models
 require_once(_PS_MODULE_DIR_ . 'lowcostexpress/models/LceShipment.php');
 
@@ -89,6 +92,11 @@ class LowCostExpress extends CarrierModule
       if (!Db::getInstance()->Execute($s))
         return false;
   
+    // Column adds
+    Db::getInstance()->Execute("SHOW COLUMNS FROM `"._DB_PREFIX_."carrier` LIKE 'lce_product_code'");
+    if (Db::getInstance()->numRows() == 0)
+      Db::getInstance()->Execute("ALTER TABLE `"._DB_PREFIX_."carrier` ADD `lce_product_code` VARCHAR(255) NOT NULL DEFAULT '' AFTER `name`;");
+  
     // Executing standard module installation statements
     if (!parent::install()) return false;
 
@@ -100,76 +108,7 @@ class LowCostExpress extends CarrierModule
         !$this->registerHook('updateCarrier') || // For update of carrier IDs
         !$this->registerHook('displayAdminOrder') // Displaying LCE Shipments on order admin page
       ) return false;
-  
-    if (!$this->createLCECarriers(self::$_lce_carriers)) return false;
     
-    return true;
-  }
-
-  public static function createLCECarriers($carrierDefinition)
-  {
-    global $cookie;
-
-    /* TODO: make this process dynamic, by calling the list of products
-     * on the LCE.io API.
-     * This process should also be able to udpate the list of carriers when
-     * new LCE products are available.
-     */    
-    foreach($carrierDefinition as $carrierCode => $config) {
-    
-      $carrier = new Carrier();
-      $carrier->name = $config['name'];
-      $carrier->id_tax_rules_group = $config['id_tax_rules_group'];
-      $carrier->url = $config['url'];
-      $carrier->active = $config['active'];
-      $carrier->deleted = $config['deleted'];
-      $carrier->delay = $config['delay'];
-      $carrier->shipping_handling = $config['shipping_handling'];
-      $carrier->range_behavior = $config['range_behavior'];
-      $carrier->is_module = $config['is_module'];
-      $carrier->shipping_external = $config['shipping_external'];
-      $carrier->external_module_name = $config['external_module_name'];
-      $carrier->need_range = $config['need_range'];
-          
-      $languages = Language::getLanguages(true);
-
-      foreach ($languages as $language) {
-        if (array_key_exists($language['iso_code'], $config['delay'])) {
-          $carrier->delay[$language['id_lang']] = $config['delay'][$language['iso_code']];
-        } else {
-          $carrier->delay[$language['id_lang']] = $config['delay']['fr'];
-        }
-      }
-
-      if ($carrier->add())
-      {
-        Configuration::updateValue($config['configuration_item'],(int)($carrier->id));
-
-        // Assign all groups to carrier
-        $groups = Group::getgroups(true);
-        foreach ($groups as $group)
-        {
-          Db::getInstance()->Execute('INSERT INTO '._DB_PREFIX_.'carrier_group VALUE (\''.(int)($carrier->id).'\',\''.(int)($group['id_group']).'\')');
-        }
-
-        $rangePrice = new RangePrice();
-        $rangePrice->id_carrier = $carrier->id;
-        $rangePrice->delimiter1 = '0';
-        $rangePrice->delimiter2 = '10000';
-        $rangePrice->add();
-
-        // Assign all zones to carrier
-        $zones=Zone::getZones();
-        foreach($zones as $zone) {
-          $carrier->addZone($zone['id_zone']);
-        }
-        
-        //copy logo
-        if (!copy(dirname(__FILE__).'/img/'.$config['logo_filename'].'.jpg',_PS_SHIP_IMG_DIR_.'/'.$carrier->id.'.jpg')) {
-          return false;
-        }
-      }
-    }
     return true;
   }
 
@@ -197,12 +136,9 @@ class LowCostExpress extends CarrierModule
    */
   public function hookUpdateCarrier($params)
   {
-    foreach(self::$_lce_carriers as $carrierCode => $config) {
-      $carrier_id = Configuration::get($config['configuration_item']);
-      
-      if ((int)($params['id_carrier']) == (int)($carrier_id))
-        Configuration::updateValue($config['configuration_item'], $params['carrier']->id);
-    }
+    // Initializing carrier which will be obsolete
+    $carrier = new Carrier((int)$params['id_carrier']);
+    Configuration::updateValue('LCE_'.$carrier->lce_product_code, $params['carrier']->id);
   }
 
   //===============
@@ -217,14 +153,17 @@ class LowCostExpress extends CarrierModule
     $message = '';
 
     if (Tools::isSubmit('submit_'.$this->name))
-      $message = $this->_saveContent();
+      $message = $this->_saveSettings();
+
+    if (Tools::isSubmit('submit_'.$this->name.'_refresh_products'))
+      $message = $this->_refreshLceProducts();
 
     $this->_displayContent($message);
 
     return $this->display(__FILE__, 'views/admin/settings.tpl');
   }
 
-  private function _saveContent()
+  private function _saveSettings()
   {
     $message = '';
 
@@ -248,10 +187,104 @@ class LowCostExpress extends CarrierModule
     return $message;
   }
 
+  private function _refreshLceProducts()
+  {
+    $message = '';
+    
+    Lce\Lce::configure(Configuration::get('MOD_LCE_API_LOGIN'), Configuration::get('MOD_LCE_API_PASSWORD'), 'staging');
+
+    $products = Lce\Resource\Product::findAll();
+
+    foreach($products as $product){
+      if (!Configuration::get('LCE_'.$product->code)) {
+        $product_exists = false;
+      } else {
+        $c = new Carrier(Configuration::get('LCE_'.$product->code));
+        if ($c->deleted) {
+          $product_exists = false;
+        } else {
+          $product_exists = true;
+        }
+      }
+      
+      // If the carrier is not yet registered, we add it
+      if ( !$product_exists &&
+            in_array(strtoupper(Tools::getValue("shipper_country")), $product->export_from)
+         ){
+
+        $carrier = new Carrier();
+        $carrier->name = $product->name;
+        $carrier->id_tax_rules_group = 1;
+        $carrier->url = '';
+        $carrier->active = true;
+        $carrier->deleted = 0;
+        $carrier->shipping_handling = false;
+        $carrier->range_behavior = 0;
+        $carrier->is_module = false;
+        $carrier->shipping_external = true;
+        $carrier->external_module_name = 'lowcostexpress';
+        $carrier->need_range = 'false';
+            
+        $languages = Language::getLanguages(true);
+
+        foreach ($languages as $language) {
+          $iso_code = strtolower($language['iso_code']);
+          $carrier->delay[$language['id_lang']] = $product->delivery_informations->$iso_code;
+        }
+
+        if ($carrier->add())
+        {
+          Configuration::updateValue('LCE_'.$product->code,(int)($carrier->id));
+
+          // Assign all groups to carrier
+          $groups = Group::getgroups(true);
+          foreach ($groups as $group)
+          {
+            Db::getInstance()->Execute('INSERT INTO '._DB_PREFIX_.'carrier_group VALUE (\''.(int)($carrier->id).'\',\''.(int)($group['id_group']).'\')');
+          }
+
+          $rangePrice = new RangePrice();
+          $rangePrice->id_carrier = $carrier->id;
+          $rangePrice->delimiter1 = '0';
+          $rangePrice->delimiter2 = '10000';
+          $rangePrice->add();
+
+          // Assign all zones to carrier
+          $zones=Zone::getZones();
+          foreach($zones as $zone) {
+            $carrier->addZone($zone['id_zone']);
+          }
+          
+          //copy logo
+          //if (!copy(dirname(__FILE__).'/img/'.$config['logo_filename'].'.jpg',_PS_SHIP_IMG_DIR_.'/'.$carrier->id.'.jpg')) {
+          //  return false;
+          //}
+        }
+      }
+    }
+
+    return $message;
+  }
+
   private function _displayContent($message)
   {
+    
+    // Obtaining existing carriers linked to LCE products
+    $sql = 'SELECT c.*, cl.delay
+              FROM `'._DB_PREFIX_.'carrier` c
+              LEFT JOIN `'._DB_PREFIX_.'carrier_lang` cl ON (c.`id_carrier` = cl.`id_carrier` AND cl.`id_lang` = '.(int)$this->context->language->id.Shop::addSqlRestrictionOnLang('cl').')
+              WHERE c.`deleted` = 0 AND c.`external_module_name` = "lowcostexpress"';
+  
+    $carriers_res = Db::getInstance()->ExecuteS($sql);
+    $carriers = array();
+    foreach($carriers_res as $key => $val) {
+      $carriers[] = new Carrier((int)$val['id_carrier']);
+    }
+  
+  
     $this->context->smarty->assign(array(
       'message' => $message,
+      'carriers' => $carriers,
       'MOD_LCE_API_LOGIN' => Configuration::get('MOD_LCE_API_LOGIN'),
       'MOD_LCE_API_PASSWORD' => Configuration::get('MOD_LCE_API_PASSWORD'),
       'MOD_LCE_DEFAULT_SHIPPER_NAME' => Configuration::get('MOD_LCE_DEFAULT_SHIPPER_NAME'),
