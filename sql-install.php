@@ -53,3 +53,26 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_parcels` (
     `delete` tinyint(1) unsigned NOT NULL DEFAULT "0",
     PRIMARY KEY  (`id_parcel`)
   ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
+
+$sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_quotes` (
+    `id_quote` int(10) NOT NULL AUTO_INCREMENT,
+    `id_cart` int(10) NOT NULL,
+    `api_quote_uuid` VARCHAR(255) NOT NULL DEFAULT "",
+    `date_add` DATETIME,
+    `date_upd` DATETIME,
+    `delete` tinyint(1) unsigned NOT NULL DEFAULT "0",
+    PRIMARY KEY  (`id_quote`)
+  ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
+
+$sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_offers` (
+    `id_offer` int(10) NOT NULL AUTO_INCREMENT,
+    `id_quote` int(10) NOT NULL,
+    `api_offer_uuid` VARCHAR(255) NOT NULL DEFAULT "",
+    `lce_product_code` VARCHAR(255) NOT NULL DEFAULT "",
+    `total_price_in_cents` INT(10) NOT NULL,
+    `currency` VARCHAR(255) NOT NULL DEFAULT "",
+    `date_add` DATETIME,
+    `date_upd` DATETIME,
+    `delete` tinyint(1) unsigned NOT NULL DEFAULT "0",
+    PRIMARY KEY  (`id_offer`)
+  ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
