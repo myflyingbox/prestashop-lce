@@ -57,9 +57,81 @@
       <label>&nbsp;</label>
       <input id="submit_{$module_name}" name="submit_{$module_name}" type="submit" value="{l s='Save'}" class="button" />
     </p>
+</fieldset>
+
+<br/>
+<fieldset>
+  <legend>{l s='Price calculation'}</legend>
+    <p>{l s="The following settings are used to calculate the price displayed to the customer. It is useful only if you directly propose the LCE Carrier products to your customers. The calculation is always applied to the total price, including all applicable taxes. All settings are optional, and additive, in the same order; so you can first apply a proportional surchage of 5%, then add 2€ to the result and finally round the resulting price to the next upper integer."}</p>
+
+    <label for="MOD_LCE_PRICE_SURCHARGE_PERCENT">{l s='Price surchage (percent of base price):' mod='lowcostexpress'}</label>
+    <div class='margin-form'>
+      <input id="MOD_LCE_PRICE_SURCHARGE_PERCENT" name="MOD_LCE_PRICE_SURCHARGE_PERCENT" type="text" value="{$MOD_LCE_PRICE_SURCHARGE_PERCENT}" />
+      <p class='preference_description'>{l s='A value of 20 will inscrease the price by 20%, a value of 100 will double the price.' mod='lowcostexpress'}</label>
+    </div>
+
+    <label for="MOD_LCE_PRICE_SURCHARGE_STATIC">{l s='Price surchage (in cents):' mod='lowcostexpress'}</label>
+    <div class='margin-form'>
+      <input id="MOD_LCE_PRICE_SURCHARGE_STATIC" name="MOD_LCE_PRICE_SURCHARGE_STATIC" type="text" value="{$MOD_LCE_PRICE_SURCHARGE_STATIC}" />
+      <p class='preference_description'>{l s='IN CENTS! If you want to add 5€ to all LCE prices, then write 500.' mod='lowcostexpress'}</label>
+    </div>
+    
+    <label for="MOD_LCE_PRICE_ROUND_INCREMENT">{l s='Increment for price rounding:' mod='lowcostexpress'}</label>
+    <div class='margin-form'>
+      <input id="MOD_LCE_PRICE_ROUND_INCREMENT" name="MOD_LCE_PRICE_ROUND_INCREMENT" type="text" value="{$MOD_LCE_PRICE_ROUND_INCREMENT}" />
+      <p class='preference_description'>{l s='IN CENTS! e.g. 20 will round 13.33 to 13.40, 100 will round 15.13 to 16.00.' mod='lowcostexpress'}</label>
+    </div>
+    <p>
+      <label>&nbsp;</label>
+      <input id="submit_{$module_name}" name="submit_{$module_name}" type="submit" value="{l s='Save'}" class="button" />
+    </p>
+
+</fieldset>
+
+<br/>
+<fieldset>
+  <legend>{l s='Default dimensions'}</legend>
+  <p>
+    {l s='When trying to obtain transportation prices for the cart of the customer, the module must send dimensions and weight. As the module cannot guess your standard packaging strategies, the following table allows you to define a correspondance between a weight and packaging dimensions. The module will always use the calculated weight of the cart (rounded to the upper integer), and will then obtain the corresponding packaging dimensions from this table. Please note that you will be able to specify the exact dimensions and weights of your final packaging when booking a shipment through the order back-office page.'}
+  </p>
+  <table>
+    <theader>
+      <th>Position</th>
+      <th>Weight up to (kg)</th>
+      <th>Length (cm)</th>
+      <th>Width (cm)</th>
+      <th>Height (cm)</th>
+    </theader>
+    <tbody>
+    {foreach from=$dimensions item=d}
+      <tr>
+        <td>
+          {$d->id}
+        </td>
+        <td>
+          <input id="dim{$d->id}_weight" name="dim{$d->id}_weight" type="text" size="10" value="{$d->weight_to}" />
+        </td>
+        <td>
+          <input id="dim{$d->id}_length" name="dim{$d->id}_length" type="text" size="10" value="{$d->length}" />
+        </td>
+        <td>
+          <input id="dim{$d->id}_width" name="dim{$d->id}_width" type="text" size="10" value="{$d->width}" />
+        </td>
+        <td>
+          <input id="dim{$d->id}_height" name="dim{$d->id}_height" type="text" size="10" value="{$d->height}" />
+        </td>
+      </tr>
+    {/foreach}
+    </tbody>
+  </table>  
+  <p>
+    <label>&nbsp;</label>
+    <input id="submit_{$module_name}" name="submit_{$module_name}" type="submit" value="{l s='Save'}" class="button" />
+  </p>
   </form>
 </fieldset>
 
+<br/>
 <fieldset>
   <legend>{l s='LCE Products'}</legend>
   
@@ -77,3 +149,5 @@
       <input id="submit_{$module_name}_refresh_products" name="submit_{$module_name}_refresh_products" type="submit" value="{l s='Initialize/refresh products'}" class="button" />
     </p>
   </form>
+</fieldset>
+

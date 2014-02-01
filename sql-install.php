@@ -3,9 +3,9 @@
 $sql = array();
 
 $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_shipments` (
-    `id_shipment` int(10) NOT NULL AUTO_INCREMENT,
-    `order_id` int(10) NOT NULL,
-    `carrier_id` int(10),
+    `id_shipment` int(11) NOT NULL AUTO_INCREMENT,
+    `order_id` int(11) NOT NULL,
+    `carrier_id` int(11),
     `api_quote_uuid` VARCHAR(255) NOT NULL DEFAULT "",
     `api_order_uuid` VARCHAR(255) NOT NULL DEFAULT "",
     `collection_date` DATETIME,
@@ -36,15 +36,15 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_shipments` (
   ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
 
 $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_parcels` (
-    `id_parcel` int(10) NOT NULL AUTO_INCREMENT,
-    `length` int(10) NOT NULL,
-    `width` int(10) NOT NULL,
-    `height` int(10) NOT NULL,
+    `id_parcel` int(11) NOT NULL AUTO_INCREMENT,
+    `length` int(11) NOT NULL,
+    `width` int(11) NOT NULL,
+    `height` int(11) NOT NULL,
     `weight` decimal(5,3) NOT NULL,
     `shipper_reference` VARCHAR(255) NOT NULL DEFAULT "",
     `recipient_reference` VARCHAR(255) NOT NULL DEFAULT "",
     `customer_reference` VARCHAR(255) NOT NULL DEFAULT "",
-    `value` INT(10),
+    `value` INT(11),
     `currency` VARCHAR(255) NOT NULL DEFAULT "",
     `description` VARCHAR(255) NOT NULL DEFAULT "",
     `country_of_origin` VARCHAR(2) NOT NULL DEFAULT "",
@@ -55,8 +55,8 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_parcels` (
   ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
 
 $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_quotes` (
-    `id_quote` int(10) NOT NULL AUTO_INCREMENT,
-    `id_cart` int(10) NOT NULL,
+    `id_quote` int(11) NOT NULL AUTO_INCREMENT,
+    `id_cart` int(11) NOT NULL,
     `api_quote_uuid` VARCHAR(255) NOT NULL DEFAULT "",
     `date_add` DATETIME,
     `date_upd` DATETIME,
@@ -65,14 +65,27 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_quotes` (
   ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
 
 $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_offers` (
-    `id_offer` int(10) NOT NULL AUTO_INCREMENT,
-    `id_quote` int(10) NOT NULL,
+    `id_offer` int(11) NOT NULL AUTO_INCREMENT,
+    `id_quote` int(11) NOT NULL,
     `api_offer_uuid` VARCHAR(255) NOT NULL DEFAULT "",
     `lce_product_code` VARCHAR(255) NOT NULL DEFAULT "",
-    `total_price_in_cents` INT(10) NOT NULL,
+    `total_price_in_cents` INT(11) NOT NULL,
     `currency` VARCHAR(255) NOT NULL DEFAULT "",
     `date_add` DATETIME,
     `date_upd` DATETIME,
     `delete` tinyint(1) unsigned NOT NULL DEFAULT "0",
     PRIMARY KEY  (`id_offer`)
+  ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
+
+$sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_dimensions` (
+    `id_dimension` int(11) NOT NULL AUTO_INCREMENT,
+    `weight` int(11) NOT NULL,
+    `length` int(11) NOT NULL,
+    `width` int(11) NOT NULL,
+    `height` int(11) NOT NULL,
+    `weight_from` int(11) NOT NULL,
+    `weight_to` int(11) NOT NULL,
+    `date_add` DATETIME,
+    `date_upd` DATETIME,
+    PRIMARY KEY  (`id_dimension`)
   ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';

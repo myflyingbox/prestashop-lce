@@ -9,6 +9,7 @@ require_once(_PS_MODULE_DIR_ . 'lowcostexpress/lib/php-lce/bootstrap.php');
 require_once(_PS_MODULE_DIR_ . 'lowcostexpress/models/LceShipment.php');
 require_once(_PS_MODULE_DIR_ . 'lowcostexpress/models/LceQuote.php');
 require_once(_PS_MODULE_DIR_ . 'lowcostexpress/models/LceOffer.php');
+require_once(_PS_MODULE_DIR_ . 'lowcostexpress/models/LceDimension.php');
 
 class LowCostExpress extends CarrierModule
 {
@@ -149,13 +150,41 @@ class LowCostExpress extends CarrierModule
       Configuration::updateValue('MOD_LCE_DEFAULT_POSTAL_CODE', Tools::getValue('MOD_LCE_DEFAULT_POSTAL_CODE')) &&
       Configuration::updateValue('MOD_LCE_DEFAULT_COUNTRY', Tools::getValue('MOD_LCE_DEFAULT_COUNTRY')) &&
       Configuration::updateValue('MOD_LCE_DEFAULT_PHONE', Tools::getValue('MOD_LCE_DEFAULT_PHONE')) &&
-      Configuration::updateValue('MOD_LCE_DEFAULT_EMAIL', Tools::getValue('MOD_LCE_DEFAULT_EMAIL'))
+      Configuration::updateValue('MOD_LCE_DEFAULT_EMAIL', Tools::getValue('MOD_LCE_DEFAULT_EMAIL')) &&
+      Configuration::updateValue('MOD_LCE_PRICE_ROUND_INCREMENT', (int)Tools::getValue('MOD_LCE_PRICE_ROUND_INCREMENT')) &&
+      Configuration::updateValue('MOD_LCE_PRICE_SURCHARGE_STATIC', (int)Tools::getValue('MOD_LCE_PRICE_SURCHARGE_STATIC')) &&
+      Configuration::updateValue('MOD_LCE_PRICE_SURCHARGE_PERCENT', (int)Tools::getValue('MOD_LCE_PRICE_SURCHARGE_PERCENT')) &&
+      $this->_updateReferenceDimensions()
       )
       $message = $this->displayConfirmation($this->l('Your settings have been saved'));
     else
       $message = $this->displayError($this->l('There was an error while saving your settings'));
 
     return $message;
+  }
+
+  private function _updateReferenceDimensions() {
+    for ($i=1;$i<=15;$i++) {
+      $dimension = new LceDimension($i);
+      $dimension->length = (int)Tools::getValue('dim'.$i.'_length');
+      $dimension->width = (int)Tools::getValue('dim'.$i.'_width');
+      $dimension->height = (int)Tools::getValue('dim'.$i.'_height');
+      $dimension->weight_to = (int)Tools::getValue('dim'.$i.'_weight');
+      if ($i == 1) {
+        $dimension->weight_from = 0;
+      } else {
+        // Taking 'weight_from' from the previous reference
+        $dimension->weight_from = $previous_dimension->weight_to;
+        
+        // If weight_to is smaller than the previous weight_to, we automatically
+        // adjust.
+        if ($dimension->weight_to < $previous_dimension->weight_to)
+          $dimension->weight_to = $previous_dimension->weight_to;
+      }
+      $dimension->save();
+      $previous_dimension = $dimension;
+    }
+    return true;
   }
 
   private function _refreshLceProducts()
@@ -261,9 +290,30 @@ class LowCostExpress extends CarrierModule
       $carriers[] = new Carrier((int)$val['id_carrier']);
     }
   
+    // Initializing dimensions
+    $dimensions = array();
+    $default_dimensions = LceDimension::$defaults;
+    for ($i=1;$i<=15;$i++) {
+      $dimension = new LceDimension($i);
+      if (!$dimension->id) {
+        $dimension->id_dimension = $i;
+        $dimension->length = $default_dimensions[$i][1];
+        $dimension->width = $default_dimensions[$i][1];
+        $dimension->height = $default_dimensions[$i][1];
+        $dimension->weight_to = $default_dimensions[$i][0];
+        if ($i == 1)
+          $dimension->weight_from = 0;
+        else
+          $dimension->weight_from = $dimensions[$i-1]->weight_to;
+          
+        $dimension->add();
+      }
+      $dimensions[$i] = $dimension;
+    }
   
     $this->context->smarty->assign(array(
       'message' => $message,
+      'dimensions' => $dimensions,
       'carriers' => $carriers,
       'MOD_LCE_API_LOGIN' => Configuration::get('MOD_LCE_API_LOGIN'),
       'MOD_LCE_API_PASSWORD' => Configuration::get('MOD_LCE_API_PASSWORD'),
@@ -275,7 +325,10 @@ class LowCostExpress extends CarrierModule
       'MOD_LCE_DEFAULT_POSTAL_CODE' => Configuration::get('MOD_LCE_DEFAULT_POSTAL_CODE'),
       'MOD_LCE_DEFAULT_COUNTRY' => Configuration::get('MOD_LCE_DEFAULT_COUNTRY'),
       'MOD_LCE_DEFAULT_PHONE' => Configuration::get('MOD_LCE_DEFAULT_PHONE'),
-      'MOD_LCE_DEFAULT_EMAIL' => Configuration::get('MOD_LCE_DEFAULT_EMAIL')      
+      'MOD_LCE_DEFAULT_EMAIL' => Configuration::get('MOD_LCE_DEFAULT_EMAIL'),
+      'MOD_LCE_PRICE_ROUND_INCREMENT' => Configuration::get('MOD_LCE_PRICE_ROUND_INCREMENT'),
+      'MOD_LCE_PRICE_SURCHARGE_STATIC' => Configuration::get('MOD_LCE_PRICE_SURCHARGE_STATIC'),
+      'MOD_LCE_PRICE_SURCHARGE_PERCENT' => Configuration::get('MOD_LCE_PRICE_SURCHARGE_PERCENT')
     ));
   }
 
@@ -287,7 +340,6 @@ class LowCostExpress extends CarrierModule
   // Calculation of shipping cost, based on API requests
   public function getOrderShippingCost($cart,$shipping_cost)
   {
-    $cart = Context::getContext()->cart;
     
     // We check if we already have a LceQuote for this cart. If not, we request one.
     $quote = LceQuote::getLatestForCart($cart);
@@ -297,6 +349,8 @@ class LowCostExpress extends CarrierModule
       $delivery_address = new Address((int)$cart->id_address_delivery);
       $delivery_country = new Country((int)$delivery_address->id_country);
       
+      $weight = ceil($cart->getTotalWeight($cart->getProducts()));
+      $dimension = LceDimension::getForWeight($weight);
       
       $params = array(
         'shipper' => array(
@@ -307,7 +361,7 @@ class LowCostExpress extends CarrierModule
           'country' => $delivery_country->iso_code,
           'is_a_company' => false),
         'parcels' => array(
-          array('length' => 10, 'height' => 10, 'width' => 10, 'weight' => 1) //TODO: implement dynamically!!
+          array('length' => $dimension->length, 'height' => $dimension->height, 'width' => $dimension->width, 'weight' => $weight)
         )
       );
       $api_quote = Lce\Resource\Quote::request($params);
@@ -336,11 +390,29 @@ class LowCostExpress extends CarrierModule
       $lce_product_code = $row['lce_product_code'];
     
     
-    if ($lce_product_code && $lce_offer = LceOffer::getForQuoteAndLceProduct($quote, $lce_product_code))
-      return $lce_offer->total_price_in_cents / 100;
-    else
-      return false;
+    if ($lce_product_code && $lce_offer = LceOffer::getForQuoteAndLceProduct($quote, $lce_product_code)) {
+      $increment = (int)Configuration::get('MOD_LCE_PRICE_ROUND_INCREMENT');
+      $surcharge_amount = (int)Configuration::get('MOD_LCE_PRICE_SURCHARGE_STATIC');
+      $surcharge_percent = (int)Configuration::get('MOD_LCE_PRICE_SURCHARGE_PERCENT');
+      $price = $lce_offer->total_price_in_cents;
       
+      if (is_int($surcharge_percent) && $surcharge_percent > 0 && $surcharge_percent <= 100) {
+        $price = $price + ($price * $surcharge_percent / 100);
+      }
+
+      if (is_int($surcharge_amount) && $surcharge_amount > 0) {
+        $price = $price+(int)$surcharge_amount;
+      }
+
+      if (is_int($increment) && $increment > 0) {
+        $increment = 1 / $increment;
+        $price = (ceil($price * $increment) / $increment);
+      }
+
+      return  $price / 100;
+    } else {
+      return false;
+    }
   }
   
   public function getOrderShippingCostExternal($params)
