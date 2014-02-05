@@ -95,13 +95,15 @@
     {l s='When trying to obtain transportation prices for the cart of the customer, the module must send dimensions and weight. As the module cannot guess your standard packaging strategies, the following table allows you to define a correspondance between a weight and packaging dimensions. The module will always use the calculated weight of the cart (rounded to the upper integer), and will then obtain the corresponding packaging dimensions from this table. Please note that you will be able to specify the exact dimensions and weights of your final packaging when booking a shipment through the order back-office page.'}
   </p>
   <table>
-    <theader>
-      <th>Position</th>
-      <th>Weight up to (kg)</th>
-      <th>Length (cm)</th>
-      <th>Width (cm)</th>
-      <th>Height (cm)</th>
-    </theader>
+    <thead>
+      <tr>
+        <th>Position</th>
+        <th>Weight up to (kg)</th>
+        <th>Length (cm)</th>
+        <th>Width (cm)</th>
+        <th>Height (cm)</th>
+      </tr>
+    </thead>
     <tbody>
     {foreach from=$dimensions item=d}
       <tr>

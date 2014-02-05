@@ -13,6 +13,12 @@ if (!defined('_PS_VERSION_'))
  * something like admin/lce/shipment. Keep that in mind when trying to do
  * some overrides!
  * 
+ * NOTE: to activate a controller in Prestashop, you must declare it in the
+ * configuration, accessible at Admin->Menus:
+ *  Name: whatever you want
+ *  Class: the name of the controller class, e.g. AdminShipment
+ *  Module: name of the module, e.g. lowcostexpress
+ * 
  */
 class AdminShipmentController extends ModuleAdminController
 {
@@ -45,15 +51,23 @@ class AdminShipmentController extends ModuleAdminController
 
   public function renderView()
   {
+    $this->addJqueryUI('ui.dialog');
     $shipment = new LceShipment((int)Tools::getValue('id_shipment'));
     if (!Validate::isLoadedObject($shipment))
       throw new PrestaShopException('object can\'t be loaded');
-        
+    
+    $parcels = LceParcel::findAllForShipmentId($shipment->id);
     $order = new Order((int)$shipment->order_id);
     // Smarty assign
     $this->tpl_view_vars = array(
       'order' => $order,
+      'parcels' => $parcels,
       'link_order' => $this->context->link->getAdminLink('AdminOrders')."&vieworder&id_order=".$order->id,
+      'link_edit_shipment' => $this->context->link->getAdminLink('AdminShipment')."&updatelce_shipments&id_shipment=".$shipment->id,
+      'link_delete_package' => $this->context->link->getAdminLink('AdminParcel')."&ajax&dellce_parcels&action=delete_parcel&id_parcel=",
+      'link_load_package_form' => $this->context->link->getAdminLink('AdminParcel')."&ajax&addlce_parcels&action=load_form&id_shipment=".$shipment->id,
+      'link_load_update_package_form' => $this->context->link->getAdminLink('AdminParcel')."&ajax&updatelce_parcels&action=load_form&id_parcel=",
+      'link_save_package_form' => $this->context->link->getAdminLink('AdminParcel')."&ajax&addlce_parcels&action=save_form&id_shipment=".$shipment->id,
       'shipment' => $shipment,
       'shipper_country' => Country::getNameById((int)Context::getContext()->language->id, Country::getByIso($shipment->shipper_country)),
       'recipient_country' => Country::getNameById((int)Context::getContext()->language->id, Country::getByIso($shipment->recipient_country)),
@@ -155,7 +169,7 @@ class AdminShipmentController extends ModuleAdminController
   {
     // Redirecting to Order view after saving the shipment
     if (parent::postProcess())
-      Tools::redirectAdmin($this->context->link->getAdminLink('AdminOrders')."&vieworder&id_order=".$this->object->order_id);
+      Tools::redirectAdmin($this->context->link->getAdminLink('AdminShipment')."&viewlce_shipments&id_shipment=".$this->object->id);
       
   }
 }

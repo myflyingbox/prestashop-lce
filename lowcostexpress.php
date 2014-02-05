@@ -7,6 +7,7 @@ require_once(_PS_MODULE_DIR_ . 'lowcostexpress/lib/php-lce/bootstrap.php');
 
 // Loading Models
 require_once(_PS_MODULE_DIR_ . 'lowcostexpress/models/LceShipment.php');
+require_once(_PS_MODULE_DIR_ . 'lowcostexpress/models/LceParcel.php');
 require_once(_PS_MODULE_DIR_ . 'lowcostexpress/models/LceQuote.php');
 require_once(_PS_MODULE_DIR_ . 'lowcostexpress/models/LceOffer.php');
 require_once(_PS_MODULE_DIR_ . 'lowcostexpress/models/LceDimension.php');

@@ -37,6 +37,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_shipments` (
 
 $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_parcels` (
     `id_parcel` int(11) NOT NULL AUTO_INCREMENT,
+    `id_shipment` int(11) NOT NULL,
     `length` int(11) NOT NULL,
     `width` int(11) NOT NULL,
     `height` int(11) NOT NULL,
