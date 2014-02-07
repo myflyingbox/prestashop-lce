@@ -2,8 +2,8 @@
 
 <h2>{l s='LCE shipment for order:'} {$order->reference}</h2>
 
-<a href="{$link_order|escape:'htmlall':'UTF-8'}">{l s='Go back to order'} |
-<a href="{$link_edit_shipment|escape:'htmlall':'UTF-8'}">{l s='Edit shipment'}</a>
+<a href="{$link_order|escape:'htmlall':'UTF-8'}"><img src="../img/admin/arrow-left.png" alt="{l s='Back to order'}" /> {l s='Back to order'} 
+<a href="{$link_edit_shipment|escape:'htmlall':'UTF-8'}"><img src="../img/admin/edit.gif" alt="{l s='Edit shipment'}" /> {l s='Edit shipment'}</a>
 
   <div class="container-command container-command-top-spacing">
     <!-- Addresses -->
@@ -44,7 +44,7 @@
   <fieldset>
     <legend>{l s='Packages to ship'}</legend>
     {if $shipment->api_order_uuid eq false}
-      <a id="add-package" href="{$link_load_package_form}">{l s='Add package'}</a>
+      <a id="add-package" href="{$link_load_package_form}"><img src="../img/admin/add.gif" alt="{l s='Add package'}" /> {l s='Add package'}</a>
     {/if}
     
     <table id="pack-list">
@@ -71,17 +71,28 @@
             </td>
             {if $shipment->api_order_uuid eq false}
             <td>
-              <a class="delete-parcel" href="{$link_delete_package}{$p->id}">{l s='delete'}</a>
-              | <a class="edit-parcel" href="{$link_load_update_package_form}{$p->id}">{l s='edit'}</a>
-            
+              <a class="delete-parcel" href="{$link_delete_package}{$p->id}"><img src="../img/admin/delete.gif" alt="{l s='delete'}" /></a>
+               <a class="edit-parcel" href="{$link_load_update_package_form}{$p->id}"><img src="../img/admin/edit.gif" alt="{l s='edit'}" /></a>
             </td>
             {/if}
             <td>{$p->length} x {$p->width} x {$p->height} cm, {$p->weight} kg</td>
-            <td>{$p->value} {$p->currency}</td>
+            <td>
+              {if $p->value > 0}
+                {$p->value} {$p->currency}
+              {/if}    
+            </td>
             <td>{$p->description}</td>
-            <td>{l s='ref shipper:'} {$p->shipper_reference}
+            <td>
+              {if $p->shipper_reference != ''}
+                {l s='ref shipper:'} {$p->shipper_reference}
+              {/if}
+              {if $p->recipient_reference != ''}
               <br/>{l s='ref recipient:'} {$p->recipient_reference}
-              <br/>{l s='ref customer:'} {$p->customer_reference}</td>
+              {/if}
+              {if $p->customer_reference != ''}
+                <br/>{l s='ref customer:'} {$p->customer_reference}
+              {/if}
+            </td>
           </tr>
         {/foreach}
       </tbody>
@@ -95,7 +106,7 @@
   <fieldset>
     <legend>{l s='Transport booking'}</legend>
     {if $shipment->api_order_uuid eq false}
-      <a id="select-lce-offer" href="{$link_load_lce_offers}">{l s='Select a LCE carrier offer'}</a>
+      <a id="select-lce-offer" href="{$link_load_lce_offers}"><img src="../img/admin/search.gif" alt="{l s='Search LCE offer'}" />{l s='Search a carrier offer'}</a>
     {else}
       <a id="download-labels" href="{$link_download_labels}">{l s='Download labels'}</a>
     {/if}
