@@ -7,6 +7,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_shipments` (
     `order_id` int(11) NOT NULL,
     `carrier_id` int(11),
     `api_quote_uuid` VARCHAR(255) NOT NULL DEFAULT "",
+    `api_offer_uuid` VARCHAR(255) NOT NULL DEFAULT "",
     `api_order_uuid` VARCHAR(255) NOT NULL DEFAULT "",
     `collection_date` DATETIME,
     `relay_delivery_code` VARCHAR(255) NOT NULL DEFAULT "",
@@ -31,6 +32,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_shipments` (
     `recipient_email` VARCHAR(255) NOT NULL DEFAULT "",
     `date_add` DATETIME,
     `date_upd` DATETIME,
+    `date_booking` DATETIME,
     `delete` tinyint(1) unsigned NOT NULL DEFAULT "0",
     PRIMARY KEY  (`id_shipment`)
   ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';

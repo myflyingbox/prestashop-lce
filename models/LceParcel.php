@@ -44,7 +44,7 @@ class LceParcel extends ObjectModel {
   );
   
   public static function findAllForShipmentId($id_shipment) {
-      $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'lce_parcels as p WHERE p.delete = 0';
+      $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'lce_parcels as p WHERE p.`delete` = 0 AND p.`id_shipment` = '.$id_shipment.' ORDER BY p.`id_parcel` ASC';
       if ($rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS($sql)) {
           return ObjectModel :: hydrateCollection(__CLASS__, $rows);
       }

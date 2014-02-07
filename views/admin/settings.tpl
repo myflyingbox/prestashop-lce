@@ -10,6 +10,12 @@
       <label for="MOD_LCE_API_PASSWORD">{l s='Your LCE password:' mod='lowcostexpress'}</label>
       <input id="MOD_LCE_API_PASSWORD" name="MOD_LCE_API_PASSWORD" type="text" value="{$MOD_LCE_API_PASSWORD}" />
     </p>
+      <label for="MOD_LCE_API_ENV">{l s='API Environment:' mod='lowcostexpress'}</label>
+      <select id="MOD_LCE_API_ENV" name="MOD_LCE_API_ENV">
+        <option value="stating">staging (test)</option>
+        <option value="production">production</option>
+      </select>
+    <p>
     
     <p>
     {l s='The following fields are used to initialize shipper information when creating a new shipment. They can be overriden manually in the shipment form.' mod='lowcostexpress'}

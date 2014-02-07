@@ -92,7 +92,9 @@ class AdminParcelController extends ModuleAdminController
     else
       $parcel = new LceParcel();
 
-    $parcel->id_shipment = (int)Tools::getValue('id_shipment');
+    $shipment = new LceShipment((int)Tools::getValue('id_shipment'));
+
+    $parcel->id_shipment = $shipment->id;
     // Dimensions
     $parcel->length = (int)Tools::getValue('length');
     $parcel->width = (int)Tools::getValue('width');
@@ -114,6 +116,7 @@ class AdminParcelController extends ModuleAdminController
       $action = 'add';
     
     if ($parcel->validateFields(false) && $parcel->{$action}()) {
+      $shipment->invalidateOffer();
       die(Tools::jsonEncode($parcel));
     } else {
       header("HTTP/1.0 422 Unprocessable Entity");
@@ -138,6 +141,9 @@ class AdminParcelController extends ModuleAdminController
     }
     
     if ($parcel->delete()) {
+      // When deleting a package, existing offers are not anymore valid.
+      $shipment->invalidateOffer();
+
       die(Tools::jsonEncode( array('result' => $this->l('Parcel deleted.'))));
     }
   }

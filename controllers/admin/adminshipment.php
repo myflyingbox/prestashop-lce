@@ -56,18 +56,49 @@ class AdminShipmentController extends ModuleAdminController
     if (!Validate::isLoadedObject($shipment))
       throw new PrestaShopException('object can\'t be loaded');
     
-    $parcels = LceParcel::findAllForShipmentId($shipment->id);
+    $parcels = LceParcel::findAllForShipmentId($shipment->id_shipment);
     $order = new Order((int)$shipment->order_id);
+    
+    if ($shipment->api_offer_uuid)
+      $offer = Lce\Resource\Offer::find($shipment->api_offer_uuid);
+    else
+      $offer = false;
+
+    if ($shipment->api_order_uuid)
+      $booking = Lce\Resource\Order::find($shipment->api_order_uuid);
+    else
+      $booking = false;
+
+    /*
+     *  Dealing with a particular case: downloading shipment labels
+     */
+    if (Tools::isSubmit('download_labels') && $booking) {
+      $labels_content = $booking->labels();
+      $filename = 'labels_'.$booking->id.'.pdf';
+      
+      header('Content-type: application/pdf');
+      header("Content-Transfer-Encoding: binary");
+      header('Content-Disposition: attachment; filename="'.$filename.'"');
+      print($labels_content);
+      die();
+    }
+  
+
     // Smarty assign
     $this->tpl_view_vars = array(
       'order' => $order,
+      'offer' => $offer,
       'parcels' => $parcels,
       'link_order' => $this->context->link->getAdminLink('AdminOrders')."&vieworder&id_order=".$order->id,
       'link_edit_shipment' => $this->context->link->getAdminLink('AdminShipment')."&updatelce_shipments&id_shipment=".$shipment->id,
+      'link_load_lce_offers' => $this->context->link->getAdminLink('AdminShipment')."&ajax&action=get_offers&id_shipment=".$shipment->id,
       'link_delete_package' => $this->context->link->getAdminLink('AdminParcel')."&ajax&dellce_parcels&action=delete_parcel&id_parcel=",
       'link_load_package_form' => $this->context->link->getAdminLink('AdminParcel')."&ajax&addlce_parcels&action=load_form&id_shipment=".$shipment->id,
       'link_load_update_package_form' => $this->context->link->getAdminLink('AdminParcel')."&ajax&updatelce_parcels&action=load_form&id_parcel=",
       'link_save_package_form' => $this->context->link->getAdminLink('AdminParcel')."&ajax&addlce_parcels&action=save_form&id_shipment=".$shipment->id,
+      'link_save_offer_form' => $this->context->link->getAdminLink('AdminShipment')."&ajax&updatelce_shipments&action=save_offer&id_shipment=".$shipment->id,
+      'link_book_offer_form' => $this->context->link->getAdminLink('AdminShipment')."&ajax&updatelce_shipments&action=book_offer&id_shipment=".$shipment->id,
+      'link_download_labels' => $this->context->link->getAdminLink('AdminShipment')."&viewlce_shipments&download_labels&id_shipment=".$shipment->id_shipment,
       'shipment' => $shipment,
       'shipper_country' => Country::getNameById((int)Context::getContext()->language->id, Country::getByIso($shipment->shipper_country)),
       'recipient_country' => Country::getNameById((int)Context::getContext()->language->id, Country::getByIso($shipment->recipient_country)),
@@ -86,7 +117,9 @@ class AdminShipmentController extends ModuleAdminController
                     'image' => '../img/admin/cog.gif'
             ),
             'input' => array(
-                    array('type' => 'hidden', 'name' => 'order_id', 'size' => 40),
+                    array('type' => 'hidden', 'name' => 'order_id'),
+                    array('type' => 'hidden', 'name' => 'api_quote_uuid'),
+                    array('type' => 'hidden', 'name' => 'api_offer_uuid'),
                     array('type' => 'date', 'label' => $this->l('Pickup date (if applicable):'), 'name' => 'collection_date', 'size' => 20, 'maxlength' => 10, 'desc' => $this->l('Format: 2014-02-23')),
                     array('type' => 'text', 'label' => $this->l('Shipper name:'), 'name' => 'shipper_name', 'size' => 40, 'desc' => $this->l('Name of contact person.')),
                     array('type' => 'text', 'label' => $this->l('Shipper company (your shop):'), 'name' => 'shipper_company_name', 'size' => 40, 'desc' => $this->l('Name of your shop.')),
@@ -108,6 +141,17 @@ class AdminShipmentController extends ModuleAdminController
                     'image' => '../img/admin/cog.gif'
             ),
             'input' => array(
+                    array('type' => 'checkbox',
+                          'name' => 'recipient_is_a',
+                          'label' => $this->l('Company address:'),
+                          'values' => array(
+                            'query' => array(
+                              array('id' => 'company', 'name' => '', 'val' => '1'),
+                              ),
+                            'id' => 'id',
+                            'name' => 'name'),
+                          'desc' => $this->l('Select if this address is a company address, as opposed to personal address.')),
+                          
                     array('type' => 'text', 'label' => $this->l('Recipient name:'), 'name' => 'recipient_name', 'size' => 40, 'desc' => $this->l('Name of contact person.')),
                     array('type' => 'text', 'label' => $this->l('Recipient company:'), 'name' => 'recipient_company_name', 'size' => 40, 'desc' => $this->l('Name of your shop.')),
                     array('type' => 'textarea', 'label' => $this->l('Delivery address:'), 'name' => 'recipient_street', 'cols' => 38, 'rows' => 3, 'size' => '40', 'desc' => $this->l('Street information.')),
@@ -121,6 +165,12 @@ class AdminShipmentController extends ModuleAdminController
                     'class' => 'button'
             )
           ));
+
+
+    // Always forcing reset of quote and offer whenever trying to update
+    // a shipment
+    $this->fields_value['api_quote_uuid'] = '';
+    $this->fields_value['api_offer_uuid'] = '';
 
     // Loading object, if possible; returning empty object otherwise
     if (!($obj = $this->loadObject(true)))
@@ -144,7 +194,10 @@ class AdminShipmentController extends ModuleAdminController
       $this->fields_value['shipper_email'] = Configuration::get('MOD_LCE_DEFAULT_EMAIL');
       
       $this->fields_value['recipient_name'] = $customer->firstname.' '.$customer->lastname;
-      $this->fields_value['recipient_company_name'] = $customer->company;
+      if (!empty($delivery_address->company))
+        $this->fields_value['recipient_is_a_company'] = 1;
+
+      $this->fields_value['recipient_company_name'] = $delivery_address->company;
       
       $address_street = $delivery_address->address1;
       if ($delivery_address->address2)
@@ -171,5 +224,128 @@ class AdminShipmentController extends ModuleAdminController
     if (parent::postProcess())
       Tools::redirectAdmin($this->context->link->getAdminLink('AdminShipment')."&viewlce_shipments&id_shipment=".$this->object->id);
       
+  }
+  
+  public function displayAjaxGetOffers()
+  {
+    $shipment = $this->loadObject(true);
+    $params = array(
+      'shipper' => array('postal_code' => $shipment->shipper_postal_code, 'country' => $shipment->shipper_country),
+      'recipient' => array('postal_code' => $shipment->recipient_postal_code, 'country' => $shipment->recipient_country, 'is_a_company' => $shipment->recipient_is_a_company),
+      'parcels' => array()
+    );
+    $parcels = LceParcel::findAllForShipmentId($shipment->id);
+    foreach($parcels as $key => $parcel) {
+      $params['parcels'][] = array('length' => $parcel->length, 'width' => $parcel->width, 'height' => $parcel->height, 'weight' => $parcel->weight);
+    }
+    
+    $quote = Lce\Resource\Quote::request($params);
+    
+    $this->context->smarty->assign(array(
+      'quote' => $quote,
+      'offers' => $quote->offers
+    ));
+    
+    /* Manually calling all rendering methods. We need this to render a full
+     * HTML content in Ajax through a non-standard action.
+     */
+    // Using Ajax Layout
+    $this->layout = 'layout-ajax.tpl';
+    // Telling smarty to look for templates in our module path
+    $this->context->smarty->addTemplateDir(_PS_ROOT_DIR_.'/modules/lowcostexpress/views/templates/admin/shipment/helpers/view');
+    // Loading content from the specified template
+    $this->content .= $this->context->smarty->fetch('lce_offers.tpl');
+    // Calling the generic display method of AdminController
+    $this->display();
+  }
+  
+  // Creating a new parcel, from parameters submitted in Ajax
+  public function ajaxProcessSaveOffer()
+  {
+    $shipment = new LceShipment((int)Tools::getValue('id_shipment'));
+
+    if (!$shipment) {
+      header("HTTP/1.0 404 Not Found");
+      die(Tools::jsonEncode( array('error' => $this->l('Shipment not found.'))));
+    }
+    if ($shipment->api_order_uuid) {
+      header("HTTP/1.0 422 Unprocessable Entity");
+      die(Tools::jsonEncode( array('error' => $this->l('Shipment is already booked.'))));
+    }
+    
+    $shipment->api_quote_uuid = Tools::getValue('quote_uuid');
+    $shipment->api_offer_uuid = Tools::getValue('offer_uuid');
+    if (!$shipment->save()) {
+      header("HTTP/1.0 422 Unprocessable Entity");
+      die(Tools::jsonEncode( array('error' => $this->l('Shipment could not be updated.'))));
+    } else {
+      die(Tools::jsonEncode( array('result' => $this->l('Shipment updated.'))));
+    }
+  }
+
+  // Creating a new parcel, from parameters submitted in Ajax
+  public function ajaxProcessBookOffer()
+  {
+    $shipment = new LceShipment((int)Tools::getValue('id_shipment'));
+
+    $offer_uuid = (int)Tools::getValue('offer_uuid');
+
+    if (!$shipment) {
+      header("HTTP/1.0 404 Not Found");
+      die(Tools::jsonEncode( array('error' => $this->l('Shipment not found.'))));
+    }
+    
+    if ($shipment->api_order_uuid) {
+      header("HTTP/1.0 422 Unprocessable Entity");
+      die(Tools::jsonEncode( array('error' => $this->l('Shipment is already booked.'))));
+    }
+    
+    if ($shipment->api_offer_uuid != $offer_uuid) {
+      header("HTTP/1.0 422 Unprocessable Entity");
+      die(Tools::jsonEncode( array('error' => $this->l('Inconsistency between submitted offer uuid and saved offer uuid.'))));
+    }
+    
+    // Everything looks good, proceeding with booking
+    
+    $params = array(
+      'shipper' => array(
+        'company' => $shipment->shipper_company_name,
+        'name' => $shipment->shipper_name,
+        'street' => $shipment->shipper_street,
+        'city' => $shipment->shipper_city,
+        'state' => $shipment->shipper_state,
+        'phone' => $shipment->shipper_phone,
+        'email' => $shipment->shipper_email
+      ),
+      'recipient' => array(
+        'company' => $shipment->recipient_company_name,
+        'name' => $shipment->recipient_name,
+        'street' => $shipment->recipient_street,
+        'city' => $shipment->recipient_city,
+        'state' => $shipment->recipient_state,
+        'phone' => $shipment->recipient_phone,
+        'email' => $shipment->recipient_email
+      ),
+      'parcels' => array()
+    );
+      
+    $parcels = LceParcel::findAllForShipmentId($shipment->id);
+    foreach($parcels as $key => $parcel) {
+      $params['parcels'][] = array('description' => $parcel->description, 'value' => $parcel->value, 'currency' => $parcel->currency, 'country_of_origin' => $parcel->country_of_origin);
+    }
+
+    // Placing the order on the API
+    $order = Lce\Resource\Order::place($shipment->api_offer_uuid, $params);
+    
+    // Saving the order uuid
+    $shipment->api_order_uuid = $order->id;
+    $shipment->date_booking = date('Y-m-d H:i:s');
+    
+    if (!$shipment->save()) {
+      header("HTTP/1.0 422 Unprocessable Entity");
+      die(Tools::jsonEncode( array('error' => $this->l('Shipment could not be updated.'))));
+    } else {
+      die(Tools::jsonEncode( array('result' => $this->l('Shipment updated with order uuid.'))));
+    }
   }
 }

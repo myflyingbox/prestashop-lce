@@ -50,7 +50,10 @@
     <table id="pack-list">
       <thead>
         <tr>
-          <th></th>
+          <th>#</th>
+          {if $shipment->api_order_uuid eq false}
+            <th>{l s='Actions'}</th>
+          {/if}
           <th>{l s='Dimensions (LxWxH) and weight'}</th>
           <th>{l s='Value'}</th>
           <th>{l s='Description'}</th>
@@ -58,14 +61,21 @@
         </tr>
       </thead>
       <tbody>
+        {assign var=number value=1}
         {foreach from=$parcels item=p}
+          
           <tr>
             <td>
+              {$number}
+              {assign var=number value=$number+1}
+            </td>
             {if $shipment->api_order_uuid eq false}
+            <td>
               <a class="delete-parcel" href="{$link_delete_package}{$p->id}">{l s='delete'}</a>
               | <a class="edit-parcel" href="{$link_load_update_package_form}{$p->id}">{l s='edit'}</a>
-            {/if}
+            
             </td>
+            {/if}
             <td>{$p->length} x {$p->width} x {$p->height} cm, {$p->weight} kg</td>
             <td>{$p->value} {$p->currency}</td>
             <td>{$p->description}</td>
@@ -78,10 +88,74 @@
     </table>
 
   </fieldset>
+  
+  <br/>
+  
+  <!-- Booking -->
+  <fieldset>
+    <legend>{l s='Transport booking'}</legend>
+    {if $shipment->api_order_uuid eq false}
+      <a id="select-lce-offer" href="{$link_load_lce_offers}">{l s='Select a LCE carrier offer'}</a>
+    {else}
+      <a id="download-labels" href="{$link_download_labels}">{l s='Download labels'}</a>
+    {/if}
+    {if $offer eq true}
+      <table>
+        <thead>
+          <tr>
+            <th>{l s='Product name'}</th>
+            <th>{l s='Pickup details'}</th>
+            <th>{l s='Delivery details'}</th>
+            <th>{l s='Other details'}</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>{$offer->product->name}
+              <br/>{l s='Total price:'} <b>{$offer->total_price->formatted}</b>
+          </td>
+          
+          <td>
+            {foreach from=$offer->product->collection_informations key=lang item=s}
+              <p class='lang {$lang}'>{$s|nl2br}</p>
+            {/foreach}
+          </td>
+
+          <td>
+            {foreach from=$offer->product->delivery_informations key=lang item=s}
+              <p class='lang {$lang}'>{$s|nl2br}</p>
+            {/foreach}
+          </td>
+
+          <td>
+            {foreach from=$offer->product->details key=lang item=s}
+              <p class='lang {$lang}'>{$s|nl2br}</p>
+            {/foreach}
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      {if $shipment->api_order_uuid eq false}
+        <form id="book-offer">
+          <input type='hidden' name='offer_uuid' value='{$offer->id}'>
+          <input type='submit' id="book_lce_offer" value='{l s='Confirm booking'}' name='book_lce_offer'/>
+        </form>
+      {/if}
+    {/if}
+  </fieldset>
+
 {/block}
 
 <div id="dialog-package-form">
 </div>
+<div id="dialog-lce-offers">
+</div>
+<div id="dialog-confirm-booking">
+  <p>{l s='Are you sure?'}</p>
+  <p>{l s='Confirming a booking cannot be cancelled.'}
+  <br/>{l s='For products supporting it, confirming the booking will automatically send a pickup order to the carrier.'}</p>
+</div>
+
 <script>
 $(function() {
   $("#dialog-package-form").dialog({
@@ -108,27 +182,7 @@ $(function() {
             url: '{$link_save_package_form}',
             data: $(this).serialize(),
             success: function(json) {
-              var parcel = $.parseJSON(json);
-              var row =
-               '<tr>'+
-                  '<td>' +
-                    '<a class="delete-parcel" href="{$link_delete_package}'+parcel.id+'">{l s='delete'}</a>'+
-                    ' | <a class="edit-parcel" href="{$link_load_update_package_form}'+parcel.id+'">{l s='edit'}</a>'+
-                  '</td>' +
-                  '<td>'+parcel.length+' x '+parcel.width+' x '+parcel.height+' cm, '+parcel.weight+' kg</td>' +
-                  '<td>'+parcel.value+' '+parcel.currency+'</td>' +
-                  '<td>'+parcel.description+'</td>'+
-                  '<td>{l s='ref shipper:'} '+parcel.shipper_reference+
-                  '<br/>{l s='ref recipient:'} '+parcel.recipient_reference+
-                  '<br/>{l s='ref customer:'} '+parcel.customer_reference+'</td>'+
-                '</tr>';
-                
-              if (edit) {
-                link.parents("tr").replaceWith(row);
-              } else {
-                $('table#pack-list > tbody:last').append(row);
-              }
-              $( "#dialog-package-form" ).dialog("close");
+              location.reload();
             }
         });
       });
@@ -142,13 +196,82 @@ $(function() {
         type: 'POST',
         url: $(this).attr("href"),
         success: function(json) {
-          link.parents("tr").remove();
+          location.reload();
         },
         error: function(json) {
           var response = $.parseJSON(json.responseText);
           alert(response.error);
         }
       });
+  });
+  
+  $("#dialog-lce-offers").dialog({
+    autoOpen: false,
+    modal: true,
+    width: 970,
+    position: "top"
+    });
+
+  $("body").on("click","a#select-lce-offer", function(e) {
+    e.preventDefault();
+    var link = $(this);
+    var url = link.attr("href");
+    $( "#dialog-lce-offers" ).load(url, function( response, status, xhr ) {
+      $(this).dialog("open");
+      $(this).find("form").submit(function(e) {
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: '{$link_save_offer_form}',
+            data: $(this).serialize(),
+            success: function(json) {
+              location.reload();
+            },
+            error: function(json) {
+              var response = $.parseJSON(json.responseText);
+              alert(response.error);
+            }
+        });
+      });
+    });
+  });
+  
+  // managing the Ajax submit of the form
+  $("form#book-offer").submit(function(e) {
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{$link_book_offer_form}',
+      data: $(this).serialize(),
+      success: function(json) {
+        location.reload();
+      },
+      error: function(json) {
+        var response = $.parseJSON(json.responseText);
+        alert(response.error);
+      }
+    });
+  });
+  
+  $("#dialog-confirm-booking").dialog({
+      resizable: false,
+      height: 220,
+      width: 500,
+      modal: true,
+      autoOpen: false,
+      buttons: {
+          '{l s='Confirm booking'}': function() {
+              $(this).dialog('close');
+              $("form#book-offer").submit();
+          },
+          {l s='Cancel'}: function() {
+              $(this).dialog('close');
+          }
+      }
+  });
+  $("input#book_lce_offer").click(function() {
+    $("#dialog-confirm-booking").dialog('open');
+    return false;
   });
 });
 </script>

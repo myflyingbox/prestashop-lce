@@ -6,6 +6,7 @@ class LceShipment extends ObjectModel {
   public $order_id;
   public $carrier_id;
   public $api_quote_uuid;
+  public $api_offer_uuid;
   public $api_order_uuid;
   public $collection_date;
   public $shipper_name;
@@ -29,6 +30,7 @@ class LceShipment extends ObjectModel {
   public $recipient_email;
   public $date_add;
   public $date_upd;
+  public $date_booking;
 
 
   public static $definition = array(
@@ -39,6 +41,7 @@ class LceShipment extends ObjectModel {
           'order_id' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
           'carrier_id' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
           'api_quote_uuid' => array('type' => self::TYPE_STRING),
+          'api_offer_uuid' => array('type' => self::TYPE_STRING),
           'api_order_uuid' => array('type' => self::TYPE_STRING),
           'collection_date' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
           'shipper_name' => array('type' => self::TYPE_STRING),
@@ -61,7 +64,8 @@ class LceShipment extends ObjectModel {
           'recipient_phone' => array('type' => self::TYPE_STRING),
           'recipient_email' => array('type' => self::TYPE_STRING),
           'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-          'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDate')
+          'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
+          'date_booking' => array('type' => self::TYPE_DATE, 'validate' => 'isDate')
       ),
       'associations' => array(
         'order' => array('type' => self::HAS_ONE, 'field' => 'order_id', 'object' => 'Order'),
@@ -76,5 +80,11 @@ class LceShipment extends ObjectModel {
             return ObjectModel::hydrateCollection(__CLASS__, $rows);
     }
     return array();
+  }
+  
+  public function invalidateOffer(){
+    $this->api_offer_uuid = '';
+    $this->api_quote_uuid = '';
+    return $this->save();
   }
 }

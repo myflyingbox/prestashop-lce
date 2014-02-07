@@ -41,7 +41,9 @@ class LowCostExpress extends CarrierModule
     // Check is php-curl is available
     if(!extension_loaded('curl')) $this->warning.=$this->l("php-curl does not seem te be installed on your system. Please contact your hosting provider. This extension is required for the module to work properly.");
     
-    Lce\Lce::configure(Configuration::get('MOD_LCE_API_LOGIN'), Configuration::get('MOD_LCE_API_PASSWORD'), 'staging');
+    $env = Configuration::get('MOD_LCE_API_ENV');
+    if ($env != 'staging' && $env != 'production') $env = 'staging';
+    Lce\Lce::configure(Configuration::get('MOD_LCE_API_LOGIN'), Configuration::get('MOD_LCE_API_PASSWORD'), $env);
     
   }
   
@@ -69,6 +71,7 @@ class LowCostExpress extends CarrierModule
         
     // register hooks
     if(
+        !$this->registerHook('displayBackOfficeHeader') || // Adding CSS
         !$this->registerHook('updateCarrier') || // For update of carrier IDs
         !$this->registerHook('displayAdminOrder') // Displaying LCE Shipments on order admin page
       ) return false;
@@ -143,6 +146,7 @@ class LowCostExpress extends CarrierModule
     if (
       Configuration::updateValue('MOD_LCE_API_LOGIN', Tools::getValue('MOD_LCE_API_LOGIN')) &&
       Configuration::updateValue('MOD_LCE_API_PASSWORD', Tools::getValue('MOD_LCE_API_PASSWORD')) &&
+      Configuration::updateValue('MOD_LCE_API_ENV', Tools::getValue('MOD_LCE_API_ENV')) &&
       Configuration::updateValue('MOD_LCE_DEFAULT_SHIPPER_NAME', Tools::getValue('MOD_LCE_DEFAULT_SHIPPER_NAME')) &&
       Configuration::updateValue('MOD_LCE_DEFAULT_SHIPPER_COMPANY', Tools::getValue('MOD_LCE_DEFAULT_SHIPPER_COMPANY')) &&
       Configuration::updateValue('MOD_LCE_DEFAULT_STREET', Tools::getValue('MOD_LCE_DEFAULT_STREET')) &&
@@ -318,6 +322,7 @@ class LowCostExpress extends CarrierModule
       'carriers' => $carriers,
       'MOD_LCE_API_LOGIN' => Configuration::get('MOD_LCE_API_LOGIN'),
       'MOD_LCE_API_PASSWORD' => Configuration::get('MOD_LCE_API_PASSWORD'),
+      'MOD_LCE_API_ENV' => Configuration::get('MOD_LCE_API_ENV'),
       'MOD_LCE_DEFAULT_SHIPPER_NAME' => Configuration::get('MOD_LCE_DEFAULT_SHIPPER_NAME'),
       'MOD_LCE_DEFAULT_SHIPPER_COMPANY' => Configuration::get('MOD_LCE_DEFAULT_SHIPPER_COMPANY'),
       'MOD_LCE_DEFAULT_STREET' => Configuration::get('MOD_LCE_DEFAULT_STREET'),
@@ -472,6 +477,15 @@ class LowCostExpress extends CarrierModule
     
     // Rendering the partial view
     return $this->display( __FILE__, 'views/admin/order/shipment_details.tpl' );
+  }
+
+  public function hookDisplayBackOfficeHeader($params){
+  
+    $this->context->controller->addCss($this->_path.'css/style.css');
+    //~ $html = '';
+    //~ $html .= '<link href="'.$this->_path.'css/style.css" rel="stylesheet" type="text/css" media="all" />';
+//~ 
+    //~ return $html;
   }
 
 }
