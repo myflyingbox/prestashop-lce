@@ -6,8 +6,41 @@
 <a href="{$link_edit_shipment|escape:'htmlall':'UTF-8'}"><img src="../img/admin/edit.gif" alt="{l s='Edit shipment'}" /> {l s='Edit shipment'}</a>
 
   <div class="container-command container-command-top-spacing">
+  
+    <!-- Tracking -->
+    {if $shipment->api_order_uuid}
+      <fieldset>
+        <legend><img src="../img/admin/delivery.gif" alt="{l s='Tracking'}" />{l s='Tracking for all packages'}</legend>
+        {foreach $shipment->trackingStatus() item=events key=num}
+          <div style="width: 49%; float:left;">
+            <table class='table'>
+              <thead>
+                <tr>
+                  <th colspan=3>{l s='Package #'}{$num+1}</th>
+                </tr>
+                <tr>
+                  <th>{l s='Event date'}</th>
+                  <th>{l s='Event description'}</th>
+                  <th>{l s='Location'}</th>
+                </tr>
+              </thead>
+              <tbody>
+              {foreach $events item=event}
+                <tr>
+                  <td>{$event['date']|date_format:"%Y-%m-%d %H:%M"}</td>
+                  <td>{$event['label']}</td>
+                  <td>{$event['location']}</td>
+                </tr>
+              {/foreach}
+              </tbody>
+            </table>
+          </div>
+        {/foreach}
+      </fieldset>
+      <br/>
+    {/if}
+
     <!-- Addresses -->
-    
     <div style="width: 49%; float:left;">
       <!-- Invoice address -->
       <fieldset>
@@ -47,7 +80,7 @@
       <a id="add-package" href="{$link_load_package_form}"><img src="../img/admin/add.gif" alt="{l s='Add package'}" /> {l s='Add package'}</a>
     {/if}
     
-    <table id="pack-list">
+    <table id="pack-list" class="table">
       <thead>
         <tr>
           <th>#</th>
@@ -105,13 +138,15 @@
   <!-- Booking -->
   <fieldset>
     <legend>{l s='Transport booking'}</legend>
-    {if $shipment->api_order_uuid eq false}
-      <a id="select-lce-offer" href="{$link_load_lce_offers}"><img src="../img/admin/search.gif" alt="{l s='Search LCE offer'}" />{l s='Search a carrier offer'}</a>
-    {else}
-      <a id="download-labels" href="{$link_download_labels}">{l s='Download labels'}</a>
-    {/if}
+    <p>
+      {if $shipment->api_order_uuid eq false}
+        <a id="select-lce-offer" href="{$link_load_lce_offers}"><img src="../img/admin/search.gif" alt="{l s='Search LCE offer'}" />{l s='Search a carrier offer'}</a>
+      {else}
+        <a id="download-labels" href="{$link_download_labels}"><img src="../img/admin/pdf.gif" alt="{l s='Download labels'}" /> {l s='Download labels'}</a>
+      {/if}
+    </p>
     {if $offer eq true}
-      <table>
+      <table class="table">
         <thead>
           <tr>
             <th>{l s='Product name'}</th>

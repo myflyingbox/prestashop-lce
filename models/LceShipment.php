@@ -31,7 +31,16 @@ class LceShipment extends ObjectModel {
   public $date_add;
   public $date_upd;
   public $date_booking;
+  public $parcels; // List of parcels, loaded at init
 
+
+  public function __construct($id = null, $id_lang = null, $id_shop = null)
+  {
+    parent::__construct($id, $id_lang, $id_shop);
+    if ($id) {
+      $this->parcels = LceParcel::findAllForShipmentId($id);
+    }
+  }
 
   public static $definition = array(
       'table' => 'lce_shipments',
@@ -76,15 +85,101 @@ class LceShipment extends ObjectModel {
   public static function findAllForOrder($order_id)
   {
     $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'lce_shipments WHERE (order_id = '.(int)$order_id.")";
+    $collection = array();
     if ($rows = Db :: getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS($sql)) {
-            return ObjectModel::hydrateCollection(__CLASS__, $rows);
+      foreach($rows as $key => $row) {
+        $collection[] = new LceShipment((int)$row['id_shipment']);
+      }
     }
-    return array();
+    return $collection;
   }
   
-  public function invalidateOffer(){
+  public function invalidateOffer()
+  {
     $this->api_offer_uuid = '';
     $this->api_quote_uuid = '';
     return $this->save();
+  }
+  
+  public function trackingStatus()
+  {
+    $data = array();
+    
+    if ($this->api_order_uuid) {
+      $order = Lce\Resource\Order::find($this->api_order_uuid);
+      $parcel_tracking = $order->tracking();
+      $lang_iso = Context::getContext()->language->iso_code;
+      
+      foreach($parcel_tracking as $key => $parcel)
+      {
+        $event_dates = array();
+        $events = array();
+        
+        foreach($parcel->events as $event)
+        {
+          $event_dates[] = $event->happened_at;
+          $label = $event->label->$lang_iso ? $event->label->$lang_iso : $event->label->en;
+          $events[] = array('code' => $event->code, 'date' => $event->happened_at, 'label' => $label, 'location' => LceShipment::formatTrackingLocation($event->location));
+        }
+        // Now we have all events for this parcel, neatly organized.
+        array_multisort($event_dates, $events); // Sorting $events following $event_dates
+        $data[$parcel->parcel_index] = $events;
+      }
+    }
+    return $data;
+  }
+  
+  /*
+   * Returns an array containing the latest tracking event for each
+   * parcel of the shipment.
+   */
+  public function currentTrackingStatus()
+  {
+    $parcels = $this->trackingStatus();
+    
+    $data = array();
+    // For each parcel, returning only the latest event
+    
+    foreach($parcels as $key => $parcel)
+    {
+      $data[$key] = array_pop($parcel);
+    }
+    return $data;
+  }
+  
+  
+  /*
+   * Helper function to return a readable location, based on dynamic
+   * data.
+   */
+  public static function formatTrackingLocation($location)
+  {
+    $res = '';
+    if (!empty($location->name))
+      $res .= $location->name;
+    
+    // We consider that state and postal codes are only used if a city is actually specified
+    if (!empty($location->city)) {
+      $city = '';
+      $city .= $location->postal_code;
+      if (!empty($location->postal_code))
+        $city .= ' ';
+        
+      $city .= $location->city;
+      
+      if (!empty($location->state))
+        $city .= ", ".$location->state;
+    }
+    if (!empty($city)) {
+      if (!empty($res))
+        $res .= ' ('.$city.')';
+      else
+        $res .= $city;
+    }
+    
+    if (!empty($location->country)) {
+      $res .= ' - '.$location->country;
+    }
+    return $res;
   }
 }

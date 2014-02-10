@@ -71,6 +71,7 @@ class LowCostExpress extends CarrierModule
         
     // register hooks
     if(
+        !$this->registerHook('displayOrderDetail') || // Front-side parcel tracking
         !$this->registerHook('displayBackOfficeHeader') || // Adding CSS
         !$this->registerHook('updateCarrier') || // For update of carrier IDs
         !$this->registerHook('displayAdminOrder') // Displaying LCE Shipments on order admin page
@@ -482,10 +483,24 @@ class LowCostExpress extends CarrierModule
   public function hookDisplayBackOfficeHeader($params){
   
     $this->context->controller->addCss($this->_path.'css/style.css');
-    //~ $html = '';
-    //~ $html .= '<link href="'.$this->_path.'css/style.css" rel="stylesheet" type="text/css" media="all" />';
-//~ 
-    //~ return $html;
+  }
+
+  
+  /*
+   * Displaying tracking information on front-side order page
+   */
+  public function hookDisplayOrderDetail($params)
+  {
+    // We proceed only if module is currently active
+    if (!$this->active)
+      return false;
+    
+    global $currentIndex, $smarty;
+    
+    $smarty->assign('parcel_num', 0);
+    $smarty->assign('shipments', LceShipment::findAllForOrder((int)Tools::getValue('id_order')));
+    // Rendering the partial view
+    return $this->display( __FILE__, 'views/front/order/tracking_details.tpl' );
   }
 
 }
