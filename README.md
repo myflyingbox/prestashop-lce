@@ -1,7 +1,7 @@
-LCE Prestashop Module
+LowCostExpress Prestashop Module
 ==============
 
-A Prestashop module that provides an interface to the LCE web services (cf. https://lce.io).
+A Prestashop module that provides an interface to the LCE web services (cf. https://lce.io), provided by LOW COST EXPRESS (company registered in France).
 
 IMPORTANT: this is a beta version, not to be used in production yet unless in close contact with the dev team.
 
@@ -24,32 +24,29 @@ It was developed and tested on Prestashop 1.5.6.2 and therefore may not be compa
 
 ### Install from source
 
-Go to the /modules directory of your prestashop instance.
+Go to the /modules directory of your prestashop instance (replace PS_ROOT_DIR by the PATH to your prestashop instance):
+```
+cd PS_ROOT_DIR/modules
+```
 
 Get the code by cloning the github repository (note: the module directory name MUST be lowcostexpress):
 
 ```bash
-git clone https://github.com/lce/prestashop-lce.git lowcostexpress
+git clone --recursive https://github.com/lce/prestashop-lce.git lowcostexpress
 ```
 
-Load the 'php-lce' lib:
+One of the module libs (php-lce) has dependencies of its own, which you must initialize with 'composer':
 
 ```bash
-git submodule init
-git submodule update
-```
-
-The php-lce lib has dependencies of its own, which you must initialize with 'composer':
-
-```bash
-cd lib/php-lce
+cd lowcostexpress/lib/php-lce
 curl -s http://getcomposer.org/installer | php
 php composer.phar install
 ```
 
 ### Install from package
 
-Not yet available. Contact us at info@lce.io if you cannot install from source and want a package.
+Not yet available (will be very soon!).
+Contact us at info@lce.io if you cannot install from source and want a package immediately.
 
 ## Configuration
 
