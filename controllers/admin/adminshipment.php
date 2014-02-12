@@ -288,7 +288,7 @@ class AdminShipmentController extends ModuleAdminController
   {
     $shipment = new LceShipment((int)Tools::getValue('id_shipment'));
 
-    $offer_uuid = (int)Tools::getValue('offer_uuid');
+    $offer_uuid = Tools::getValue('offer_uuid');
 
     if (!$shipment) {
       header("HTTP/1.0 404 Not Found");
