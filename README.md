@@ -19,11 +19,12 @@ To use this module, you need the following:
 - php-curl module activated on the server
 - an active LCE account and API keys
 
-Please note that the module is not compatible with Prestashop 1.4. It was developed and tested on Prestashop 1.5.6.2 and therefore may not be compatible with older releases of the 1.5 series. If this is the case, please let us know.
+Please note that the module is not compatible with Prestashop 1.4.
+It was developed and tested on Prestashop 1.5.6.2 and therefore may not be compatible with older releases of the 1.5 series. If this is the case, please let us know.
 
 ### Install from source
 
-Go the /modules directory of your prestashop instance.
+Go to the /modules directory of your prestashop instance.
 
 Get the code by cloning the github repository (note: the module directory name MUST be lowcostexpress):
 
@@ -38,7 +39,7 @@ git submodule init
 git submodule update
 ```
 
-The php-lce lib has dependencies of its own, which you must with 'composer':
+The php-lce lib has dependencies of its own, which you must initialize with 'composer':
 
 ```bash
 cd lib/php-lce
@@ -48,7 +49,7 @@ php composer.phar install
 
 ### Install from package
 
-Not yet supported. Contact us at info@lce.io if you cannot install from source and want a package.
+Not yet available. Contact us at info@lce.io if you cannot install from source and want a package.
 
 ## Configuration
 
@@ -61,9 +62,9 @@ The following settings can be fine-tuned on the module's configuration page:
 * Calculation rules for automatic transport cost evaluation during cart check-out. Be especially careful when specifying a correspondance between weight and package dimensions: the module cannot guess the final packing dimensions for a given cart, so it will only base its calculation on the total weight of the cart and the correspondance rules you define on the module configuration.
 
 If you want your customers to be able to select an LCE carrier (with automatic price calculation), you must initialize a set of carriers (in the sense of 'prestashop carriers') based on LCE transport products.
-The configuration page allows to initialize/update the list of carriers available for a given country of departure.
+The configuration page allows you to automatically initialize/update the list of carriers available for a given country of departure.
 
-Please note that you do NOT need to initialize carriers if you only want to use the back-office features of the LCE module. Whenever you request offers for your shipment, all available offers will be returned anyway.
+Please note that you do not need to initialize carriers if you only want to use the back-office features of the LCE module. Whenever you request offers for your shipment, all available offers will be returned anyway.
 
 ## Usage
 
@@ -91,6 +92,6 @@ LCE shipments have their own page, on which you can:
 * download labels provided by the carrier, to apply on packages before pickup/dropoff;
 * track the progress of the shipment.
 
-## Module support
+## Getting help
 
 This module is maintained directly by the developers of the LCE API. You can contact us at tech@lce.io if you need any help using or setting up the module on your prestashop instance.
