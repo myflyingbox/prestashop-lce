@@ -316,11 +316,14 @@ class LowCostExpress extends CarrierModule
       }
       $dimensions[$i] = $dimension;
     }
+    
+    $countries = Country::getCountries($this->context->language->id);
   
     $this->context->smarty->assign(array(
       'message' => $message,
       'dimensions' => $dimensions,
       'carriers' => $carriers,
+      'countries' => $countries,
       'MOD_LCE_API_LOGIN' => Configuration::get('MOD_LCE_API_LOGIN'),
       'MOD_LCE_API_PASSWORD' => Configuration::get('MOD_LCE_API_PASSWORD'),
       'MOD_LCE_API_ENV' => Configuration::get('MOD_LCE_API_ENV'),

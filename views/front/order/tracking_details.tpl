@@ -4,13 +4,13 @@
     {if $shipment->api_order_uuid}
       {foreach $shipment->trackingStatus() item=events key=num}
         {$parcel_num = $parcel_num+1}
-        <h3>{l s='Tracking information, parcel #'} {$parcel_num}</h3>
+        <h3>{l s='Tracking information, parcel #' mod='lowcostexpress'} {$parcel_num}</h3>
         <table class='std'>
           <thead>
             <tr>
-              <th>{l s='Event date'}</th>
-              <th>{l s='Event description'}</th>
-              <th>{l s='Location'}</th>
+              <th>{l s='Event date' mod='lowcostexpress'}</th>
+              <th>{l s='Event description' mod='lowcostexpress'}</th>
+              <th>{l s='Location' mod='lowcostexpress'}</th>
             </tr>
           </thead>
           <tbody>

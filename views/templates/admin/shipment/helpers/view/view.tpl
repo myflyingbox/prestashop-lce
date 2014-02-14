@@ -1,27 +1,29 @@
 {block name="override_tpl"}
 
-<h2>{l s='LCE shipment for order:'} {$order->reference}</h2>
+<h2>{l s='LCE shipment for order:' mod='lowcostexpress'} {$order->reference}</h2>
 
-<a href="{$link_order|escape:'htmlall':'UTF-8'}"><img src="../img/admin/arrow-left.png" alt="{l s='Back to order'}" /> {l s='Back to order'} 
-<a href="{$link_edit_shipment|escape:'htmlall':'UTF-8'}"><img src="../img/admin/edit.gif" alt="{l s='Edit shipment'}" /> {l s='Edit shipment'}</a>
+<a href="{$link_order|escape:'htmlall':'UTF-8'}"><img src="../img/admin/arrow-left.png" alt="{l s='Back to order' mod='lowcostexpress'}" /> {l s='Back to order' mod='lowcostexpress'} </a>
+{if $shipment->api_order_uuid eq false}
+  <a href="{$link_edit_shipment|escape:'htmlall':'UTF-8'}"><img src="../img/admin/edit.gif" alt="{l s='Edit shipment' mod='lowcostexpress'}" /> {l s='Edit shipment' mod='lowcostexpress'}</a>
+{/if}
 
   <div class="container-command container-command-top-spacing">
   
     <!-- Tracking -->
     {if $shipment->api_order_uuid}
       <fieldset>
-        <legend><img src="../img/admin/delivery.gif" alt="{l s='Tracking'}" />{l s='Tracking for all packages'}</legend>
+        <legend><img src="../img/admin/delivery.gif" alt="{l s='Tracking'}" />{l s='Tracking for all packages' mod='lowcostexpress'}</legend>
         {foreach $shipment->trackingStatus() item=events key=num}
           <div style="width: 49%; float:left;">
             <table class='table'>
               <thead>
                 <tr>
-                  <th colspan=3>{l s='Package #'}{$num+1}</th>
+                  <th colspan=3>{l s='Package #' mod='lowcostexpress'}{$num+1}</th>
                 </tr>
                 <tr>
-                  <th>{l s='Event date'}</th>
-                  <th>{l s='Event description'}</th>
-                  <th>{l s='Location'}</th>
+                  <th>{l s='Event date' mod='lowcostexpress'}</th>
+                  <th>{l s='Event description' mod='lowcostexpress'}</th>
+                  <th>{l s='Location' mod='lowcostexpress'}</th>
                 </tr>
               </thead>
               <tbody>
@@ -44,7 +46,7 @@
     <div style="width: 49%; float:left;">
       <!-- Invoice address -->
       <fieldset>
-        <legend><img src="../img/admin/invoice.gif" alt="{l s='Delivery address'}" />{l s='Delivery address'}</legend>
+        <legend><img src="../img/admin/invoice.gif" alt="{l s='Delivery address' mod='lowcostexpress'}" />{l s='Delivery address' mod='lowcostexpress'}</legend>
           <p><b>{$shipment->recipient_name}</b></p>
           <p>
           {$shipment->recipient_street|nl2br}
@@ -58,7 +60,7 @@
       <div style="width: 49%; float:right;">
         <!-- Shipper address -->
         <fieldset>
-          <legend><img src="../img/admin/delivery.gif" alt="{l s='Pickup/shipper address'}" />{l s='Pickup/shipper address'}</legend>
+          <legend><img src="../img/admin/delivery.gif" alt="{l s='Pickup/shipper address' mod='lowcostexpress'}" />{l s='Pickup/shipper address' mod='lowcostexpress'}</legend>
           <p><b>{$shipment->shipper_name}</b></p>
           <p>
           {$shipment->shipper_street|nl2br}
@@ -75,9 +77,10 @@
   
   <!-- Parcels -->
   <fieldset>
-    <legend>{l s='Packages to ship'}</legend>
+    <legend>{l s='Packages to ship' mod='lowcostexpress'}</legend>
+    
     {if $shipment->api_order_uuid eq false}
-      <a id="add-package" href="{$link_load_package_form}"><img src="../img/admin/add.gif" alt="{l s='Add package'}" /> {l s='Add package'}</a>
+      <a id="add-package" href="{$link_load_package_form}"><img src="../img/admin/add.gif" alt="{l s='Add package' mod='lowcostexpress'}" /> {l s='Add package' mod='lowcostexpress'}</a>
     {/if}
     
     <table id="pack-list" class="table">
@@ -85,18 +88,17 @@
         <tr>
           <th>#</th>
           {if $shipment->api_order_uuid eq false}
-            <th>{l s='Actions'}</th>
+            <th>{l s='Actions' mod='lowcostexpress'}</th>
           {/if}
-          <th>{l s='Dimensions (LxWxH) and weight'}</th>
-          <th>{l s='Value'}</th>
-          <th>{l s='Description'}</th>
-          <th>{l s='References'}</th>
+          <th>{l s='Dimensions (LxWxH) and weight' mod='lowcostexpress'}</th>
+          <th>{l s='Value' mod='lowcostexpress'}</th>
+          <th>{l s='Description' mod='lowcostexpress'}</th>
+          <th>{l s='References' mod='lowcostexpress'}</th>
         </tr>
       </thead>
       <tbody>
         {assign var=number value=1}
         {foreach from=$parcels item=p}
-          
           <tr>
             <td>
               {$number}
@@ -104,8 +106,8 @@
             </td>
             {if $shipment->api_order_uuid eq false}
             <td>
-              <a class="delete-parcel" href="{$link_delete_package}{$p->id}"><img src="../img/admin/delete.gif" alt="{l s='delete'}" /></a>
-               <a class="edit-parcel" href="{$link_load_update_package_form}{$p->id}"><img src="../img/admin/edit.gif" alt="{l s='edit'}" /></a>
+              <a class="delete-parcel" href="{$link_delete_package}{$p->id}"><img src="../img/admin/delete.gif" alt="{l s='delete' mod='lowcostexpress'}" /></a>
+               <a class="edit-parcel" href="{$link_load_update_package_form}{$p->id}"><img src="../img/admin/edit.gif" alt="{l s='edit' mod='lowcostexpress'}" /></a>
             </td>
             {/if}
             <td>{$p->length} x {$p->width} x {$p->height} cm, {$p->weight} kg</td>
@@ -117,48 +119,47 @@
             <td>{$p->description}</td>
             <td>
               {if $p->shipper_reference != ''}
-                {l s='ref shipper:'} {$p->shipper_reference}
+                {l s='ref shipper:' mod='lowcostexpress'} {$p->shipper_reference}
               {/if}
               {if $p->recipient_reference != ''}
-              <br/>{l s='ref recipient:'} {$p->recipient_reference}
+              <br/>{l s='ref recipient:' mod='lowcostexpress'} {$p->recipient_reference}
               {/if}
               {if $p->customer_reference != ''}
-                <br/>{l s='ref customer:'} {$p->customer_reference}
+                <br/>{l s='ref customer:' mod='lowcostexpress'} {$p->customer_reference}
               {/if}
             </td>
           </tr>
         {/foreach}
       </tbody>
     </table>
-
   </fieldset>
   
   <br/>
   
   <!-- Booking -->
   <fieldset>
-    <legend>{l s='Transport booking'}</legend>
+    <legend>{l s='Transport booking' mod='lowcostexpress'}</legend>
     <p>
       {if $shipment->api_order_uuid eq false}
-        <a id="select-lce-offer" href="{$link_load_lce_offers}"><img src="../img/admin/search.gif" alt="{l s='Search LCE offer'}" />{l s='Search a carrier offer'}</a>
+        <a id="select-lce-offer" href="{$link_load_lce_offers}"><img src="../img/admin/search.gif" alt="{l s='Search LCE offer' mod='lowcostexpress'}" />{l s='Search a carrier offer' mod='lowcostexpress'}</a>
       {else}
-        <a id="download-labels" href="{$link_download_labels}"><img src="../img/admin/pdf.gif" alt="{l s='Download labels'}" /> {l s='Download labels'}</a>
+        <a id="download-labels" href="{$link_download_labels}"><img src="../img/admin/pdf.gif" alt="{l s='Download labels' mod='lowcostexpress'}" /> {l s='Download labels' mod='lowcostexpress'}</a>
       {/if}
     </p>
     {if $offer eq true}
       <table class="table">
         <thead>
           <tr>
-            <th>{l s='Product name'}</th>
-            <th>{l s='Pickup details'}</th>
-            <th>{l s='Delivery details'}</th>
-            <th>{l s='Other details'}</th>
+            <th>{l s='Product name' mod='lowcostexpress'}</th>
+            <th>{l s='Pickup details' mod='lowcostexpress'}</th>
+            <th>{l s='Delivery details' mod='lowcostexpress'}</th>
+            <th>{l s='Other details' mod='lowcostexpress'}</th>
           </tr>
         </thead>
         <tbody>
         <tr>
           <td>{$offer->product->name}
-              <br/>{l s='Total price:'} <b>{$offer->total_price->formatted}</b>
+              <br/>{l s='Total price:' mod='lowcostexpress'} <b>{$offer->total_price->formatted}</b>
           </td>
           
           <td>
@@ -184,7 +185,7 @@
       {if $shipment->api_order_uuid eq false}
         <form id="book-offer">
           <input type='hidden' name='offer_uuid' value='{$offer->id}'>
-          <input type='submit' id="book_lce_offer" value='{l s='Confirm booking'}' name='book_lce_offer'/>
+          <input type='submit' id="book_lce_offer" value='{l s='Confirm booking' mod='lowcostexpress'}' name='book_lce_offer'/>
         </form>
       {/if}
     {/if}
@@ -197,9 +198,9 @@
 <div id="dialog-lce-offers">
 </div>
 <div id="dialog-confirm-booking">
-  <p>{l s='Are you sure?'}</p>
-  <p>{l s='Confirming a booking cannot be cancelled.'}
-  <br/>{l s='For products supporting it, confirming the booking will automatically send a pickup order to the carrier.'}</p>
+  <p>{l s='Are you sure?' mod='lowcostexpress'}</p>
+  <p>{l s='Confirming a booking cannot be cancelled.' mod='lowcostexpress'}
+  <br/>{l s='For products supporting it, confirming the booking will automatically send a pickup order to the carrier.' mod='lowcostexpress'}</p>
 </div>
 
 <script>
@@ -306,11 +307,11 @@ $(function() {
       modal: true,
       autoOpen: false,
       buttons: {
-          '{l s='Confirm booking'}': function() {
+          '{l s='Confirm booking' mod='lowcostexpress'}': function() {
               $(this).dialog('close');
               $("form#book-offer").submit();
           },
-          {l s='Cancel'}: function() {
+          {l s='Cancel' mod='lowcostexpress'}: function() {
               $(this).dialog('close');
           }
       }

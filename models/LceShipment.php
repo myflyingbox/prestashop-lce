@@ -52,7 +52,7 @@ class LceShipment extends ObjectModel {
           'api_quote_uuid' => array('type' => self::TYPE_STRING),
           'api_offer_uuid' => array('type' => self::TYPE_STRING),
           'api_order_uuid' => array('type' => self::TYPE_STRING),
-          'collection_date' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
+          'collection_date' => array('type' => self::TYPE_DATE),
           'shipper_name' => array('type' => self::TYPE_STRING),
           'shipper_company_name' => array('type' => self::TYPE_STRING),
           'shipper_street' => array('type' => self::TYPE_STRING),
@@ -72,9 +72,9 @@ class LceShipment extends ObjectModel {
           'recipient_country' => array('type' => self::TYPE_STRING),
           'recipient_phone' => array('type' => self::TYPE_STRING),
           'recipient_email' => array('type' => self::TYPE_STRING),
-          'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-          'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-          'date_booking' => array('type' => self::TYPE_DATE, 'validate' => 'isDate')
+          'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat'),
+          'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat'),
+          'date_booking' => array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat')
       ),
       'associations' => array(
         'order' => array('type' => self::HAS_ONE, 'field' => 'order_id', 'object' => 'Order'),

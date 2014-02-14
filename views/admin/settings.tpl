@@ -1,6 +1,6 @@
 {$message}
 <fieldset>
-  <legend>{l s='Settings'}</legend>
+  <legend>{l s='Settings' mod='lowcostexpress'}</legend>
   <form method="post">
     <p>
       <label for="MOD_LCE_API_LOGIN">{l s='Your LCE login:' mod='lowcostexpress'}</label>
@@ -47,8 +47,12 @@
       <input id="MOD_LCE_DEFAULT_POSTAL_CODE" name="MOD_LCE_DEFAULT_POSTAL_CODE" type="text" value="{$MOD_LCE_DEFAULT_POSTAL_CODE}" />
     </p>
     <p>
-      <label for="MOD_LCE_DEFAULT_COUNTRY">{l s='Country (two-letter code, e.g. FR, UK):' mod='lowcostexpress'}</label>
-      <input id="MOD_LCE_DEFAULT_COUNTRY" name="MOD_LCE_DEFAULT_COUNTRY" type="text" value="{$MOD_LCE_DEFAULT_COUNTRY}" />
+      <label for="MOD_LCE_DEFAULT_COUNTRY">{l s='Country:' mod='lowcostexpress'}</label>
+      <select id="MOD_LCE_DEFAULT_COUNTRY" name="MOD_LCE_DEFAULT_COUNTRY">
+        {foreach $countries item=country}
+          <option value="{$country['iso_code']}"{if $country['iso_code'] eq $MOD_LCE_DEFAULT_COUNTRY} selected="selected"{/if}>{$country['name']}</option>
+        {/foreach}
+      </select>
     </p>
     <p>
       <label for="MOD_LCE_DEFAULT_PHONE">{l s='Contact phone:' mod='lowcostexpress'}</label>
@@ -61,14 +65,14 @@
 
     <p>
       <label>&nbsp;</label>
-      <input id="submit_{$module_name}" name="submit_{$module_name}" type="submit" value="{l s='Save'}" class="button" />
+      <input id="submit_{$module_name}" name="submit_{$module_name}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="button" />
     </p>
 </fieldset>
 
 <br/>
 <fieldset>
-  <legend>{l s='Price calculation'}</legend>
-    <p>{l s="The following settings are used to calculate the price displayed to the customer. It is useful only if you directly propose the LCE Carrier products to your customers. The calculation is always applied to the total price, including all applicable taxes. All settings are optional, and additive, in the same order; so you can first apply a proportional surchage of 5%, then add 2€ to the result and finally round the resulting price to the next upper integer."}</p>
+  <legend>{l s='Price calculation' mod='lowcostexpress'}</legend>
+    <p>{l s="The following settings are used to calculate the price displayed to the customer. It is useful only if you directly propose the LCE Carrier products to your customers. The calculation is always applied to the total price, including all applicable taxes. All settings are optional, and additive, in the same order; so you can first apply a proportional surchage of 5%, then add 2€ to the result and finally round the resulting price to the next upper integer." mod='lowcostexpress'}</p>
 
     <label for="MOD_LCE_PRICE_SURCHARGE_PERCENT">{l s='Price surchage (percent of base price):' mod='lowcostexpress'}</label>
     <div class='margin-form'>
@@ -89,25 +93,25 @@
     </div>
     <p>
       <label>&nbsp;</label>
-      <input id="submit_{$module_name}" name="submit_{$module_name}" type="submit" value="{l s='Save'}" class="button" />
+      <input id="submit_{$module_name}" name="submit_{$module_name}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="button" />
     </p>
 
 </fieldset>
 
 <br/>
 <fieldset>
-  <legend>{l s='Default dimensions'}</legend>
+  <legend>{l s='Default dimensions' mod='lowcostexpress'}</legend>
   <p>
-    {l s='When trying to obtain transportation prices for the cart of the customer, the module must send dimensions and weight. As the module cannot guess your standard packaging strategies, the following table allows you to define a correspondance between a weight and packaging dimensions. The module will always use the calculated weight of the cart (rounded to the upper integer), and will then obtain the corresponding packaging dimensions from this table. Please note that you will be able to specify the exact dimensions and weights of your final packaging when booking a shipment through the order back-office page.'}
+    {l s='When trying to obtain transportation prices for the cart of the customer, the module must send dimensions and weight. As the module cannot guess your standard packaging strategies, the following table allows you to define a correspondance between a weight and packaging dimensions. The module will always use the calculated weight of the cart (rounded to the upper integer), and will then obtain the corresponding packaging dimensions from this table. Please note that you will be able to specify the exact dimensions and weights of your final packaging when booking a shipment through the order back-office page.' mod='lowcostexpress'}
   </p>
   <table>
     <thead>
       <tr>
-        <th>Position</th>
-        <th>Weight up to (kg)</th>
-        <th>Length (cm)</th>
-        <th>Width (cm)</th>
-        <th>Height (cm)</th>
+        <th>{l s='Position' mod='lowcostexpress'}</th>
+        <th>{l s='Weight up to (kg)' mod='lowcostexpress'}</th>
+        <th>{l s='Length (cm)' mod='lowcostexpress'}</th>
+        <th>{l s='Width (cm)' mod='lowcostexpress'}</th>
+        <th>{l s='Height (cm)' mod='lowcostexpress'}</th>
       </tr>
     </thead>
     <tbody>
@@ -134,14 +138,14 @@
   </table>  
   <p>
     <label>&nbsp;</label>
-    <input id="submit_{$module_name}" name="submit_{$module_name}" type="submit" value="{l s='Save'}" class="button" />
+    <input id="submit_{$module_name}" name="submit_{$module_name}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="button" />
   </p>
   </form>
 </fieldset>
 
 <br/>
 <fieldset>
-  <legend>{l s='LCE Products'}</legend>
+  <legend>{l s='LCE Products' mod='lowcostexpress'}</legend>
   
   {foreach from=$carriers key=k item=c}
     <li>{$c->name}</li>
@@ -150,11 +154,17 @@
   <form method="post">
     <p>
       <label for="shipper_country">{l s='From which country do you ship your goods:' mod='lowcostexpress'}</label>
-      <input id="shipper_country" name="shipper_country" type="text" value="{$MOD_LCE_DEFAULT_COUNTRY}" />
-    </p>
+      <select id="shipper_country" name="shipper_country">
+        {foreach $countries item=country}
+          <option value="{$country['iso_code']}"{if $country['iso_code'] eq $MOD_LCE_DEFAULT_COUNTRY} selected="selected"{/if}>{$country['name']}</option>
+        {/foreach}
+      </select>
+    <p>
+    
+    
     <p>
       <label>&nbsp;</label>
-      <input id="submit_{$module_name}_refresh_products" name="submit_{$module_name}_refresh_products" type="submit" value="{l s='Initialize/refresh products'}" class="button" />
+      <input id="submit_{$module_name}_refresh_products" name="submit_{$module_name}_refresh_products" type="submit" value="{l s='Initialize/refresh products' mod='lowcostexpress'}" class="button" />
     </p>
   </form>
 </fieldset>

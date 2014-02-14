@@ -6,6 +6,6 @@
 
 {block name="script"}
         $(document).ready(function() {
-          //alert('test');
+          $('option[selected=selected]').attr('selected', 'selected');
         });
 {/block}

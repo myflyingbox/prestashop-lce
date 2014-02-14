@@ -23,6 +23,11 @@ class AdminParcelController extends ModuleAdminController
 
   public function renderForm()
   {
+    $countries = array();
+    foreach(Country::getCountries($this->context->language->id) as $key => $c) {
+      $countries[$c['iso_code']] = array('country_code' => $c['iso_code'], 'name' => $c['name']);
+    }
+    
     $this->multiple_fieldsets = true;
     $this->fields_form = array();    
     $this->fields_form[] = array('form' => array(
@@ -48,7 +53,17 @@ class AdminParcelController extends ModuleAdminController
                     array('type' => 'text', 'label' => $this->l('Value:'), 'name' => 'value', 'size' => 5, 'desc' => $this->l('Declared value of the content.')),
                     array('type' => 'text', 'label' => $this->l('Currency:'), 'name' => 'currency', 'size' => 5, 'desc' => $this->l('Currency code for the value.')),
                     array('type' => 'text', 'label' => $this->l('Description:'), 'name' => 'description', 'size' => 40, 'desc' => $this->l('Description of the goods.')),
-                    array('type' => 'text', 'label' => $this->l('Country of origin:'), 'name' => 'country_of_origin', 'size' => 4, 'desc' => $this->l('Country code of the origin of the products in the package.'))
+                    array(  'type' => 'select',
+                            'label' => $this->l('Country of origin:'),
+                            'desc' => $this->l('Country code of the origin of the products in the package.'),
+                            'name' => 'country_of_origin',
+                            'options' => array(
+                              'query' => $countries,
+                              'id' => 'country_code',
+                              'name' => 'name'
+                            )
+                          )
+                    
             )
           ));
 

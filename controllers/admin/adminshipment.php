@@ -82,7 +82,6 @@ class AdminShipmentController extends ModuleAdminController
       print($labels_content);
       die();
     }
-  
 
     // Smarty assign
     $this->tpl_view_vars = array(
@@ -107,10 +106,34 @@ class AdminShipmentController extends ModuleAdminController
     return parent::renderView();
   }
 
+
+	public function processUpdate()
+  {
+    $id = (int)Tools::getValue($this->identifier);
+    if (isset($id)) {
+      $this->errors = array();
+      $object = new $this->className($id);
+      if (!empty($object->api_order_uuid)) {
+        $this->errors[] = Tools::displayError('You cannot update a shipment that has been ordered!');
+        $this->redirect_after = self::$currentIndex.'&'.$this->identifier.'='.$object->id.'&update'.$this->table.'&token='.$this->token;
+        return false;
+      } else {
+        return parent::processUpdate();
+      }
+    }
+    
+  }
+
   public function renderForm()
   {
+  
+    $countries = array();
+    foreach(Country::getCountries($this->context->language->id) as $key => $c) {
+      $countries[$c['iso_code']] = array('country_code' => $c['iso_code'], 'name' => $c['name']);
+    }
+  
     $this->multiple_fieldsets = true;
-    $this->fields_form = array();    
+    $this->fields_form = array();
     $this->fields_form[] = array('form' => array(
             'legend' => array(
                     'title' => $this->l('Shipper'),
@@ -121,13 +144,22 @@ class AdminShipmentController extends ModuleAdminController
                     array('type' => 'hidden', 'name' => 'api_quote_uuid'),
                     array('type' => 'hidden', 'name' => 'api_offer_uuid'),
                     array('type' => 'date', 'label' => $this->l('Pickup date (if applicable):'), 'name' => 'collection_date', 'size' => 20, 'maxlength' => 10, 'desc' => $this->l('Format: 2014-02-23')),
-                    array('type' => 'text', 'label' => $this->l('Shipper name:'), 'name' => 'shipper_name', 'size' => 40, 'desc' => $this->l('Name of contact person.')),
+                    array('type' => 'text', 'label' => $this->l('Shipper name:'), 'name' => 'shipper_name', 'size' => 40, 'desc' => $this->l('Name of contact person.'), 'required' => true),
                     array('type' => 'text', 'label' => $this->l('Shipper company (your shop):'), 'name' => 'shipper_company_name', 'size' => 40, 'desc' => $this->l('Name of your shop.')),
-                    array('type' => 'textarea', 'label' => $this->l('Pickup address:'), 'name' => 'shipper_street', 'cols' => 38, 'rows' => 3, 'desc' => $this->l('Street information.')),
-                    array('type' => 'text', 'label' => $this->l('City:'), 'name' => 'shipper_city', 'size' => 40),
-                    array('type' => 'text', 'label' => $this->l('Postal code:'), 'name' => 'shipper_postal_code', 'size' => 40),
+                    array('type' => 'textarea', 'label' => $this->l('Pickup address:'), 'name' => 'shipper_street', 'cols' => 38, 'rows' => 3, 'desc' => $this->l('Street information.'), 'required' => true),
+                    array('type' => 'text', 'label' => $this->l('City:'), 'name' => 'shipper_city', 'size' => 40, 'required' => true),
+                    array('type' => 'text', 'label' => $this->l('Postal code:'), 'name' => 'shipper_postal_code', 'size' => 40, 'required' => true),
                     array('type' => 'text', 'label' => $this->l('State:'), 'name' => 'shipper_state', 'size' => 40, 'desc' => $this->l('Only if necessary.')),
-                    array('type' => 'text', 'label' => $this->l('Country:'), 'name' => 'shipper_country', 'size' => 2, 'desc' => $this->l('Country code on two letters, e.g. FR, UK.')),
+                    array(  'type' => 'select',
+                            'label' => $this->l('Country:'),
+                            'name' => 'shipper_country',
+                            'required' => true,
+                            'options' => array(
+                              'query' => $countries,
+                              'id' => 'country_code',
+                              'name' => 'name'
+                            )
+                          )
             ),
             'submit' => array(
                     'title' => $this->l('Save'),
@@ -152,13 +184,22 @@ class AdminShipmentController extends ModuleAdminController
                             'name' => 'name'),
                           'desc' => $this->l('Select if this address is a company address, as opposed to personal address.')),
                           
-                    array('type' => 'text', 'label' => $this->l('Recipient name:'), 'name' => 'recipient_name', 'size' => 40, 'desc' => $this->l('Name of contact person.')),
+                    array('type' => 'text', 'label' => $this->l('Recipient name:'), 'name' => 'recipient_name', 'size' => 40, 'desc' => $this->l('Name of contact person.'), 'required' => true),
                     array('type' => 'text', 'label' => $this->l('Recipient company:'), 'name' => 'recipient_company_name', 'size' => 40, 'desc' => $this->l('Name of your shop.')),
-                    array('type' => 'textarea', 'label' => $this->l('Delivery address:'), 'name' => 'recipient_street', 'cols' => 38, 'rows' => 3, 'size' => '40', 'desc' => $this->l('Street information.')),
-                    array('type' => 'text', 'label' => $this->l('City:'), 'name' => 'recipient_city', 'size' => 40),
-                    array('type' => 'text', 'label' => $this->l('Postal code:'), 'name' => 'recipient_postal_code', 'size' => 40),
+                    array('type' => 'textarea', 'label' => $this->l('Delivery address:'), 'name' => 'recipient_street', 'cols' => 38, 'rows' => 3, 'size' => '40', 'desc' => $this->l('Street information.'), 'required' => true),
+                    array('type' => 'text', 'label' => $this->l('City:'), 'name' => 'recipient_city', 'size' => 40, 'required' => true),
+                    array('type' => 'text', 'label' => $this->l('Postal code:'), 'name' => 'recipient_postal_code', 'size' => 40, 'required' => true),
                     array('type' => 'text', 'label' => $this->l('State:'), 'name' => 'recipient_state', 'size' => 40, 'desc' => $this->l('Only if necessary.')),
-                    array('type' => 'text', 'label' => $this->l('Country:'), 'name' => 'recipient_country', 'size' => 2, 'desc' => $this->l('Country code on two letters, e.g. FR, UK.')),
+                    array(  'type' => 'select',
+                            'label' => $this->l('Country:'),
+                            'name' => 'recipient_country',
+                            'required' => true,
+                            'options' => array(
+                              'query' => $countries,
+                              'id' => 'country_code',
+                              'name' => 'name'
+                            )
+                          )
             ),
             'submit' => array(
                     'title' => $this->l('Save'),

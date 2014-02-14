@@ -4,10 +4,10 @@
   <thead>
     <tr>
       <th></th>
-      <th style='width: 20%;'>{l s='Product name'}</th>
-      <th>{l s='Pickup details'}</th>
-      <th>{l s='Delivery details'}</th>
-      <th>{l s='Other details'}</th>
+      <th style='width: 20%;'>{l s='Product name' mod='lowcostexpress'}</th>
+      <th>{l s='Pickup details' mod='lowcostexpress'}</th>
+      <th>{l s='Delivery details' mod='lowcostexpress'}</th>
+      <th>{l s='Other details' mod='lowcostexpress'}</th>
     </tr>
   </thead>
   <tbody>
@@ -16,7 +16,7 @@
     <td><input type='radio' name='offer_uuid' value='{$offer->id}'></td>
     
     <td>{$offer->product->name}
-        <br/>{l s='Total price:'} <b>{$offer->total_price->formatted}</b>
+        <br/>{l s='Total price:' mod='lowcostexpress'} <b>{$offer->total_price->formatted}</b>
     </td>
     
     <td>
@@ -41,5 +41,5 @@
 {/foreach}
   </tbody>
 </table>
-<input type='submit' value='{l s='Select offer'}' name='select_lce_offer'/>
+<input type='submit' value='{l s='Select offer' mod='lowcostexpress'}' name='select_lce_offer'/>
 </form>

@@ -1,17 +1,17 @@
 <br/>
 <fieldset>
-  <legend><img src="../img/admin/delivery.gif" />{l s='LCE Shipments'}</legend>
+  <legend><img src="../img/admin/delivery.gif" />{l s='LCE Shipments' mod='lowcostexpress'}</legend>
   <p>
-    <a href="{$var.new_shipment_path}"><img src="../img/admin/add.gif" alt="{l s='Add shipment'}" /> {l s='Add shipment'}</a>
+    <a href="{$var.new_shipment_path}"><img src="../img/admin/add.gif" alt="{l s='Add shipment' mod='lowcostexpress'}" /> {l s='Add shipment' mod='lowcostexpress'}</a>
   </p>
   
   <table class="table" width="100%">
     <thead>
       <tr>
-        <th>{l s='Date'}</th>
-        <th>{l s='Status'}</th>
-        <th>{l s='Number of packages'}</th>
-        <th>{l s='Tracking status (per package #) | Location'}</th>
+        <th>{l s='Date' mod='lowcostexpress'}</th>
+        <th>{l s='Status' mod='lowcostexpress'}</th>
+        <th>{l s='Number of packages' mod='lowcostexpress'}</th>
+        <th>{l s='Tracking status (per package #) | Location' mod='lowcostexpress'}</th>
       </tr>
     </thead>
     <tbody>
@@ -20,9 +20,9 @@
       <td><a href="{$var.shipment_urls[$s->id_shipment]}">{$s->date_add}</a></td>
       <td>
         {if $s->api_order_uuid}
-          {l s='Confirmed'}
+          {l s='Confirmed' mod='lowcostexpress'}
         {else}
-          {l s='Draft'}
+          {l s='Draft' mod='lowcostexpress'}
         {/if}
       </td>
       <td>{$s->parcels|@count}</td>
