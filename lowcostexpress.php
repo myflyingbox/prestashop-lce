@@ -271,9 +271,7 @@ class LowCostExpress extends CarrierModule
           }
           
           //copy logo
-          //if (!copy(dirname(__FILE__).'/img/'.$config['logo_filename'].'.jpg',_PS_SHIP_IMG_DIR_.'/'.$carrier->id.'.jpg')) {
-          //  return false;
-          //}
+          copy(dirname(__FILE__).'/img/'.$product->logo.'.jpg',_PS_SHIP_IMG_DIR_.'/'.$carrier->id.'.jpg');
         }
       }
     }
