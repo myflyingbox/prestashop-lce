@@ -1,6 +1,8 @@
 LowCostExpress Prestashop Module
 ==============
 
+(cette documentation est également disponible [en français](README-fr.md))
+
 A Prestashop module that provides an interface to the LCE web services (cf. https://lce.io), provided by LOW COST EXPRESS (company registered in France).
 
 IMPORTANT: this is a beta version, not to be used in production yet unless in close contact with the dev team.
