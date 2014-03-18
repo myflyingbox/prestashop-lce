@@ -25,13 +25,13 @@ class LowCostExpress extends CarrierModule
   {
     $this->name = 'lowcostexpress';
     $this->tab = 'shipping_logistics';
-    $this->version = '0.0.1';
+    $this->version = '0.0.2';
     $this->author = 'Low Cost Express SAS';
 
     parent::__construct();
 
     $this->displayName = $this->l('LowCostExpress Module');
-    $this->description = $this->l('ALPHA-VERSION. Provides integration of all features of the LCE API (http://lce.io), offering access to many carriers at great rates.');
+    $this->description = $this->l('BETA VERSION. Provides integration of all features of the LCE API (http://lce.io), offering access to many carriers at great rates.');
     $this->ps_versions_compliancy = array('min' => '1.5', 'max' => '1.6'); 
 
     $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module?');
@@ -67,10 +67,10 @@ class LowCostExpress extends CarrierModule
     if (!parent::install()) return false;
 
     // Check for php-curl
-    if(!extension_loaded('curl')) return false;
+    if (!extension_loaded('curl')) return false;
         
     // register hooks
-    if(
+    if (
         !$this->registerHook('displayOrderDetail') || // Front-side parcel tracking
         !$this->registerHook('displayBackOfficeHeader') || // Adding CSS
         !$this->registerHook('updateCarrier') || // For update of carrier IDs
@@ -197,8 +197,6 @@ class LowCostExpress extends CarrierModule
   {
     $message = '';
     
-    
-
     $products = Lce\Resource\Product::findAll();
 
     foreach($products as $product){
@@ -232,10 +230,16 @@ class LowCostExpress extends CarrierModule
         $carrier->need_range = 'false';
             
         $languages = Language::getLanguages(true);
-
         foreach ($languages as $language) {
           $iso_code = strtolower($language['iso_code']);
-          $carrier->delay[$language['id_lang']] = $product->delivery_informations->$iso_code;
+          if (strlen($product->delivery_informations->$iso_code) > 0) {
+            $carrier->delay[$language['id_lang']] = $product->delivery_informations->$iso_code;
+          }
+        }
+        if (sizeof($carrier->delay) == 0) {
+          foreach ($languages as $language) {
+            $carrier->delay[$language['id_lang']] = 'N/A';
+          }
         }
 
         if ($carrier->add())
@@ -357,69 +361,76 @@ class LowCostExpress extends CarrierModule
       $delivery_address = new Address((int)$cart->id_address_delivery);
       $delivery_country = new Country((int)$delivery_address->id_country);
       
-      $weight = ceil($cart->getTotalWeight($cart->getProducts()));
-      $dimension = LceDimension::getForWeight($weight);
+      // We only proceed if we have a delivery address, otherwise it is quite pointless to request rates
+      if (!empty($delivery_address->city)) {
       
-      $params = array(
-        'shipper' => array(
-          'postal_code' => Configuration::get('MOD_LCE_DEFAULT_POSTAL_CODE'),
-          'country' => Configuration::get('MOD_LCE_DEFAULT_COUNTRY')),
-        'recipient' => array(
-          'postal_code' => $delivery_address->postcode,
-          'country' => $delivery_country->iso_code,
-          'is_a_company' => false),
-        'parcels' => array(
-          array('length' => $dimension->length, 'height' => $dimension->height, 'width' => $dimension->width, 'weight' => $weight)
-        )
-      );
-      $api_quote = Lce\Resource\Quote::request($params);
-      
-      $quote = new LceQuote();
-      $quote->id_cart = $cart->id;
-      $quote->api_quote_uuid = $api_quote->id;
-      if ($quote->add()) {
-        // Now we create the offers
-        foreach($api_quote->offers as $k => $api_offer) {
-          $offer = new LceOffer();
-          $offer->id_quote = $quote->id;
-          $offer->api_offer_uuid = $api_offer->id;
-          $offer->lce_product_code = $api_offer->product->code;
-          $offer->total_price_in_cents = $api_offer->total_price->amount_in_cents;
-          $offer->currency = $api_offer->total_price->currency;
-          $offer->add();
+        $weight = ceil($cart->getTotalWeight($cart->getProducts()));
+        $dimension = LceDimension::getForWeight($weight);
+        
+        $params = array(
+          'shipper' => array(
+            'city' => Configuration::get('MOD_LCE_DEFAULT_CITY'),
+            'postal_code' => Configuration::get('MOD_LCE_DEFAULT_POSTAL_CODE'),
+            'country' => Configuration::get('MOD_LCE_DEFAULT_COUNTRY')),
+          'recipient' => array(
+            'city' => $delivery_address->city,
+            'postal_code' => $delivery_address->postcode,
+            'country' => $delivery_country->iso_code,
+            'is_a_company' => false),
+          'parcels' => array(
+            array('length' => $dimension->length, 'height' => $dimension->height, 'width' => $dimension->width, 'weight' => $weight)
+          )
+        );
+        $api_quote = Lce\Resource\Quote::request($params);
+        
+        $quote = new LceQuote();
+        $quote->id_cart = $cart->id;
+        $quote->api_quote_uuid = $api_quote->id;
+        if ($quote->add()) {
+          // Now we create the offers
+          foreach($api_quote->offers as $k => $api_offer) {
+            $offer = new LceOffer();
+            $offer->id_quote = $quote->id;
+            $offer->api_offer_uuid = $api_offer->id;
+            $offer->lce_product_code = $api_offer->product->code;
+            $offer->total_price_in_cents = $api_offer->total_price->amount_in_cents;
+            $offer->currency = $api_offer->total_price->currency;
+            $offer->add();
+          }
         }
       }
     }
-    /* At this point, we have a quote object, new or existing.
+    /* At this point, we should have a quote object, new or existing, and only if a delivery address was specified.
      * We now get the price for the corresponding carrier.
      */
-    $sql = 'SELECT `carrier`.`lce_product_code` FROM '._DB_PREFIX_.'carrier AS carrier WHERE (`carrier`.`id_carrier` = '.(int)$this->id_carrier.')';
-    if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql))
-      $lce_product_code = $row['lce_product_code'];
-    
-    
-    if ($lce_product_code && $lce_offer = LceOffer::getForQuoteAndLceProduct($quote, $lce_product_code)) {
-      $increment = (int)Configuration::get('MOD_LCE_PRICE_ROUND_INCREMENT');
-      $surcharge_amount = (int)Configuration::get('MOD_LCE_PRICE_SURCHARGE_STATIC');
-      $surcharge_percent = (int)Configuration::get('MOD_LCE_PRICE_SURCHARGE_PERCENT');
-      $price = $lce_offer->total_price_in_cents;
-      
-      if (is_int($surcharge_percent) && $surcharge_percent > 0 && $surcharge_percent <= 100) {
-        $price = $price + ($price * $surcharge_percent / 100);
-      }
+    if ($quote) {
+      $sql = 'SELECT `carrier`.`lce_product_code` FROM '._DB_PREFIX_.'carrier AS carrier WHERE (`carrier`.`id_carrier` = '.(int)$this->id_carrier.')';
+      if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql))
+        $lce_product_code = $row['lce_product_code'];
+        
+      if ($lce_product_code && $lce_offer = LceOffer::getForQuoteAndLceProduct($quote, $lce_product_code)) {
+        $increment = (int)Configuration::get('MOD_LCE_PRICE_ROUND_INCREMENT');
+        $surcharge_amount = (int)Configuration::get('MOD_LCE_PRICE_SURCHARGE_STATIC');
+        $surcharge_percent = (int)Configuration::get('MOD_LCE_PRICE_SURCHARGE_PERCENT');
+        $price = $lce_offer->total_price_in_cents;
+        
+        if (is_int($surcharge_percent) && $surcharge_percent > 0 && $surcharge_percent <= 100) {
+          $price = $price + ($price * $surcharge_percent / 100);
+        }
 
-      if (is_int($surcharge_amount) && $surcharge_amount > 0) {
-        $price = $price+(int)$surcharge_amount;
-      }
+        if (is_int($surcharge_amount) && $surcharge_amount > 0) {
+          $price = $price+(int)$surcharge_amount;
+        }
 
-      if (is_int($increment) && $increment > 0) {
-        $increment = 1 / $increment;
-        $price = (ceil($price * $increment) / $increment);
-      }
+        if (is_int($increment) && $increment > 0) {
+          $increment = 1 / $increment;
+          $price = (ceil($price * $increment) / $increment);
+        }
 
-      return  $price / 100;
-    } else {
-      return false;
+        return  $price / 100;
+      } else {
+        return false;
+      }
     }
   }
   

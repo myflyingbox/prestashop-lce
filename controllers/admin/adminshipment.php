@@ -271,8 +271,8 @@ class AdminShipmentController extends ModuleAdminController
   {
     $shipment = $this->loadObject(true);
     $params = array(
-      'shipper' => array('postal_code' => $shipment->shipper_postal_code, 'country' => $shipment->shipper_country),
-      'recipient' => array('postal_code' => $shipment->recipient_postal_code, 'country' => $shipment->recipient_country, 'is_a_company' => $shipment->recipient_is_a_company),
+      'shipper' => array('city' => $shipment->shipper_city, 'postal_code' => $shipment->shipper_postal_code, 'country' => $shipment->shipper_country),
+      'recipient' => array('city' => $shipment->recipient_city, 'postal_code' => $shipment->recipient_postal_code, 'country' => $shipment->recipient_country, 'is_a_company' => $shipment->recipient_is_a_company),
       'parcels' => array()
     );
     $parcels = LceParcel::findAllForShipmentId($shipment->id);
