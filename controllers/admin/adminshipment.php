@@ -51,6 +51,7 @@ class AdminShipmentController extends ModuleAdminController
 
   public function renderView()
   {
+    $this->addJqueryUI('ui.button');
     $this->addJqueryUI('ui.dialog');
     $shipment = new LceShipment((int)Tools::getValue('id_shipment'));
     if (!Validate::isLoadedObject($shipment))
