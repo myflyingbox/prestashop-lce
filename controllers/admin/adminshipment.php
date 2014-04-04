@@ -268,6 +268,11 @@ class AdminShipmentController extends ModuleAdminController
       
   }
   
+  public function displayAjaxget_offers()
+  {
+    return $this->displayAjaxGetOffers();
+  }
+  
   public function displayAjaxGetOffers()
   {
     $shipment = $this->loadObject(true);
