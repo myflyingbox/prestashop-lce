@@ -43,8 +43,9 @@ class LowCostExpress extends CarrierModule
     
     $env = Configuration::get('MOD_LCE_API_ENV');
     if ($env != 'staging' && $env != 'production') $env = 'staging';
-    Lce\Lce::configure(Configuration::get('MOD_LCE_API_LOGIN'), Configuration::get('MOD_LCE_API_PASSWORD'), $env);
-    
+    $api = Lce\Lce::configure(Configuration::get('MOD_LCE_API_LOGIN'), Configuration::get('MOD_LCE_API_PASSWORD'), $env);
+    $api->application = "prestashop-lce";
+    $api->application_version = $this->version;
   }
   
   //===============
