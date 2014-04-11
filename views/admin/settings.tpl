@@ -5,16 +5,19 @@
     <p>
       <label for="MOD_LCE_API_LOGIN">{l s='Your LCE login:' mod='lowcostexpress'}</label>
       <input id="MOD_LCE_API_LOGIN" name="MOD_LCE_API_LOGIN" type="text" value="{$MOD_LCE_API_LOGIN}" />
+      <sup>*</sup>
     </p>
     <p>
       <label for="MOD_LCE_API_PASSWORD">{l s='Your LCE password:' mod='lowcostexpress'}</label>
       <input id="MOD_LCE_API_PASSWORD" name="MOD_LCE_API_PASSWORD" type="text" value="{$MOD_LCE_API_PASSWORD}" />
+      <sup>*</sup>
     </p>
       <label for="MOD_LCE_API_ENV">{l s='API Environment:' mod='lowcostexpress'}</label>
       <select id="MOD_LCE_API_ENV" name="MOD_LCE_API_ENV">
         <option value="stating">staging (test)</option>
         <option value="production">production</option>
       </select>
+      <sup>*</sup>
     <p>
     
     <p>
@@ -24,19 +27,23 @@
     <p>
       <label for="MOD_LCE_DEFAULT_SHIPPER_NAME">{l s='Shipper name (contact name):' mod='lowcostexpress'}</label>
       <input id="MOD_LCE_DEFAULT_SHIPPER_NAME" name="MOD_LCE_DEFAULT_SHIPPER_NAME" type="text" value="{$MOD_LCE_DEFAULT_SHIPPER_NAME}" />
+      <sup>*</sup>
     </p>
     
     <p>
       <label for="MOD_LCE_DEFAULT_SHIPPER_COMPANY">{l s='Shipper company (your shop):' mod='lowcostexpress'}</label>
       <input id="MOD_LCE_DEFAULT_SHIPPER_COMPANY" name="MOD_LCE_DEFAULT_SHIPPER_COMPANY" type="text" value="{$MOD_LCE_DEFAULT_SHIPPER_COMPANY}" />
+      <sup>*</sup>
     </p>
     <p>
       <label for="MOD_LCE_DEFAULT_STREET">{l s='Shipment pickup address:' mod='lowcostexpress'}</label>
       <textarea id="MOD_LCE_DEFAULT_STREET" name="MOD_LCE_DEFAULT_STREET">{$MOD_LCE_DEFAULT_STREET}</textarea>
+      <sup>*</sup>
     </p>
     <p>
       <label for="MOD_LCE_DEFAULT_CITY">{l s='City:' mod='lowcostexpress'}</label>
       <input id="MOD_LCE_DEFAULT_CITY" name="MOD_LCE_DEFAULT_CITY" type="text" value="{$MOD_LCE_DEFAULT_CITY}" />
+      <sup>*</sup>
     </p>
     <p>
       <label for="MOD_LCE_DEFAULT_STATE">{l s='State:' mod='lowcostexpress'}</label>
@@ -45,6 +52,7 @@
     <p>
       <label for="MOD_LCE_DEFAULT_POSTAL_CODE">{l s='Postal code:' mod='lowcostexpress'}</label>
       <input id="MOD_LCE_DEFAULT_POSTAL_CODE" name="MOD_LCE_DEFAULT_POSTAL_CODE" type="text" value="{$MOD_LCE_DEFAULT_POSTAL_CODE}" />
+      <sup>*</sup>
     </p>
     <p>
       <label for="MOD_LCE_DEFAULT_COUNTRY">{l s='Country:' mod='lowcostexpress'}</label>
@@ -53,14 +61,17 @@
           <option value="{$country['iso_code']}"{if $country['iso_code'] eq $MOD_LCE_DEFAULT_COUNTRY} selected="selected"{/if}>{$country['name']}</option>
         {/foreach}
       </select>
+      <sup>*</sup>
     </p>
     <p>
       <label for="MOD_LCE_DEFAULT_PHONE">{l s='Contact phone:' mod='lowcostexpress'}</label>
       <input id="MOD_LCE_DEFAULT_PHONE" name="MOD_LCE_DEFAULT_PHONE" type="text" value="{$MOD_LCE_DEFAULT_PHONE}" />
+      <sup>*</sup>
     </p>
     <p>
       <label for="MOD_LCE_DEFAULT_EMAIL">{l s='Contact email:' mod='lowcostexpress'}</label>
       <input id="MOD_LCE_DEFAULT_EMAIL" name="MOD_LCE_DEFAULT_EMAIL" type="text" value="{$MOD_LCE_DEFAULT_EMAIL}" />
+      <sup>*</sup>
     </p>
 
     <p>

@@ -15,6 +15,36 @@ require_once(_PS_MODULE_DIR_ . 'lowcostexpress/models/LceDimension.php');
 class LowCostExpress extends CarrierModule
 {
 
+  public static $settings = array('MOD_LCE_API_LOGIN',
+                         'MOD_LCE_API_PASSWORD',
+                         'MOD_LCE_API_ENV',
+                         'MOD_LCE_DEFAULT_SHIPPER_NAME',
+                         'MOD_LCE_DEFAULT_SHIPPER_COMPANY',
+                         'MOD_LCE_DEFAULT_STREET',
+                         'MOD_LCE_DEFAULT_CITY',
+                         'MOD_LCE_DEFAULT_STATE',
+                         'MOD_LCE_DEFAULT_POSTAL_CODE',
+                         'MOD_LCE_DEFAULT_COUNTRY',
+                         'MOD_LCE_DEFAULT_PHONE',
+                         'MOD_LCE_DEFAULT_EMAIL',
+                         'MOD_LCE_PRICE_ROUND_INCREMENT',
+                         'MOD_LCE_PRICE_SURCHARGE_STATIC',
+                         'MOD_LCE_PRICE_SURCHARGE_PERCENT');
+
+  public static $mandatory_settings = array('MOD_LCE_API_LOGIN',
+                         'MOD_LCE_API_PASSWORD',
+                         'MOD_LCE_API_ENV',
+                         'MOD_LCE_DEFAULT_SHIPPER_NAME',
+                         'MOD_LCE_DEFAULT_SHIPPER_COMPANY',
+                         'MOD_LCE_DEFAULT_STREET',
+                         'MOD_LCE_DEFAULT_CITY',
+                         'MOD_LCE_DEFAULT_POSTAL_CODE',
+                         'MOD_LCE_DEFAULT_COUNTRY',
+                         'MOD_LCE_DEFAULT_PHONE',
+                         'MOD_LCE_DEFAULT_EMAIL');
+
+
+
   public  $id_carrier;
 
   private $_html = '';
@@ -144,29 +174,31 @@ class LowCostExpress extends CarrierModule
   private function _saveSettings()
   {
     $message = '';
+    $data_missing = false;
+    
+    foreach(self::$mandatory_settings as $setting) {
+      if (empty(Tools::getValue($setting))) {
+        $data_missing = true;
+      }
+    }
 
-    if (
-      Configuration::updateValue('MOD_LCE_API_LOGIN', Tools::getValue('MOD_LCE_API_LOGIN')) &&
-      Configuration::updateValue('MOD_LCE_API_PASSWORD', Tools::getValue('MOD_LCE_API_PASSWORD')) &&
-      Configuration::updateValue('MOD_LCE_API_ENV', Tools::getValue('MOD_LCE_API_ENV')) &&
-      Configuration::updateValue('MOD_LCE_DEFAULT_SHIPPER_NAME', Tools::getValue('MOD_LCE_DEFAULT_SHIPPER_NAME')) &&
-      Configuration::updateValue('MOD_LCE_DEFAULT_SHIPPER_COMPANY', Tools::getValue('MOD_LCE_DEFAULT_SHIPPER_COMPANY')) &&
-      Configuration::updateValue('MOD_LCE_DEFAULT_STREET', Tools::getValue('MOD_LCE_DEFAULT_STREET')) &&
-      Configuration::updateValue('MOD_LCE_DEFAULT_CITY', Tools::getValue('MOD_LCE_DEFAULT_CITY')) &&
-      Configuration::updateValue('MOD_LCE_DEFAULT_STATE', Tools::getValue('MOD_LCE_DEFAULT_STATE')) &&
-      Configuration::updateValue('MOD_LCE_DEFAULT_POSTAL_CODE', Tools::getValue('MOD_LCE_DEFAULT_POSTAL_CODE')) &&
-      Configuration::updateValue('MOD_LCE_DEFAULT_COUNTRY', Tools::getValue('MOD_LCE_DEFAULT_COUNTRY')) &&
-      Configuration::updateValue('MOD_LCE_DEFAULT_PHONE', Tools::getValue('MOD_LCE_DEFAULT_PHONE')) &&
-      Configuration::updateValue('MOD_LCE_DEFAULT_EMAIL', Tools::getValue('MOD_LCE_DEFAULT_EMAIL')) &&
-      Configuration::updateValue('MOD_LCE_PRICE_ROUND_INCREMENT', (int)Tools::getValue('MOD_LCE_PRICE_ROUND_INCREMENT')) &&
-      Configuration::updateValue('MOD_LCE_PRICE_SURCHARGE_STATIC', (int)Tools::getValue('MOD_LCE_PRICE_SURCHARGE_STATIC')) &&
-      Configuration::updateValue('MOD_LCE_PRICE_SURCHARGE_PERCENT', (int)Tools::getValue('MOD_LCE_PRICE_SURCHARGE_PERCENT')) &&
-      $this->_updateReferenceDimensions()
-      )
-      $message = $this->displayConfirmation($this->l('Your settings have been saved'));
-    else
-      $message = $this->displayError($this->l('There was an error while saving your settings'));
-
+    if (!$data_missing) {
+      $record_error = false;
+      foreach(self::$settings as $setting) {
+        if (!Configuration::updateValue($setting, Tools::getValue($setting))){
+          $record_error = true;
+        }
+      }
+      
+      if ($record_error) {
+        $message = $this->displayError($this->l('There was an error while saving your settings'));
+      } else {
+        $this->_updateReferenceDimensions();
+        $message = $this->displayConfirmation($this->l('Your settings have been saved'));
+      }
+    } else {
+      $message = $this->displayError($this->l('Error: you must set a value for all mandatory settings'));
+    }
     return $message;
   }
 
