@@ -157,6 +157,13 @@
 <br/>
 <fieldset>
   <legend>{l s='LCE Products' mod='lowcostexpress'}</legend>
+  <p>
+  {l s='Be aware that when new LCE products are added the corresponding carriers in Prestashop are NOT activated by default. You must activate them manually.' mod='lowcostexpress'}
+  </p>
+  
+  <p>
+  {l s='You need to initialize LCE products only if you intend to propose the LCE offers directly to your customer during cart checkout. If you only intend to use the back-office features of the module, you do not need to initialize LCE products here.' mod='lowcostexpress'}
+  </p>
   
   {foreach from=$carriers key=k item=c}
     <li>{$c->name}</li>

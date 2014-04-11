@@ -253,7 +253,7 @@ class LowCostExpress extends CarrierModule
         $carrier->name = $product->name;
         $carrier->id_tax_rules_group = 1;
         $carrier->url = '';
-        $carrier->active = true;
+        $carrier->active = false;
         $carrier->deleted = 0;
         $carrier->shipping_handling = false;
         $carrier->range_behavior = 0;
