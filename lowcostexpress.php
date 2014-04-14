@@ -177,7 +177,8 @@ class LowCostExpress extends CarrierModule
     $data_missing = false;
     
     foreach(self::$mandatory_settings as $setting) {
-      if (empty(Tools::getValue($setting))) {
+      $setting_value = Tools::getValue($setting);
+      if (empty($setting_value)) {
         $data_missing = true;
       }
     }
