@@ -230,90 +230,93 @@ class LowCostExpress extends CarrierModule
   private function _refreshLceProducts()
   {
     $message = '';
-    
-    $products = Lce\Resource\Product::findAll();
+    try {
+      $products = Lce\Resource\Product::findAll();
 
-    foreach($products as $product){
-      if (!Configuration::get('LCE_'.$product->code)) {
-        $product_exists = false;
-      } else {
-        $c = new Carrier(Configuration::get('LCE_'.$product->code));
-        if ($c->deleted) {
+      foreach($products as $product){
+        if (!Configuration::get('LCE_'.$product->code)) {
           $product_exists = false;
         } else {
-          $product_exists = true;
-        }
-      }
-      
-      // If the carrier is not yet registered, we add it
-      if ( !$product_exists &&
-            in_array(strtoupper(Tools::getValue("shipper_country")), $product->export_from)
-         ){
-
-        $carrier = new Carrier();
-        $carrier->name = $product->name;
-        $carrier->id_tax_rules_group = 1;
-        $carrier->url = '';
-        $carrier->active = false;
-        $carrier->deleted = 0;
-        $carrier->shipping_handling = false;
-        $carrier->range_behavior = 0;
-        $carrier->is_module = false;
-        $carrier->shipping_external = true;
-        $carrier->external_module_name = 'lowcostexpress';
-        $carrier->need_range = 'false';
-            
-        $languages = Language::getLanguages(true);
-        foreach ($languages as $language) {
-          $iso_code = strtolower($language['iso_code']);
-          if (strlen($product->delivery_informations->$iso_code) > 0) {
-            $carrier->delay[$language['id_lang']] = $product->delivery_informations->$iso_code;
+          $c = new Carrier(Configuration::get('LCE_'.$product->code));
+          if ($c->deleted) {
+            $product_exists = false;
+          } else {
+            $product_exists = true;
           }
         }
-        if (sizeof($carrier->delay) == 0) {
+        
+        // If the carrier is not yet registered, we add it
+        if ( !$product_exists &&
+              in_array(strtoupper(Tools::getValue("shipper_country")), $product->export_from)
+           ){
+
+          $carrier = new Carrier();
+          $carrier->name = $product->name;
+          $carrier->id_tax_rules_group = 1;
+          $carrier->url = '';
+          $carrier->active = false;
+          $carrier->deleted = 0;
+          $carrier->shipping_handling = false;
+          $carrier->range_behavior = 0;
+          $carrier->is_module = false;
+          $carrier->shipping_external = true;
+          $carrier->external_module_name = 'lowcostexpress';
+          $carrier->need_range = 'false';
+              
+          $languages = Language::getLanguages(true);
           foreach ($languages as $language) {
-            $carrier->delay[$language['id_lang']] = 'N/A';
+            $iso_code = strtolower($language['iso_code']);
+            if (strlen($product->delivery_informations->$iso_code) > 0) {
+              $carrier->delay[$language['id_lang']] = $product->delivery_informations->$iso_code;
+            }
           }
-        }
+          if (sizeof($carrier->delay) == 0) {
+            foreach ($languages as $language) {
+              $carrier->delay[$language['id_lang']] = 'N/A';
+            }
+          }
 
-        if ($carrier->add())
-        {
-          Configuration::updateValue('LCE_'.$product->code,(int)($carrier->id));
-          
-          // Setting the lce_product_code on carrier table
-          Db::getInstance()->Execute('UPDATE '._DB_PREFIX_.'carrier SET lce_product_code = "'.$product->code.'" WHERE `id_carrier` = '.(int)$carrier->id);
-          
-          // Assign all groups to carrier
-          $groups = Group::getgroups(true);
-          foreach ($groups as $group)
+          if ($carrier->add())
           {
-            Db::getInstance()->Execute('INSERT INTO '._DB_PREFIX_.'carrier_group VALUE (\''.(int)($carrier->id).'\',\''.(int)($group['id_group']).'\')');
+            Configuration::updateValue('LCE_'.$product->code,(int)($carrier->id));
+            
+            // Setting the lce_product_code on carrier table
+            Db::getInstance()->Execute('UPDATE '._DB_PREFIX_.'carrier SET lce_product_code = "'.$product->code.'" WHERE `id_carrier` = '.(int)$carrier->id);
+            
+            // Assign all groups to carrier
+            $groups = Group::getgroups(true);
+            foreach ($groups as $group)
+            {
+              Db::getInstance()->Execute('INSERT INTO '._DB_PREFIX_.'carrier_group VALUE (\''.(int)($carrier->id).'\',\''.(int)($group['id_group']).'\')');
+            }
+
+            $rangePrice = new RangePrice();
+            $rangePrice->id_carrier = $carrier->id;
+            $rangePrice->delimiter1 = '0';
+            $rangePrice->delimiter2 = '1000';
+            $rangePrice->add();
+
+            $rangeWeight = new RangeWeight();
+            $rangeWeight->id_carrier = $carrier->id;
+            $rangeWeight->delimiter1 = '0';
+            $rangeWeight->delimiter2 = '1000';
+            $rangeWeight->add();
+
+            // Assign all zones to carrier
+            $zones=Zone::getZones();
+            foreach($zones as $zone) {
+              $carrier->addZone($zone['id_zone']);
+            }
+            
+            //copy logo
+            copy(dirname(__FILE__).'/img/'.$product->logo.'.jpg',_PS_SHIP_IMG_DIR_.'/'.$carrier->id.'.jpg');
           }
-
-          $rangePrice = new RangePrice();
-          $rangePrice->id_carrier = $carrier->id;
-          $rangePrice->delimiter1 = '0';
-          $rangePrice->delimiter2 = '1000';
-          $rangePrice->add();
-
-          $rangeWeight = new RangeWeight();
-          $rangeWeight->id_carrier = $carrier->id;
-          $rangeWeight->delimiter1 = '0';
-          $rangeWeight->delimiter2 = '1000';
-          $rangeWeight->add();
-
-          // Assign all zones to carrier
-          $zones=Zone::getZones();
-          foreach($zones as $zone) {
-            $carrier->addZone($zone['id_zone']);
-          }
-          
-          //copy logo
-          copy(dirname(__FILE__).'/img/'.$product->logo.'.jpg',_PS_SHIP_IMG_DIR_.'/'.$carrier->id.'.jpg');
         }
       }
+    } catch (Exception $e) {
+      error_log($e->getMessage());
+      $message = $this->displayError($e->getMessage());
     }
-
     return $message;
   }
 
