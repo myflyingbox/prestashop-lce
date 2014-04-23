@@ -14,8 +14,8 @@
     </p>
       <label for="MOD_LCE_API_ENV">{l s='API Environment:' mod='lowcostexpress'}</label>
       <select id="MOD_LCE_API_ENV" name="MOD_LCE_API_ENV">
-        <option value="stating">staging (test)</option>
-        <option value="production">production</option>
+        <option value="staging"{if $MOD_LCE_API_ENV eq 'staging'} selected="selected"{/if}>staging (test)</option>
+        <option value="production"{if $MOD_LCE_API_ENV eq 'production'} selected="selected"{/if}>production</option>
       </select>
       <sup>*</sup>
     <p>
