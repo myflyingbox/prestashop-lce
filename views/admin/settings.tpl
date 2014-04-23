@@ -164,10 +164,23 @@
   <p>
   {l s='You need to initialize LCE products only if you intend to propose the LCE offers directly to your customer during cart checkout. If you only intend to use the back-office features of the module, you do not need to initialize LCE products here.' mod='lowcostexpress'}
   </p>
-  
-  {foreach from=$carriers key=k item=c}
-    <li>{$c->name}</li>
-  {/foreach}
+
+  <table class="table" width="100%">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+      </tr>
+    </thead>
+    <tbody>
+    {foreach from=$carriers key=k item=c}
+      <tr>
+        <td>{$c->id}</td>
+        <td>{$c->name}</td>
+      </tr>
+    {/foreach}
+    </tbody>
+  </table>
   
   <form method="post">
     <p>
