@@ -246,7 +246,7 @@ class LowCostExpress extends CarrierModule
         }
         
         // If the carrier is not yet registered, we add it
-        if ( !$product_exists &&
+        if ( !$product_exists && !empty($product->code) && 
               in_array(strtoupper(Tools::getValue("shipper_country")), $product->export_from)
            ){
 
@@ -281,7 +281,7 @@ class LowCostExpress extends CarrierModule
             Configuration::updateValue('LCE_'.$product->code,(int)($carrier->id));
             
             // Setting the lce_product_code on carrier table
-            Db::getInstance()->Execute('UPDATE '._DB_PREFIX_.'carrier SET lce_product_code = "'.$product->code.'" WHERE `id_carrier` = '.(int)$carrier->id);
+            Db::getInstance()->Execute('UPDATE '._DB_PREFIX_.'carrier SET lce_product_code = "'.$product->code.'" WHERE `external_module_name` = "lowcostexpress" AND `id_carrier` = '.(int)$carrier->id);
             
             // Assign all groups to carrier
             $groups = Group::getgroups(true);
