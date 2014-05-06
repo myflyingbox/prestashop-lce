@@ -140,10 +140,14 @@
   <fieldset>
     <legend>{l s='Transport booking' mod='lowcostexpress'}</legend>
     <p>
-      {if $shipment->api_order_uuid eq false}
-        <a id="select-lce-offer" href="{$link_load_lce_offers}"><img src="../img/admin/search.gif" alt="{l s='Search LCE offer' mod='lowcostexpress'}" />{l s='Search a carrier offer' mod='lowcostexpress'}</a>
+      {if count($parcels) == 0}
+        {l s='You must add parcels in order to access transport offers.' mod='lowcostexpress'}
       {else}
-        <a id="download-labels" href="{$link_download_labels}"><img src="../img/admin/pdf.gif" alt="{l s='Download labels' mod='lowcostexpress'}" /> {l s='Download labels' mod='lowcostexpress'}</a>
+        {if $shipment->api_order_uuid eq false}
+          <a id="select-lce-offer" href="{$link_load_lce_offers}"><img src="../img/admin/search.gif" alt="{l s='Search LCE offer' mod='lowcostexpress'}" />{l s='Search a carrier offer' mod='lowcostexpress'}</a>
+        {else}
+          <a id="download-labels" href="{$link_download_labels}"><img src="../img/admin/pdf.gif" alt="{l s='Download labels' mod='lowcostexpress'}" /> {l s='Download labels' mod='lowcostexpress'}</a>
+        {/if}
       {/if}
     </p>
     {if $offer eq true}

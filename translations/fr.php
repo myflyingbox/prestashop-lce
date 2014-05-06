@@ -137,6 +137,7 @@ $_MODULE['<{lowcostexpress}prestashop>view_64c1dbc0fd9e7d2ac9744bc319fc52b7'] = 
 $_MODULE['<{lowcostexpress}prestashop>view_dcf8eac53530373df8aaec6ee6b03c10'] = 'ref destinataire :';
 $_MODULE['<{lowcostexpress}prestashop>view_b86c43cd2037f52fd355dea27be1bf04'] = 'ref client :';
 $_MODULE['<{lowcostexpress}prestashop>view_14212de903aee49b371848943d55062d'] = 'Commande transport';
+$_MODULE['<{lowcostexpress}prestashop>view_39169df0e5b549eca1f2e487e56da6c3'] = 'Vous devez ajouter des colis pour accéder aux offres de transport.';
 $_MODULE['<{lowcostexpress}prestashop>view_9ca56148221e94078311b7b0ce14923b'] = 'Chercher une offre LCE';
 $_MODULE['<{lowcostexpress}prestashop>view_c2667cfa1ea7e58fef370148d999c0bc'] = 'Chercher une offre de transport';
 $_MODULE['<{lowcostexpress}prestashop>view_0abce4355d24febcf1eedfcb7084bfe4'] = 'Télécharger étiquettes';
