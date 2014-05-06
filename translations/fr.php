@@ -35,8 +35,6 @@ $_MODULE['<{lowcostexpress}prestashop>adminparcel_8112f5855e7a7b59b06f397f1317a6
 $_MODULE['<{lowcostexpress}prestashop>adminparcel_c937440e07c124043c2bf834de162ebd'] = 'Cette expédition est déjà validée.';
 $_MODULE['<{lowcostexpress}prestashop>adminparcel_c1e69aeadd2293ebb9df229314cbcf3f'] = 'Colis supprimé.';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_355c81b5e1be1404e46ebb17fe94fa7c'] = 'Expéditeur';
-$_MODULE['<{lowcostexpress}prestashop>adminshipment_4b7926d0564924c503f9c2b6155d3a6e'] = 'Date d\'enlèvement (si applicable) :';
-$_MODULE['<{lowcostexpress}prestashop>adminshipment_1dedffa3bc221905b304e6257b0810ee'] = 'Format : 2014-02-23';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_d31b74527377601ea2a10b050aa709d7'] = 'Nom de l\'expéditeur :';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_4eb82bc423e49eb3faa8263f28a71293'] = 'Nom du contact :';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_f8a8b36b98ff9bccdd08fbfd2195b353'] = 'Entreprise (votre magasin) :';
@@ -146,6 +144,8 @@ $_MODULE['<{lowcostexpress}prestashop>view_0fc04cc34e5145cc0c68259d35175494'] = 
 $_MODULE['<{lowcostexpress}prestashop>view_369f737ed2170d9ea4903687d81f597e'] = 'Détails livraison';
 $_MODULE['<{lowcostexpress}prestashop>view_3fd08cb647ade0b3f80e4429d53c235b'] = 'Autres détails';
 $_MODULE['<{lowcostexpress}prestashop>view_f7bf0110b8a7f32f448b77b63b29d5b0'] = 'Prix total :';
+$_MODULE['<{lowcostexpress}prestashop>view_39ed20dc3ca897031b4487cc8d538eca'] = 'Date d\'enlèvement';
+$_MODULE['<{lowcostexpress}prestashop>view_1db3ccec6d6e9a146e72d51721c7e40b'] = 'Date non garantie ; dépend du transporteur et de la date de commande.';
 $_MODULE['<{lowcostexpress}prestashop>view_b870958ff81268c1a02d9c84d48bf90a'] = 'Confirmer la commande de transport';
 $_MODULE['<{lowcostexpress}prestashop>view_729a51874fe901b092899e9e8b31c97a'] = 'Etes-vous sûr ?';
 $_MODULE['<{lowcostexpress}prestashop>view_31d3b94d5739bce45e1dd23b361a1a1d'] = 'La confirmation d\'une commande ne peut pas être annulée.';

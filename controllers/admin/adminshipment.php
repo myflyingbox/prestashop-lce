@@ -83,12 +83,33 @@ class AdminShipmentController extends ModuleAdminController
       print($labels_content);
       die();
     }
+    
+    // Collection dates (pickup only)
+    $collection_dates = false;
+    if ($offer && $offer->product->pick_up) {
+      $collection_dates = array();
+      // We use dates returned by the API if available
+      if (count($offer->collection_dates) > 0) {
+        foreach($offer->collection_dates as $date) {
+          $collection_dates[] = $date->date;
+        }
+      } else {
+        // The API didn't send us a set of dates. We compute the next weekdays (out of the next 10 days)
+        for($i=0;$i<10;$i++) {
+          $time = strtotime("+".$i." day");
+          if (date("N", $time) != 6 && date("N", $time) != 7) { // No pickup on week-ends
+            $collection_dates[] = date("Y-m-d", $time);
+          }
+        }
+      }
+    }
 
     // Smarty assign
     $this->tpl_view_vars = array(
       'order' => $order,
       'offer' => $offer,
       'parcels' => $parcels,
+      'collection_dates' => $collection_dates,
       'link_order' => $this->context->link->getAdminLink('AdminOrders')."&vieworder&id_order=".$order->id,
       'link_edit_shipment' => $this->context->link->getAdminLink('AdminShipment')."&updatelce_shipments&id_shipment=".$shipment->id,
       'link_load_lce_offers' => $this->context->link->getAdminLink('AdminShipment')."&ajax&action=get_offers&id_shipment=".$shipment->id,
@@ -144,7 +165,6 @@ class AdminShipmentController extends ModuleAdminController
                     array('type' => 'hidden', 'name' => 'order_id'),
                     array('type' => 'hidden', 'name' => 'api_quote_uuid'),
                     array('type' => 'hidden', 'name' => 'api_offer_uuid'),
-                    array('type' => 'date', 'label' => $this->l('Pickup date (if applicable):'), 'name' => 'collection_date', 'size' => 20, 'maxlength' => 10, 'desc' => $this->l('Format: 2014-02-23')),
                     array('type' => 'text', 'label' => $this->l('Shipper name:'), 'name' => 'shipper_name', 'size' => 40, 'desc' => $this->l('Name of contact person.'), 'required' => true),
                     array('type' => 'text', 'label' => $this->l('Shipper company (your shop):'), 'name' => 'shipper_company_name', 'size' => 40, 'desc' => $this->l('Name of your shop.')),
                     array('type' => 'textarea', 'label' => $this->l('Pickup address:'), 'name' => 'shipper_street', 'cols' => 38, 'rows' => 3, 'desc' => $this->l('Street information.'), 'required' => true),
@@ -375,7 +395,12 @@ class AdminShipmentController extends ModuleAdminController
       ),
       'parcels' => array()
     );
-      
+    
+    $collection_date = Tools::getValue('collection_date');
+    if ($collection_date) {
+      $params['shipper']['collection_date'] = $collection_date;
+    }
+    
     $parcels = LceParcel::findAllForShipmentId($shipment->id);
     foreach($parcels as $key => $parcel) {
       $params['parcels'][] = array('description' => $parcel->description, 'value' => $parcel->value, 'currency' => $parcel->currency, 'country_of_origin' => $parcel->country_of_origin);

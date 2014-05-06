@@ -189,7 +189,23 @@
       {if $shipment->api_order_uuid eq false}
         <form id="book-offer">
           <input type='hidden' name='offer_uuid' value='{$offer->id}'>
-          <input type='submit' id="book_lce_offer" value='{l s='Confirm booking' mod='lowcostexpress'}' name='book_lce_offer'/>
+          {if $collection_dates neq false}
+          <p>
+            <label for="collection_date">{l s='Preferred pickup date:' mod='lowcostexpress'}</label>
+            <div class='margin-form'>
+              <select id="collection_date" name="collection_date">
+                {foreach $collection_dates item=pickup_date}
+                  <option value="{$pickup_date}">{$pickup_date}</option>
+                {/foreach}
+              </select>
+              <sup>*</sup>
+              <p class='preference_description'>{l s='The date is not guaranteed, and depends on carrier and booking time.' mod='lowcostexpress'}</p>
+            </div>
+          </p>
+          {/if}
+          <div class='margin-form'>
+            <input type='submit' id="book_lce_offer" value='{l s='Confirm booking' mod='lowcostexpress'}' name='book_lce_offer'/>
+          </div>
         </form>
       {/if}
     {/if}

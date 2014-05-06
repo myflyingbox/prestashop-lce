@@ -8,7 +8,6 @@ class LceShipment extends ObjectModel {
   public $api_quote_uuid;
   public $api_offer_uuid;
   public $api_order_uuid;
-  public $collection_date;
   public $shipper_name;
   public $shipper_company_name;
   public $shipper_street;
@@ -52,7 +51,6 @@ class LceShipment extends ObjectModel {
           'api_quote_uuid' => array('type' => self::TYPE_STRING),
           'api_offer_uuid' => array('type' => self::TYPE_STRING),
           'api_order_uuid' => array('type' => self::TYPE_STRING),
-          'collection_date' => array('type' => self::TYPE_DATE),
           'shipper_name' => array('type' => self::TYPE_STRING),
           'shipper_company_name' => array('type' => self::TYPE_STRING),
           'shipper_street' => array('type' => self::TYPE_STRING),
