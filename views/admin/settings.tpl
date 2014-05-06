@@ -88,19 +88,19 @@
     <label for="MOD_LCE_PRICE_SURCHARGE_PERCENT">{l s='Price surchage (percent of base price):' mod='lowcostexpress'}</label>
     <div class='margin-form'>
       <input id="MOD_LCE_PRICE_SURCHARGE_PERCENT" name="MOD_LCE_PRICE_SURCHARGE_PERCENT" type="text" value="{$MOD_LCE_PRICE_SURCHARGE_PERCENT}" />
-      <p class='preference_description'>{l s='A value of 20 will inscrease the price by 20%, a value of 100 will double the price.' mod='lowcostexpress'}</label>
+      <p class='preference_description'>{l s='A value of 20 will inscrease the price by 20%, a value of 100 will double the price.' mod='lowcostexpress'}</p>
     </div>
 
     <label for="MOD_LCE_PRICE_SURCHARGE_STATIC">{l s='Price surchage (in cents):' mod='lowcostexpress'}</label>
     <div class='margin-form'>
       <input id="MOD_LCE_PRICE_SURCHARGE_STATIC" name="MOD_LCE_PRICE_SURCHARGE_STATIC" type="text" value="{$MOD_LCE_PRICE_SURCHARGE_STATIC}" />
-      <p class='preference_description'>{l s='IN CENTS! If you want to add 5€ to all LCE prices, then write 500.' mod='lowcostexpress'}</label>
+      <p class='preference_description'>{l s='IN CENTS! If you want to add 5€ to all LCE prices, then write 500.' mod='lowcostexpress'}</p>
     </div>
     
     <label for="MOD_LCE_PRICE_ROUND_INCREMENT">{l s='Increment for price rounding:' mod='lowcostexpress'}</label>
     <div class='margin-form'>
       <input id="MOD_LCE_PRICE_ROUND_INCREMENT" name="MOD_LCE_PRICE_ROUND_INCREMENT" type="text" value="{$MOD_LCE_PRICE_ROUND_INCREMENT}" />
-      <p class='preference_description'>{l s='IN CENTS! e.g. 20 will round 13.33 to 13.40, 100 will round 15.13 to 16.00.' mod='lowcostexpress'}</label>
+      <p class='preference_description'>{l s='IN CENTS! e.g. 20 will round 13.33 to 13.40, 100 will round 15.13 to 16.00.' mod='lowcostexpress'}</p>
     </div>
     <p>
       <label>&nbsp;</label>
