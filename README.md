@@ -17,7 +17,7 @@ This module provides two distinct set of features :
 ## Installation
 
 To use this module, you need the following:
-- a Prestashop 1.5 instance up and running
+- a Prestashop 1.5 or 1.6 instance up and running
 - php-curl module activated on the server
 - an active LCE account and API keys
 
@@ -47,12 +47,35 @@ php composer.phar install
 
 ### Install from package
 
-Not yet available (will be very soon!).
-Contact us at info@lce.io if you cannot install from source and want a package immediately.
+Go to the [list of releases](https://github.com/lce/prestashop-lce/releases) and download the latest package.
+You can then upload the file as-is in your Prestashop's module manager.
 
 ## Configuration
 
+
+### Install/activate the module
+
 Go to prestashop's module management page, and install the lowcostexpress module, which should be listed.
+
+### Register the controllers
+
+The module uses two back-office controllers that need to be registered in order to work properly.
+To do so, go to Administration -> Menus, and clic on "Add a menu" (path and denomination may vary depending on your Prestashop version and configuration).
+
+The following values shall be put into appropriate fields:
+- Name: "LCE Shipments" (you can choose freely; this will be the menu item name as displayed in the interface)
+- Class: AdminShipment
+- Module: lowcostexpress
+Make sure the menu item is set active.
+
+Repeat the procedure to add another menu item with the following values:
+- Name: "LCE Parcels"
+- Class: AdminParcel
+- Module: lowcostexpress
+
+Note that it doesn't matter where you put these menu items in the menu hierarchy; what matters is that they are registered and active.
+
+### Set the module settings
 
 The following settings can be fine-tuned on the module's configuration page:
 * LCE API ID and password

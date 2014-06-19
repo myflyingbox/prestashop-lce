@@ -14,7 +14,7 @@ Ce module fournit deux ensembles de fonctionnalités indépendants :
 ## Installation
 
 Pour utiliser ce module, vous avez besoin de :
-- Prestashop 1.5, installé et fonctionnel
+- Prestashop 1.5 ou 1.6, installé et fonctionnel
 - le module php-curl activé sur le serveur
 - un compte LCE actif et les clés d'API correspondantes
 
@@ -44,13 +44,34 @@ php composer.phar install
 
 ### Installation à partir d'un paquet
 
-Pas encore disponible (mais c'est prévu pour très bientôt !).
-
-Contactez-nous à info@lce.io si vous ne pouvez pas installer à partir des sources et souhaitez disposer d'un paquet immédiatement.
+Ouvrez la [liste des publications](https://github.com/lce/prestashop-lce/releases) et téléchargez le dernier paquet disponible (premier de la liste).
+Vous pouvez ensuite charger ce fichier tel quel dans le gestionnaire de modules de Prestashop.
 
 ## Configuration
 
-Ouvre la page de gestion des modules dans Prestashop, et installez le module lowcostexpress, qui devrait être listé.
+### Installez/activez le module
+
+Ouvrez la page de gestion des modules dans Prestashop, et installez le module lowcostexpress, qui devrait être listé.
+
+### Enregistrez les contrôleurs
+
+Le module utilise deux contrôleurs en back-office. Ces contrôleurs doivent êter enregistrés pour fonctionner correctement.
+Pour ce faire, ouvrez la page Administration -> Menus et cliquez sur "Ajouter un menu" (le chemin et la dénomination peuvent varier selon votre version et configuration de Prestashop).
+
+Les valeurs suivantes doivent être saisies dans le formulaire :
+- Nom : "Expéditions LCE" (vous pouvez choisir librement ; il s'agit simplement du nom tel qu'il sera affiché dans l'interface)
+- Classe : AdminShipment
+- Module : lowcostexpress
+Assurez-vous de bien activer ce menu.
+
+Répétez la procédure pour ajouter un nouvel élément de menu avec les valeurs suivantes :
+- Name: "Colis LCE"
+- Class: AdminParcel
+- Module: lowcostexpress
+
+Notez que la position de ces éléments de menu dans la hiérarchie des menus n'importe pas, tant que les éléments sont enregistrés et actifs.
+
+### Configurez les paramètres du module
 
 Les paramètres suivants peuvent être définis sur la page de configuration du module :
 * Identifiant et mode de passe de votre compte d'API LCE
