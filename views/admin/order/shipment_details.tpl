@@ -1,4 +1,4 @@
-<br/>
+<div class='panel'>
 <fieldset>
   <legend><img src="../img/admin/delivery.gif" />{l s='LCE Shipments' mod='lowcostexpress'}</legend>
   <p>
@@ -39,3 +39,4 @@
   </table>
   
 </fieldset>
+</div>

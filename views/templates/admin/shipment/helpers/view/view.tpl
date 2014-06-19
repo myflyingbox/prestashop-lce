@@ -162,26 +162,20 @@
         </thead>
         <tbody>
         <tr>
-          <td>{$offer->product->name}
-              <br/>{l s='Total price:' mod='lowcostexpress'} <b>{$offer->total_price->formatted}</b>
+          <td>{$offer->product_name}
+              <br/>{l s='Total price:' mod='lowcostexpress'} <b>{$offer->total_price}</b>
           </td>
           
           <td>
-            {foreach from=$offer->product->collection_informations key=lang item=s}
-              <p class='lang {$lang}'>{$s|nl2br}</p>
-            {/foreach}
+            {$offer->collection_informations|nl2br}
           </td>
 
           <td>
-            {foreach from=$offer->product->delivery_informations key=lang item=s}
-              <p class='lang {$lang}'>{$s|nl2br}</p>
-            {/foreach}
+            {$offer->delivery_informations|nl2br}
           </td>
 
           <td>
-            {foreach from=$offer->product->details key=lang item=s}
-              <p class='lang {$lang}'>{$s|nl2br}</p>
-            {/foreach}
+            {$offer->product_details|nl2br}
           </td>
         </tr>
         </tbody>
@@ -213,7 +207,7 @@
 
 {/block}
 
-<div id="dialog-package-form">
+<div id="dialog-package-form" class="bootstrap" style="overflow-x:hidden;">
 </div>
 <div id="dialog-lce-offers">
 </div>
@@ -229,7 +223,13 @@ $(function() {
     autoOpen: false,
     modal: true,
     width: 970,
-    position: "top"
+    maxHeight: 700,
+    dialogClass: 'lce-modal',
+    position: { my: "top",
+                at: "top+100",
+                of: window,
+                collision: "none"
+                }
     });
     
   $("body").on("click","a#add-package, a.edit-parcel", function(e) {
@@ -276,7 +276,13 @@ $(function() {
     autoOpen: false,
     modal: true,
     width: 970,
-    position: "top"
+    maxHeight: 700,
+    dialogClass: 'lce-modal',
+    position: { my: "top",
+                at: "top+100",
+                of: window,
+                collision: "none"
+                }
     });
 
   $("body").on("click","a#select-lce-offer", function(e) {

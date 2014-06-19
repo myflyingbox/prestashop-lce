@@ -62,7 +62,7 @@ class LowCostExpress extends CarrierModule
 
     $this->displayName = $this->l('LowCostExpress Module');
     $this->description = $this->l('BETA VERSION. Provides integration of all features of the LCE API (http://lce.io), offering access to many carriers at great rates.');
-    $this->ps_versions_compliancy = array('min' => '1.5', 'max' => '1.6'); 
+    $this->ps_versions_compliancy = array('min' => '1.5', 'max' => '1.7'); 
 
     $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module?');
 
@@ -75,7 +75,7 @@ class LowCostExpress extends CarrierModule
     if ($env != 'staging' && $env != 'production') $env = 'staging';
     $api = Lce\Lce::configure(Configuration::get('MOD_LCE_API_LOGIN'), Configuration::get('MOD_LCE_API_PASSWORD'), $env);
     $api->application = "prestashop-lce";
-    $api->application_version = $this->version;
+    $api->application_version = $this->version . " (PS ". _PS_VERSION_.")";
   }
   
   //===============
@@ -403,8 +403,10 @@ class LowCostExpress extends CarrierModule
       if (!empty($delivery_address->city)) {
       
         $weight = ceil($cart->getTotalWeight($cart->getProducts()));
+        if ($weight == 0)
+          $weight = 0.2;
+          
         $dimension = LceDimension::getForWeight($weight);
-        
         $params = array(
           'shipper' => array(
             'city' => Configuration::get('MOD_LCE_DEFAULT_CITY'),

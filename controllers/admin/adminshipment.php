@@ -28,6 +28,8 @@ class AdminShipmentController extends ModuleAdminController
    */
   public function __construct()
   {
+      $this->bootstrap = true;
+  
       // The below attributes are used for many automatic naming conventions
       $this->table     = 'lce_shipments'; // Table containing the records
       $this->className  = 'LceShipment'; // Class of the object managed by this controller
@@ -60,10 +62,36 @@ class AdminShipmentController extends ModuleAdminController
     $parcels = LceParcel::findAllForShipmentId($shipment->id_shipment);
     $order = new Order((int)$shipment->order_id);
     
-    if ($shipment->api_offer_uuid)
+    if ($shipment->api_offer_uuid) {
       $offer = Lce\Resource\Offer::find($shipment->api_offer_uuid);
-    else
-      $offer = false;
+      $offer_data = new stdClass();
+      $offer_data->id = $offer->id;
+      $offer_data->product_name = $offer->product->name;
+      $offer_data->total_price = $offer->total_price->formatted;
+      
+      if (property_exists($offer->product->collection_informations, $this->context->language->iso_code)){
+        $lang = $this->context->language->iso_code;
+      } else { 
+        $lang = "en";
+      }
+      $offer_data->collection_informations = $offer->product->collection_informations->$lang;
+      
+      if (property_exists($offer->product->delivery_informations, $this->context->language->iso_code)){
+        $lang = $this->context->language->iso_code;
+      } else { 
+        $lang = "en";
+      }
+      $offer_data->delivery_informations = $offer->product->delivery_informations->$lang;
+
+      if (property_exists($offer->product->details, $this->context->language->iso_code)){
+        $lang = $this->context->language->iso_code;
+      } else { 
+        $lang = "en";
+      }
+      $offer_data->product_details = $offer->product->details->$lang;
+    } else {
+      $offer_data = false;
+    }
 
     if ($shipment->api_order_uuid)
       $booking = Lce\Resource\Order::find($shipment->api_order_uuid);
@@ -107,7 +135,7 @@ class AdminShipmentController extends ModuleAdminController
     // Smarty assign
     $this->tpl_view_vars = array(
       'order' => $order,
-      'offer' => $offer,
+      'offer' => $offer_data,
       'parcels' => $parcels,
       'collection_dates' => $collection_dates,
       'link_order' => $this->context->link->getAdminLink('AdminOrders')."&vieworder&id_order=".$order->id,
@@ -158,7 +186,7 @@ class AdminShipmentController extends ModuleAdminController
     $this->fields_form = array();
     $this->fields_form[] = array('form' => array(
             'legend' => array(
-                    'title' => $this->l('Shipper'),
+                    'title' => $this->l('Pickup and delivery'),
                     'image' => '../img/admin/cog.gif'
             ),
             'input' => array(
@@ -180,23 +208,16 @@ class AdminShipmentController extends ModuleAdminController
                               'id' => 'country_code',
                               'name' => 'name'
                             )
-                          )
-            ),
-            'submit' => array(
-                    'title' => $this->l('Save'),
-                    'class' => 'button'
-            )
-          ));
+                          ),
 
-    $this->fields_form[] = array('form' => array(
-            'legend' => array(
-                    'title' => $this->l('Recipient'),
-                    'image' => '../img/admin/cog.gif'
-            ),
-            'input' => array(
+                    array('type' => 'html',
+                          'name' => "<hr/>"
+                    ),
+                    array('type' => 'text', 'label' => $this->l('Recipient name:'), 'name' => 'recipient_name', 'size' => 40, 'desc' => $this->l('Name of contact person.'), 'required' => true),
+                    array('type' => 'text', 'label' => $this->l('Recipient company:'), 'name' => 'recipient_company_name', 'size' => 40, 'desc' => $this->l('Name of your shop.')),
                     array('type' => 'checkbox',
                           'name' => 'recipient_is_a',
-                          'label' => $this->l('Company address:'),
+                          'label' => $this->l('Is company address?'),
                           'values' => array(
                             'query' => array(
                               array('id' => 'company', 'name' => '', 'val' => '1'),
@@ -204,9 +225,6 @@ class AdminShipmentController extends ModuleAdminController
                             'id' => 'id',
                             'name' => 'name'),
                           'desc' => $this->l('Select if this address is a company address, as opposed to personal address.')),
-                          
-                    array('type' => 'text', 'label' => $this->l('Recipient name:'), 'name' => 'recipient_name', 'size' => 40, 'desc' => $this->l('Name of contact person.'), 'required' => true),
-                    array('type' => 'text', 'label' => $this->l('Recipient company:'), 'name' => 'recipient_company_name', 'size' => 40, 'desc' => $this->l('Name of your shop.')),
                     array('type' => 'textarea', 'label' => $this->l('Delivery address:'), 'name' => 'recipient_street', 'cols' => 38, 'rows' => 3, 'size' => '40', 'desc' => $this->l('Street information.'), 'required' => true),
                     array('type' => 'text', 'label' => $this->l('City:'), 'name' => 'recipient_city', 'size' => 40, 'required' => true),
                     array('type' => 'text', 'label' => $this->l('Postal code:'), 'name' => 'recipient_postal_code', 'size' => 40, 'required' => true),
@@ -308,9 +326,40 @@ class AdminShipmentController extends ModuleAdminController
     
     $quote = Lce\Resource\Quote::request($params);
     
+    $offers = array();
+    foreach($quote->offers as $key => $offer){
+      $data = new stdClass();
+      $data->id = $offer->id;
+      $data->product_name = $offer->product->name;
+      $data->total_price = $offer->total_price->formatted;
+      
+      if (property_exists($offer->product->collection_informations, $this->context->language->iso_code)){
+        $lang = $this->context->language->iso_code;
+      } else { 
+        $lang = "en";
+      }
+      $data->collection_informations = $offer->product->collection_informations->$lang;
+      
+      if (property_exists($offer->product->delivery_informations, $this->context->language->iso_code)){
+        $lang = $this->context->language->iso_code;
+      } else { 
+        $lang = "en";
+      }
+      $data->delivery_informations = $offer->product->delivery_informations->$lang;
+
+      if (property_exists($offer->product->details, $this->context->language->iso_code)){
+        $lang = $this->context->language->iso_code;
+      } else { 
+        $lang = "en";
+      }
+      $data->product_details = $offer->product->details->$lang;
+      
+      $offers[] = $data;
+    }
+    
     $this->context->smarty->assign(array(
       'quote' => $quote,
-      'offers' => $quote->offers
+      'offers' => $offers
     ));
     
     /* Manually calling all rendering methods. We need this to render a full

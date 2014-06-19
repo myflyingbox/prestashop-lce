@@ -11,6 +11,9 @@ class AdminParcelController extends ModuleAdminController
    */
   public function __construct()
   {
+  
+      $this->bootstrap = true;
+      
       // The below attributes are used for many automatic naming conventions
       $this->table     = 'lce_parcels'; // Table containing the records
       $this->className  = 'LceParcel'; // Class of the object managed by this controller
@@ -37,10 +40,10 @@ class AdminParcelController extends ModuleAdminController
             ),
             'input' => array(
                     array('type' => 'hidden', 'name' => 'shipment_id'),
-                    array('type' => 'text', 'label' => $this->l('Length (cm):'), 'name' => 'length', 'size' => 5, 'required' => true),
-                    array('type' => 'text', 'label' => $this->l('Width (cm):'), 'name' => 'width', 'size' => 5, 'required' => true),
-                    array('type' => 'text', 'label' => $this->l('Height (cm):'), 'name' => 'height', 'size' => 5, 'required' => true),
-                    array('type' => 'text', 'label' => $this->l('Weight (kg):'), 'name' => 'weight', 'size' => 5, 'required' => true)
+                    array('type' => 'text', 'label' => $this->l('Length (cm):'), 'name' => 'length', 'size' => 5, 'class' => 'fixed-width-sm', 'required' => true),
+                    array('type' => 'text', 'label' => $this->l('Width (cm):'), 'name' => 'width', 'size' => 5, 'class' => 'fixed-width-sm', 'required' => true),
+                    array('type' => 'text', 'label' => $this->l('Height (cm):'), 'name' => 'height', 'size' => 5, 'class' => 'fixed-width-sm', 'required' => true),
+                    array('type' => 'text', 'label' => $this->l('Weight (kg):'), 'name' => 'weight', 'size' => 5, 'class' => 'fixed-width-sm', 'required' => true)
             )
           ));
 
@@ -50,9 +53,9 @@ class AdminParcelController extends ModuleAdminController
                     'image' => '../img/admin/cog.gif'
             ),
             'input' => array(
-                    array('type' => 'text', 'label' => $this->l('Value:'), 'name' => 'value', 'size' => 5, 'desc' => $this->l('Declared value of the content.')),
-                    array('type' => 'text', 'label' => $this->l('Currency:'), 'name' => 'currency', 'size' => 5, 'desc' => $this->l('Currency code for the value.')),
-                    array('type' => 'text', 'label' => $this->l('Description:'), 'name' => 'description', 'size' => 40, 'desc' => $this->l('Description of the goods.')),
+                    array('type' => 'text', 'label' => $this->l('Value:'), 'name' => 'value', 'size' => 5, 'class' => 'fixed-width-sm', 'desc' => $this->l('Declared value of the content.')),
+                    array('type' => 'text', 'label' => $this->l('Currency:'), 'name' => 'currency', 'size' => 5, 'class' => 'fixed-width-sm', 'desc' => $this->l('Currency code for the value.')),
+                    array('type' => 'text', 'label' => $this->l('Description:'), 'name' => 'description', 'size' => 40, 'class' => 'fixed-width-xl', 'desc' => $this->l('Description of the goods.')),
                     array(  'type' => 'select',
                             'label' => $this->l('Country of origin:'),
                             'desc' => $this->l('Country code of the origin of the products in the package.'),
@@ -73,9 +76,9 @@ class AdminParcelController extends ModuleAdminController
                     'image' => '../img/admin/cog.gif'
             ),
             'input' => array(
-                    array('type' => 'text', 'label' => $this->l('Shipper reference:'), 'name' => 'shipper_reference', 'size' => 5, 'desc' => $this->l('Your reference. May be printed on the label, depending on the carrier.')),
-                    array('type' => 'text', 'label' => $this->l('Recipient reference:'), 'name' => 'recipient_reference', 'size' => 5, 'desc' => $this->l('Recipient\'s reference may be printed on the label, depending on the carrier.')),
-                    array('type' => 'text', 'label' => $this->l('Customer reference:'), 'name' => 'customer_reference', 'size' => 5, 'desc' => $this->l('If your customer is not the recipient, specific reference for the customer.')),
+                    array('type' => 'text', 'label' => $this->l('Shipper reference:'), 'name' => 'shipper_reference', 'size' => 5, 'class' => 'fixed-width-lg', 'desc' => $this->l('Your reference. May be printed on the label, depending on the carrier.')),
+                    array('type' => 'text', 'label' => $this->l('Recipient reference:'), 'name' => 'recipient_reference', 'size' => 5, 'class' => 'fixed-width-lg', 'desc' => $this->l('Recipient\'s reference may be printed on the label, depending on the carrier.')),
+                    array('type' => 'text', 'label' => $this->l('Customer reference:'), 'name' => 'customer_reference', 'size' => 5, 'class' => 'fixed-width-lg', 'desc' => $this->l('If your customer is not the recipient, specific reference for the customer.')),
             ),
             'submit' => array(
                     'title' => $this->l('Save'),
