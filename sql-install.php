@@ -72,6 +72,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_offers` (
     `id_quote` int(11) NOT NULL,
     `api_offer_uuid` VARCHAR(255) NOT NULL DEFAULT "",
     `lce_product_code` VARCHAR(255) NOT NULL DEFAULT "",
+    `base_price_in_cents` INT(11) NOT NULL,
     `total_price_in_cents` INT(11) NOT NULL,
     `currency` VARCHAR(255) NOT NULL DEFAULT "",
     `date_add` DATETIME,

@@ -34,7 +34,7 @@ $_MODULE['<{lowcostexpress}prestashop>adminparcel_0c0ab619c48e146fb5d1cc45fdbd1f
 $_MODULE['<{lowcostexpress}prestashop>adminparcel_8112f5855e7a7b59b06f397f1317a6c1'] = 'Colis introuvable.';
 $_MODULE['<{lowcostexpress}prestashop>adminparcel_c937440e07c124043c2bf834de162ebd'] = 'Cette expédition est déjà validée.';
 $_MODULE['<{lowcostexpress}prestashop>adminparcel_c1e69aeadd2293ebb9df229314cbcf3f'] = 'Colis supprimé.';
-$_MODULE['<{lowcostexpress}prestashop>adminshipment_355c81b5e1be1404e46ebb17fe94fa7c'] = 'Expéditeur';
+$_MODULE['<{lowcostexpress}prestashop>adminshipment_9c0a9dc92860563743612cc03af548d6'] = 'Enlèvement et livraison';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_d31b74527377601ea2a10b050aa709d7'] = 'Nom de l\'expéditeur :';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_4eb82bc423e49eb3faa8263f28a71293'] = 'Nom du contact :';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_f8a8b36b98ff9bccdd08fbfd2195b353'] = 'Entreprise (votre magasin) :';
@@ -46,13 +46,12 @@ $_MODULE['<{lowcostexpress}prestashop>adminshipment_da67a6777d9e5451375f8ab27e15
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_18325105de95083e4a1d10b78f29c2bc'] = 'Etat :';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_caaad7c314b91573ea8216c1495a1ac2'] = 'Seulement si nécessaire dans le pays en question.';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_f64be5eef68442a8f50cf535b92ad3e4'] = 'Pays :';
-$_MODULE['<{lowcostexpress}prestashop>adminshipment_c9cc8cce247e49bae79f15173ce97354'] = 'Enregistrer';
-$_MODULE['<{lowcostexpress}prestashop>adminshipment_5d6103b662f41b07e10687f03aca8fdc'] = 'Destinataire';
-$_MODULE['<{lowcostexpress}prestashop>adminshipment_4cdd08f5bf6d7086af65bdde7687db91'] = 'Adresse d\'entreprise :';
-$_MODULE['<{lowcostexpress}prestashop>adminshipment_902db99f4be00b23c6fec0ae0a0e1f68'] = 'Cochez si cette adresse est celle d\'une entreprise (par opposition à une adresse personnelle).';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_98fe2f639579f58ae6a3531ad4eab6db'] = 'Nom du destinataire :';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_621d2e0fa9558029d266e0713f9aee7d'] = 'Entreprise destinataire :';
+$_MODULE['<{lowcostexpress}prestashop>adminshipment_6ae8b86785007d6e1132442d2f1d9ff8'] = 'Adresse d\'entreprise ?';
+$_MODULE['<{lowcostexpress}prestashop>adminshipment_902db99f4be00b23c6fec0ae0a0e1f68'] = 'Cochez si cette adresse est celle d\'une entreprise (par opposition à une adresse personnelle).';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_32063d827ff1f7d07455a7b8e3e1c098'] = 'Adresse de livraison :';
+$_MODULE['<{lowcostexpress}prestashop>adminshipment_c9cc8cce247e49bae79f15173ce97354'] = 'Enregistrer';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_c72beff395de9683509901f0c5cc835f'] = 'Expédition introuvable.';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_c937440e07c124043c2bf834de162ebd'] = 'Cette expédition est déjà validée.';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_2d8ddcf4ab228f835076896ee0da93c7'] = 'L\'expédition n\'a pas pu être créée.';
@@ -81,6 +80,9 @@ $_MODULE['<{lowcostexpress}prestashop>settings_56004a3f44457d411980de964bb230c1'
 $_MODULE['<{lowcostexpress}prestashop>settings_5bf6389bad29fd69d94d8d5a46d56db6'] = 'EN CENTIMES ! Si vous souhaitez ajouter 5€ à tous les tarifs LCE, vous devrez saisir 500.';
 $_MODULE['<{lowcostexpress}prestashop>settings_5355a7153a52d76968946c0bc267a925'] = 'Incrément pour l\'arrondi du prix :';
 $_MODULE['<{lowcostexpress}prestashop>settings_72f35ce94bee7ce9dfdfb5a31ea3b3b1'] = 'EN CENTIMES ! Arrondi toujours supérieur. Par exemple 20 arrondira 13,33 à 13,40. 100 arrondira 15,13 à 16,00.';
+$_MODULE['<{lowcostexpress}prestashop>settings_1688eccadea5bbb7c85267a90ed1a2be'] = 'Prix retourné :';
+$_MODULE['<{lowcostexpress}prestashop>settings_28e643618826288005a54b1a36741ef1'] = 'Hors taxes';
+$_MODULE['<{lowcostexpress}prestashop>settings_a2b544e8022bd4f36d8c6c144b7278dd'] = 'TTC';
 $_MODULE['<{lowcostexpress}prestashop>settings_1a78af351d12ac64409de6ce37a7714b'] = 'Dimensions par défaut';
 $_MODULE['<{lowcostexpress}prestashop>settings_c8e5117676f2fe33fcec7dee8fde5840'] = 'Lorsque le module tente d\'obtenir des tarifs de transport pour le panier du client, il doit transmettre à la fois un poids et des dimensions d\'emballage. Le module ne pouvant déterminer lui-même vos dimensions standards d\'emballage pour un panier donné, le tableau ci-dessous vous permet de définir une correspondance entre un poids et des dimensions d\'emballage. Le module se basera systématiquement sur le poids total du panier (arrondi au kg supérieur) pour obtenir une correspondance de diemnsions sur la base de ce tableau. Notez que lors de la commande réelle de l\'expédition en back-office vous spécifierez les dimensions réelles de vos colis.';
 $_MODULE['<{lowcostexpress}prestashop>settings_52f5e0bc3859bc5f5e25130b6c7e8881'] = 'Position';

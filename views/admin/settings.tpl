@@ -102,6 +102,13 @@
       <input id="MOD_LCE_PRICE_ROUND_INCREMENT" name="MOD_LCE_PRICE_ROUND_INCREMENT" type="text" value="{$MOD_LCE_PRICE_ROUND_INCREMENT}" />
       <p class='preference_description'>{l s='IN CENTS! e.g. 20 will round 13.33 to 13.40, 100 will round 15.13 to 16.00.' mod='lowcostexpress'}</p>
     </div>
+    
+    <label for="MOD_LCE_PRICE_TAX_RULES">{l s='Price returned:' mod='lowcostexpress'}</label>
+    <select id="MOD_LCE_PRICE_TAX_RULES" name="MOD_LCE_PRICE_TAX_RULES">
+      <option value="before_taxes"{if $MOD_LCE_PRICE_TAX_RULES eq 'before_taxes'} selected="selected"{/if}>{l s='before taxes' mod='lowcostexpress'}</option>
+      <option value="taxes_included"{if $MOD_LCE_PRICE_TAX_RULES eq 'taxes_included'} selected="selected"{/if}>{l s='taxes included' mod='lowcostexpress'}</option>
+    </select>
+    
     <p>
       <label>&nbsp;</label>
       <input id="submit_{$module_name}" name="submit_{$module_name}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="button" />

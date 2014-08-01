@@ -5,6 +5,7 @@ class LceOffer extends ObjectModel {
   public $id_quote;
   public $api_offer_uuid;
   public $lce_product_code;
+  public $base_price_in_cents;
   public $total_price_in_cents;
   public $currency;
   public $date_add;
@@ -19,6 +20,7 @@ class LceOffer extends ObjectModel {
           'id_quote' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
           'api_offer_uuid' => array('type' => self::TYPE_STRING, 'required' => true),
           'lce_product_code' => array('type' => self::TYPE_STRING, 'required' => true),
+          'base_price_in_cents' => array('type' => self::TYPE_INT, 'required' => true),
           'total_price_in_cents' => array('type' => self::TYPE_INT, 'required' => true),
           'currency' => array('type' => self::TYPE_STRING, 'required' => true),
           'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),

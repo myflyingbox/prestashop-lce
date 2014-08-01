@@ -29,7 +29,8 @@ class LowCostExpress extends CarrierModule
                          'MOD_LCE_DEFAULT_EMAIL',
                          'MOD_LCE_PRICE_ROUND_INCREMENT',
                          'MOD_LCE_PRICE_SURCHARGE_STATIC',
-                         'MOD_LCE_PRICE_SURCHARGE_PERCENT');
+                         'MOD_LCE_PRICE_SURCHARGE_PERCENT',
+                         'MOD_LCE_PRICE_TAX_RULES');
 
   public static $mandatory_settings = array('MOD_LCE_API_LOGIN',
                          'MOD_LCE_API_PASSWORD',
@@ -55,7 +56,7 @@ class LowCostExpress extends CarrierModule
   {
     $this->name = 'lowcostexpress';
     $this->tab = 'shipping_logistics';
-    $this->version = '0.0.7';
+    $this->version = '0.0.8';
     $this->author = 'Low Cost Express SAS';
 
     parent::__construct();
@@ -89,10 +90,15 @@ class LowCostExpress extends CarrierModule
       if (!Db::getInstance()->Execute($s))
         return false;
   
-    // Column adds
+    // Column adds to existing PS tables
     Db::getInstance()->Execute("SHOW COLUMNS FROM `"._DB_PREFIX_."carrier` LIKE 'lce_product_code'");
     if (Db::getInstance()->numRows() == 0)
       Db::getInstance()->Execute("ALTER TABLE `"._DB_PREFIX_."carrier` ADD `lce_product_code` VARCHAR(255) NOT NULL DEFAULT '' AFTER `name`;");
+  
+    // Migration 0.0.7 to 0.0.8
+    Db::getInstance()->Execute("SHOW COLUMNS FROM `"._DB_PREFIX_."lce_offers` LIKE 'base_price_in_cents'");
+    if (Db::getInstance()->numRows() == 0)
+      Db::getInstance()->Execute("ALTER TABLE `"._DB_PREFIX_."lce_offers` ADD `base_price_in_cents` INT(11) NOT NULL AFTER `lce_product_code`;");
   
     // Executing standard module installation statements
     if (!parent::install()) return false;
@@ -268,7 +274,7 @@ class LowCostExpress extends CarrierModule
           foreach ($languages as $language) {
             $iso_code = strtolower($language['iso_code']);
             if (strlen($product->delivery_informations->$iso_code) > 0) {
-              $carrier->delay[$language['id_lang']] = $product->delivery_informations->$iso_code;
+              $carrier->delay[$language['id_lang']] = substr($product->delivery_informations->$iso_code, 0, 128);
             }
           }
           if (sizeof($carrier->delay) == 0) {
@@ -361,6 +367,7 @@ class LowCostExpress extends CarrierModule
   
     $this->context->smarty->assign(array(
       'message' => $message,
+      'module_name' => $this->name,
       'dimensions' => $dimensions,
       'carriers' => $carriers,
       'countries' => $countries,
@@ -378,7 +385,8 @@ class LowCostExpress extends CarrierModule
       'MOD_LCE_DEFAULT_EMAIL' => Configuration::get('MOD_LCE_DEFAULT_EMAIL'),
       'MOD_LCE_PRICE_ROUND_INCREMENT' => Configuration::get('MOD_LCE_PRICE_ROUND_INCREMENT'),
       'MOD_LCE_PRICE_SURCHARGE_STATIC' => Configuration::get('MOD_LCE_PRICE_SURCHARGE_STATIC'),
-      'MOD_LCE_PRICE_SURCHARGE_PERCENT' => Configuration::get('MOD_LCE_PRICE_SURCHARGE_PERCENT')
+      'MOD_LCE_PRICE_SURCHARGE_PERCENT' => Configuration::get('MOD_LCE_PRICE_SURCHARGE_PERCENT'),
+      'MOD_LCE_PRICE_TAX_RULES' => Configuration::get('MOD_LCE_PRICE_TAX_RULES')
     ));
   }
 
@@ -433,6 +441,7 @@ class LowCostExpress extends CarrierModule
             $offer->id_quote = $quote->id;
             $offer->api_offer_uuid = $api_offer->id;
             $offer->lce_product_code = $api_offer->product->code;
+            $offer->base_price_in_cents = $api_offer->price->amount_in_cents;
             $offer->total_price_in_cents = $api_offer->total_price->amount_in_cents;
             $offer->currency = $api_offer->total_price->currency;
             $offer->add();
@@ -452,7 +461,12 @@ class LowCostExpress extends CarrierModule
         $increment = (int)Configuration::get('MOD_LCE_PRICE_ROUND_INCREMENT');
         $surcharge_amount = (int)Configuration::get('MOD_LCE_PRICE_SURCHARGE_STATIC');
         $surcharge_percent = (int)Configuration::get('MOD_LCE_PRICE_SURCHARGE_PERCENT');
-        $price = $lce_offer->total_price_in_cents;
+        $price_taxation_rule = Configuration::get('MOD_LCE_PRICE_TAX_RULES');
+        if ($price_taxation_rule == 'before_taxes') {
+          $price = $lce_offer->base_price_in_cents;
+        } else {
+          $price = $lce_offer->total_price_in_cents;
+        }
         
         if (is_int($surcharge_percent) && $surcharge_percent > 0 && $surcharge_percent <= 100) {
           $price = $price + ($price * $surcharge_percent / 100);
