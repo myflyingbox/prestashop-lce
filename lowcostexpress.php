@@ -56,7 +56,7 @@ class LowCostExpress extends CarrierModule
   {
     $this->name = 'lowcostexpress';
     $this->tab = 'shipping_logistics';
-    $this->version = '0.0.8';
+    $this->version = '0.0.9';
     $this->author = 'Low Cost Express SAS';
 
     parent::__construct();
@@ -134,7 +134,7 @@ class LowCostExpress extends CarrierModule
   
     // Tag all carriers provided as deleted
     foreach($carriers as $key => $carrier) {
-      $carrier->deleted=true;
+      $carrier->active = false;
       $carrier->save();
     }
     
