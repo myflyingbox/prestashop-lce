@@ -222,11 +222,11 @@ $(function() {
   $("#dialog-package-form").dialog({
     autoOpen: false,
     modal: true,
-    width: 970,
-    maxHeight: 700,
+    width: '65%',
+    maxHeight: 500,
     dialogClass: 'lce-modal',
-    position: { my: "top",
-                at: "top+100",
+    position: { my: "center top",
+                at: "center+100 top+100",
                 of: window,
                 collision: "none"
                 }
@@ -275,11 +275,11 @@ $(function() {
   $("#dialog-lce-offers").dialog({
     autoOpen: false,
     modal: true,
-    width: 970,
-    maxHeight: 700,
+    width: '65%',
+    maxHeight: 500,
     dialogClass: 'lce-modal',
     position: { my: "top",
-                at: "top+100",
+                at: "center+100 top+100",
                 of: window,
                 collision: "none"
                 }
@@ -329,8 +329,13 @@ $(function() {
   $("#dialog-confirm-booking").dialog({
       resizable: false,
       height: 220,
-      width: 500,
+      width: '65%',
       modal: true,
+      position: { my: "top",
+                  at: "center+100 top+100",
+                  of: window,
+                  collision: "none"
+                  },
       autoOpen: false,
       buttons: {
           '{l s='Confirm booking' mod='lowcostexpress'}': function() {

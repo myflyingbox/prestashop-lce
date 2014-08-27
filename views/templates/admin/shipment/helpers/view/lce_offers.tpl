@@ -4,10 +4,8 @@
   <thead>
     <tr>
       <th></th>
-      <th style='width: 20%;'>{l s='Product name' mod='lowcostexpress'}</th>
-      <th>{l s='Pickup details' mod='lowcostexpress'}</th>
-      <th>{l s='Delivery details' mod='lowcostexpress'}</th>
-      <th>{l s='Other details' mod='lowcostexpress'}</th>
+      <th style='width: 25%;'>{l s='Product name' mod='lowcostexpress'}</th>
+      <th>{l s='Details' mod='lowcostexpress'}</th>
     </tr>
   </thead>
   <tbody>
@@ -20,15 +18,11 @@
     </td>
     
     <td>
-      {$offer->collection_informations|nl2br}
-    </td>
-
-    <td>
-      {$offer->delivery_informations|nl2br}
-    </td>
-
-    <td>
-      {$offer->product_details|nl2br}
+      <ul>
+        <li>{$offer->collection_informations|nl2br}</li>
+        <li>{$offer->delivery_informations|nl2br}</li>
+        <li>{$offer->product_details|nl2br}</li>
+      </ul>
     </td>
 
   </tr>
