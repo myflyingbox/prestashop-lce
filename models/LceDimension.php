@@ -35,8 +35,8 @@ class LceDimension extends ObjectModel {
           'length' => array('type' => self::TYPE_INT, 'required' => true),
           'width' => array('type' => self::TYPE_INT, 'required' => true),
           'height' => array('type' => self::TYPE_INT, 'required' => true),
-          'weight_from' => array('type' => self::TYPE_INT, 'required' => true),
-          'weight_to' => array('type' => self::TYPE_INT, 'required' => true),
+          'weight_from' => array('type' => self::TYPE_FLOAT, 'required' => true),
+          'weight_to' => array('type' => self::TYPE_FLOAT, 'required' => true),
           'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
           'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDate')
       )

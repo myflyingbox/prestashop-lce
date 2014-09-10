@@ -83,12 +83,12 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_offers` (
 
 $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_dimensions` (
     `id_dimension` int(11) NOT NULL AUTO_INCREMENT,
-    `weight` int(11) NOT NULL,
+    `weight` decimal(5,3) NOT NULL,
     `length` int(11) NOT NULL,
     `width` int(11) NOT NULL,
     `height` int(11) NOT NULL,
-    `weight_from` int(11) NOT NULL,
-    `weight_to` int(11) NOT NULL,
+    `weight_from` decimal(5,3) NOT NULL,
+    `weight_to` decimal(5,3) NOT NULL,
     `date_add` DATETIME,
     `date_upd` DATETIME,
     PRIMARY KEY  (`id_dimension`)

@@ -100,6 +100,11 @@ class LowCostExpress extends CarrierModule
     if (Db::getInstance()->numRows() == 0)
       Db::getInstance()->Execute("ALTER TABLE `"._DB_PREFIX_."lce_offers` ADD `base_price_in_cents` INT(11) NOT NULL AFTER `lce_product_code`;");
   
+    // Migration 0.0.10 to 0.0.11
+    Db::getInstance()->execute("ALTER TABLE `"._DB_PREFIX_."lce_dimensions` CHANGE `weight` `weight` DECIMAL(5,3);");
+    Db::getInstance()->execute("ALTER TABLE `"._DB_PREFIX_."lce_dimensions` CHANGE `weight_to` `weight_to` DECIMAL(5,3);");
+    Db::getInstance()->execute("ALTER TABLE `"._DB_PREFIX_."lce_dimensions` CHANGE `weight_from` `weight_from` DECIMAL(5,3);");
+
     // Executing standard module installation statements
     if (!parent::install()) return false;
 
@@ -150,9 +155,11 @@ class LowCostExpress extends CarrierModule
    */
   public function hookUpdateCarrier($params)
   {
-    // Initializing carrier which will be obsolete
-    $carrier = new Carrier((int)$params['id_carrier']);
-    Configuration::updateValue('LCE_'.$carrier->lce_product_code, $params['carrier']->id);
+    
+    $sql = 'SELECT `lce_product_code` FROM '._DB_PREFIX_.'carrier WHERE (`id_carrier` = "'.$params['id_carrier'].'")';
+    $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+
+    Configuration::updateValue('LCE_'.$row['lce_product_code'], $params['carrier']->id);
   }
 
   //===============
@@ -215,7 +222,7 @@ class LowCostExpress extends CarrierModule
       $dimension->length = (int)Tools::getValue('dim'.$i.'_length');
       $dimension->width = (int)Tools::getValue('dim'.$i.'_width');
       $dimension->height = (int)Tools::getValue('dim'.$i.'_height');
-      $dimension->weight_to = (int)Tools::getValue('dim'.$i.'_weight');
+      $dimension->weight_to = (float)Tools::getValue('dim'.$i.'_weight');
       if ($i == 1) {
         $dimension->weight_from = 0;
       } else {
@@ -244,12 +251,21 @@ class LowCostExpress extends CarrierModule
         if (!Configuration::get('LCE_'.$product_code)) {
           $product_exists = false;
         } else {
-          $c = new Carrier(Configuration::get('LCE_'.$product_code));
-          if ($c->deleted) {
-            $product_exists = false;
+          // Attempting to get the carrier directly via SQL, by module, product code, and existing flag (deleted = 0)
+          $sql = 'SELECT `id_carrier` FROM '._DB_PREFIX_.'carrier WHERE (`external_module_name` = "lowcostexpress" AND `lce_product_code` = "'.$product_code.'" AND `deleted` = 0)';
+          if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql)) {
+            if ((int)$row['id_carrier'] > 0)
+              $product_exists = true;
           } else {
-            $product_exists = true;
+            $product_exists = false;
           }
+        
+          //~ $c = new Carrier(Configuration::get('LCE_'.$product_code));
+          //~ if ($c->deleted) {
+            //~ $product_exists = false;
+          //~ } else {
+            //~ $product_exists = true;
+          //~ }
         }
         
         // If the carrier is not yet registered, we add it
