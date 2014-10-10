@@ -209,6 +209,8 @@ class AdminShipmentController extends ModuleAdminController
                               'name' => 'name'
                             )
                           ),
+                    array('type' => 'text', 'label' => $this->l('Contact phone:'), 'name' => 'shipper_phone', 'size' => 40, 'required' => true),
+                    array('type' => 'text', 'label' => $this->l('Contact email:'), 'name' => 'shipper_email', 'size' => 40, 'required' => false),
 
                     array('type' => 'html',
                           'name' => "<hr/>"
@@ -238,7 +240,9 @@ class AdminShipmentController extends ModuleAdminController
                               'id' => 'country_code',
                               'name' => 'name'
                             )
-                          )
+                          ),
+                    array('type' => 'text', 'label' => $this->l('Contact phone:'), 'name' => 'recipient_phone', 'size' => 40, 'required' => true),
+                    array('type' => 'text', 'label' => $this->l('Contact email:'), 'name' => 'recipient_email', 'size' => 40, 'required' => false)
             ),
             'submit' => array(
                     'title' => $this->l('Save'),
@@ -293,6 +297,12 @@ class AdminShipmentController extends ModuleAdminController
       
       $country = new Country((int)$delivery_address->id_country);
       $this->fields_value['recipient_country'] = $country->iso_code;
+      
+      $recipient_phone = (!empty($delivery_address->phone_mobile) ? $delivery_address->phone_mobile : $delivery_address->phone);
+      $this->fields_value['recipient_phone'] = $recipient_phone;
+      
+      $this->fields_value['recipient_email'] = $customer->email;
+      
     }
 
     return parent::renderForm();
