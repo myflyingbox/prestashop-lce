@@ -27,6 +27,7 @@ class AdminParcelController extends ModuleAdminController
   public function renderForm()
   {
     $countries = array();
+    $countries[0] = array('country_code' => '', 'name' => '-');
     foreach(Country::getCountries($this->context->language->id) as $key => $c) {
       $countries[$c['iso_code']] = array('country_code' => $c['iso_code'], 'name' => $c['name']);
     }
