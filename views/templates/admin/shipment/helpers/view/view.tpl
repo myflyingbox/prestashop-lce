@@ -223,10 +223,10 @@ $(function() {
     autoOpen: false,
     modal: true,
     width: '65%',
-    maxHeight: 500,
+    height: $(window).height()-225,
     dialogClass: 'lce-modal',
     position: { my: "center top",
-                at: "center+100 top+100",
+                at: "center+100 top+125",
                 of: window,
                 collision: "none"
                 }
@@ -276,10 +276,10 @@ $(function() {
     autoOpen: false,
     modal: true,
     width: '65%',
-    maxHeight: 500,
+    height: $(window).height()-225,
     dialogClass: 'lce-modal',
     position: { my: "top",
-                at: "center+100 top+100",
+                at: "center+100 top+125",
                 of: window,
                 collision: "none"
                 }
@@ -332,7 +332,7 @@ $(function() {
       width: '65%',
       modal: true,
       position: { my: "top",
-                  at: "center+100 top+100",
+                  at: "center+100 top+125",
                   of: window,
                   collision: "none"
                   },
