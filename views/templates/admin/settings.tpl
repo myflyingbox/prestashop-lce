@@ -1,15 +1,39 @@
-{$message}
+{*
+* 2016 MyFlyingBox
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the Academic Free License (AFL 3.0)
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://opensource.org/licenses/afl-3.0.php
+* If you did not receive a copy of the license and are unable to
+* obtain it through the world-wide-web, please send an email
+* to contact@myflyingbox.com so we can send you a copy immediately.
+*
+* DISCLAIMER
+*
+* Do not edit or add to this file if you wish to upgrade your module to newer
+* versions in the future.
+*
+*  @author MyFlyingBox <contact@myflyingbox.com>
+*  @copyright	2016 MyFlyingBox
+*  @version		1.0
+*  @license		http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+*}
+
+{html_entity_decode($message|escape:'htmlall':'UTF-8')}
 <fieldset>
   <legend>{l s='Settings' mod='lowcostexpress'}</legend>
   <form method="post">
     <p>
       <label for="MOD_LCE_API_LOGIN">{l s='Your LCE login:' mod='lowcostexpress'}</label>
-      <input id="MOD_LCE_API_LOGIN" name="MOD_LCE_API_LOGIN" type="text" value="{$MOD_LCE_API_LOGIN}" />
+      <input id="MOD_LCE_API_LOGIN" name="MOD_LCE_API_LOGIN" type="text" value="{$MOD_LCE_API_LOGIN|escape:'htmlall':'UTF-8'}" />
       <sup>*</sup>
     </p>
     <p>
       <label for="MOD_LCE_API_PASSWORD">{l s='Your LCE password:' mod='lowcostexpress'}</label>
-      <input id="MOD_LCE_API_PASSWORD" name="MOD_LCE_API_PASSWORD" type="text" value="{$MOD_LCE_API_PASSWORD}" />
+      <input id="MOD_LCE_API_PASSWORD" name="MOD_LCE_API_PASSWORD" type="text" value="{$MOD_LCE_API_PASSWORD|escape:'htmlall':'UTF-8'}" />
       <sup>*</sup>
     </p>
       <label for="MOD_LCE_API_ENV">{l s='API Environment:' mod='lowcostexpress'}</label>
@@ -26,80 +50,80 @@
 
     <p>
       <label for="MOD_LCE_DEFAULT_SHIPPER_NAME">{l s='Shipper name (contact name):' mod='lowcostexpress'}</label>
-      <input id="MOD_LCE_DEFAULT_SHIPPER_NAME" name="MOD_LCE_DEFAULT_SHIPPER_NAME" type="text" value="{$MOD_LCE_DEFAULT_SHIPPER_NAME}" />
+      <input id="MOD_LCE_DEFAULT_SHIPPER_NAME" name="MOD_LCE_DEFAULT_SHIPPER_NAME" type="text" value="{$MOD_LCE_DEFAULT_SHIPPER_NAME|escape:'htmlall':'UTF-8'}" />
       <sup>*</sup>
     </p>
     
     <p>
       <label for="MOD_LCE_DEFAULT_SHIPPER_COMPANY">{l s='Shipper company (your shop):' mod='lowcostexpress'}</label>
-      <input id="MOD_LCE_DEFAULT_SHIPPER_COMPANY" name="MOD_LCE_DEFAULT_SHIPPER_COMPANY" type="text" value="{$MOD_LCE_DEFAULT_SHIPPER_COMPANY}" />
+      <input id="MOD_LCE_DEFAULT_SHIPPER_COMPANY" name="MOD_LCE_DEFAULT_SHIPPER_COMPANY" type="text" value="{$MOD_LCE_DEFAULT_SHIPPER_COMPANY|escape:'htmlall':'UTF-8'}" />
       <sup>*</sup>
     </p>
     <p>
       <label for="MOD_LCE_DEFAULT_STREET">{l s='Shipment pickup address:' mod='lowcostexpress'}</label>
-      <textarea id="MOD_LCE_DEFAULT_STREET" name="MOD_LCE_DEFAULT_STREET">{$MOD_LCE_DEFAULT_STREET}</textarea>
+      <textarea id="MOD_LCE_DEFAULT_STREET" name="MOD_LCE_DEFAULT_STREET">{$MOD_LCE_DEFAULT_STREET|escape:'htmlall':'UTF-8'}</textarea>
       <sup>*</sup>
     </p>
     <p>
       <label for="MOD_LCE_DEFAULT_CITY">{l s='City:' mod='lowcostexpress'}</label>
-      <input id="MOD_LCE_DEFAULT_CITY" name="MOD_LCE_DEFAULT_CITY" type="text" value="{$MOD_LCE_DEFAULT_CITY}" />
+      <input id="MOD_LCE_DEFAULT_CITY" name="MOD_LCE_DEFAULT_CITY" type="text" value="{$MOD_LCE_DEFAULT_CITY|escape:'htmlall':'UTF-8'}" />
       <sup>*</sup>
     </p>
     <p>
       <label for="MOD_LCE_DEFAULT_STATE">{l s='State:' mod='lowcostexpress'}</label>
-      <input id="MOD_LCE_DEFAULT_STATE" name="MOD_LCE_DEFAULT_STATE" type="text" value="{$MOD_LCE_DEFAULT_STATE}" />
+      <input id="MOD_LCE_DEFAULT_STATE" name="MOD_LCE_DEFAULT_STATE" type="text" value="{$MOD_LCE_DEFAULT_STATE|escape:'htmlall':'UTF-8'}" />
     </p>
     <p>
       <label for="MOD_LCE_DEFAULT_POSTAL_CODE">{l s='Postal code:' mod='lowcostexpress'}</label>
-      <input id="MOD_LCE_DEFAULT_POSTAL_CODE" name="MOD_LCE_DEFAULT_POSTAL_CODE" type="text" value="{$MOD_LCE_DEFAULT_POSTAL_CODE}" />
+      <input id="MOD_LCE_DEFAULT_POSTAL_CODE" name="MOD_LCE_DEFAULT_POSTAL_CODE" type="text" value="{$MOD_LCE_DEFAULT_POSTAL_CODE|escape:'htmlall':'UTF-8'}" />
       <sup>*</sup>
     </p>
     <p>
       <label for="MOD_LCE_DEFAULT_COUNTRY">{l s='Country:' mod='lowcostexpress'}</label>
       <select id="MOD_LCE_DEFAULT_COUNTRY" name="MOD_LCE_DEFAULT_COUNTRY">
         {foreach $countries item=country}
-          <option value="{$country['iso_code']}"{if $country['iso_code'] eq $MOD_LCE_DEFAULT_COUNTRY} selected="selected"{/if}>{$country['name']}</option>
+          <option value="{$country['iso_code']|escape:'htmlall':'UTF-8'}"{if $country['iso_code'] eq $MOD_LCE_DEFAULT_COUNTRY|escape:'htmlall':'UTF-8'} selected="selected"{/if}>{$country['name']|escape:'htmlall':'UTF-8'}</option>
         {/foreach}
       </select>
       <sup>*</sup>
     </p>
     <p>
       <label for="MOD_LCE_DEFAULT_PHONE">{l s='Contact phone:' mod='lowcostexpress'}</label>
-      <input id="MOD_LCE_DEFAULT_PHONE" name="MOD_LCE_DEFAULT_PHONE" type="text" value="{$MOD_LCE_DEFAULT_PHONE}" />
+      <input id="MOD_LCE_DEFAULT_PHONE" name="MOD_LCE_DEFAULT_PHONE" type="text" value="{$MOD_LCE_DEFAULT_PHONE|escape:'htmlall':'UTF-8'}" />
       <sup>*</sup>
     </p>
     <p>
       <label for="MOD_LCE_DEFAULT_EMAIL">{l s='Contact email:' mod='lowcostexpress'}</label>
-      <input id="MOD_LCE_DEFAULT_EMAIL" name="MOD_LCE_DEFAULT_EMAIL" type="text" value="{$MOD_LCE_DEFAULT_EMAIL}" />
+      <input id="MOD_LCE_DEFAULT_EMAIL" name="MOD_LCE_DEFAULT_EMAIL" type="text" value="{$MOD_LCE_DEFAULT_EMAIL|escape:'htmlall':'UTF-8'}" />
       <sup>*</sup>
     </p>
 
     <p>
       <label>&nbsp;</label>
-      <input id="submit_{$module_name}" name="submit_{$module_name}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="button" />
+      <input id="submit_{$module_name|escape:'htmlall':'UTF-8'}" name="submit_{$module_name|escape:'htmlall':'UTF-8'}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="button" />
     </p>
 </fieldset>
 
 <br/>
 <fieldset>
   <legend>{l s='Price calculation' mod='lowcostexpress'}</legend>
-    <p>{l s="The following settings are used to calculate the price displayed to the customer. It is useful only if you directly propose the LCE Carrier products to your customers. The calculation is always applied to the total price, including all applicable taxes. All settings are optional, and additive, in the same order; so you can first apply a proportional surchage of 5%, then add 2€ to the result and finally round the resulting price to the next upper integer." mod='lowcostexpress'}</p>
+    <p>{l s='The following settings are used to calculate the price displayed to the customer. It is useful only if you directly propose the LCE Carrier products to your customers. The calculation is always applied to the total price, including all applicable taxes. All settings are optional, and additive, in the same order; so you can first apply a proportional surchage of 5%, then add 2€ to the result and finally round the resulting price to the next upper integer.' mod='lowcostexpress'}</p>
 
     <label for="MOD_LCE_PRICE_SURCHARGE_PERCENT">{l s='Price surchage (percent of base price):' mod='lowcostexpress'}</label>
     <div class='margin-form'>
-      <input id="MOD_LCE_PRICE_SURCHARGE_PERCENT" name="MOD_LCE_PRICE_SURCHARGE_PERCENT" type="text" value="{$MOD_LCE_PRICE_SURCHARGE_PERCENT}" />
+      <input id="MOD_LCE_PRICE_SURCHARGE_PERCENT" name="MOD_LCE_PRICE_SURCHARGE_PERCENT" type="text" value="{$MOD_LCE_PRICE_SURCHARGE_PERCENT|escape:'htmlall':'UTF-8'}" />
       <p class='preference_description'>{l s='A value of 20 will inscrease the price by 20%, a value of 100 will double the price.' mod='lowcostexpress'}</p>
     </div>
 
     <label for="MOD_LCE_PRICE_SURCHARGE_STATIC">{l s='Price surchage (in cents):' mod='lowcostexpress'}</label>
     <div class='margin-form'>
-      <input id="MOD_LCE_PRICE_SURCHARGE_STATIC" name="MOD_LCE_PRICE_SURCHARGE_STATIC" type="text" value="{$MOD_LCE_PRICE_SURCHARGE_STATIC}" />
+      <input id="MOD_LCE_PRICE_SURCHARGE_STATIC" name="MOD_LCE_PRICE_SURCHARGE_STATIC" type="text" value="{$MOD_LCE_PRICE_SURCHARGE_STATIC|escape:'htmlall':'UTF-8'}" />
       <p class='preference_description'>{l s='IN CENTS! If you want to add 5€ to all LCE prices, then write 500.' mod='lowcostexpress'}</p>
     </div>
     
     <label for="MOD_LCE_PRICE_ROUND_INCREMENT">{l s='Increment for price rounding:' mod='lowcostexpress'}</label>
     <div class='margin-form'>
-      <input id="MOD_LCE_PRICE_ROUND_INCREMENT" name="MOD_LCE_PRICE_ROUND_INCREMENT" type="text" value="{$MOD_LCE_PRICE_ROUND_INCREMENT}" />
+      <input id="MOD_LCE_PRICE_ROUND_INCREMENT" name="MOD_LCE_PRICE_ROUND_INCREMENT" type="text" value="{$MOD_LCE_PRICE_ROUND_INCREMENT|escape:'htmlall':'UTF-8'}" />
       <p class='preference_description'>{l s='IN CENTS! e.g. 20 will round 13.33 to 13.40, 100 will round 15.13 to 16.00.' mod='lowcostexpress'}</p>
     </div>
     
@@ -111,7 +135,7 @@
     
     <p>
       <label>&nbsp;</label>
-      <input id="submit_{$module_name}" name="submit_{$module_name}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="button" />
+      <input id="submit_{$module_name|escape:'htmlall':'UTF-8'}" name="submit_{$module_name|escape:'htmlall':'UTF-8'}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="button" />
     </p>
 
 </fieldset>
@@ -136,19 +160,19 @@
     {foreach from=$dimensions item=d}
       <tr>
         <td>
-          {$d->id}
+          {$d->id|escape:'htmlall':'UTF-8'}
         </td>
         <td>
-          <input id="dim{$d->id}_weight" name="dim{$d->id}_weight" type="text" size="10" value="{$d->weight_to}" />
+          <input id="dim{$d->id|escape:'htmlall':'UTF-8'}_weight" name="dim{$d->id|escape:'htmlall':'UTF-8'}_weight" type="text" size="10" value="{$d->weight_to|escape:'htmlall':'UTF-8'}" />
         </td>
         <td>
-          <input id="dim{$d->id}_length" name="dim{$d->id}_length" type="text" size="10" value="{$d->length}" />
+          <input id="dim{$d->id|escape:'htmlall':'UTF-8'}_length" name="dim{$d->id|escape:'htmlall':'UTF-8'}_length" type="text" size="10" value="{$d->length|escape:'htmlall':'UTF-8'}" />
         </td>
         <td>
-          <input id="dim{$d->id}_width" name="dim{$d->id}_width" type="text" size="10" value="{$d->width}" />
+          <input id="dim{$d->id|escape:'htmlall':'UTF-8'}_width" name="dim{$d->id|escape:'htmlall':'UTF-8'}_width" type="text" size="10" value="{$d->width|escape:'htmlall':'UTF-8'}" />
         </td>
         <td>
-          <input id="dim{$d->id}_height" name="dim{$d->id}_height" type="text" size="10" value="{$d->height}" />
+          <input id="dim{$d->id|escape:'htmlall':'UTF-8'}_height" name="dim{$d->id|escape:'htmlall':'UTF-8'}_height" type="text" size="10" value="{$d->height|escape:'htmlall':'UTF-8'}" />
         </td>
       </tr>
     {/foreach}
@@ -156,7 +180,7 @@
   </table>  
   <p>
     <label>&nbsp;</label>
-    <input id="submit_{$module_name}" name="submit_{$module_name}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="button" />
+    <input id="submit_{$module_name|escape:'htmlall':'UTF-8'}" name="submit_{$module_name|escape:'htmlall':'UTF-8'}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="button" />
   </p>
   </form>
 </fieldset>
@@ -182,8 +206,8 @@
     <tbody>
     {foreach from=$carriers key=k item=c}
       <tr>
-        <td>{$c->id}</td>
-        <td>{$c->name}</td>
+        <td>{$c->id|escape:'htmlall':'UTF-8'}</td>
+        <td>{$c->name|escape:'htmlall':'UTF-8'}</td>
       </tr>
     {/foreach}
     </tbody>
@@ -194,7 +218,7 @@
       <label for="shipper_country">{l s='From which country do you ship your goods:' mod='lowcostexpress'}</label>
       <select id="shipper_country" name="shipper_country">
         {foreach $countries item=country}
-          <option value="{$country['iso_code']}"{if $country['iso_code'] eq $MOD_LCE_DEFAULT_COUNTRY} selected="selected"{/if}>{$country['name']}</option>
+          <option value="{$country['iso_code']|escape:'htmlall':'UTF-8'}"{if $country['iso_code'] eq $MOD_LCE_DEFAULT_COUNTRY|escape:'htmlall':'UTF-8'} selected="selected"{/if}>{$country['name']|escape:'htmlall':'UTF-8'}</option>
         {/foreach}
       </select>
     <p>
@@ -202,7 +226,7 @@
     
     <p>
       <label>&nbsp;</label>
-      <input id="submit_{$module_name}_refresh_products" name="submit_{$module_name}_refresh_products" type="submit" value="{l s='Initialize/refresh products' mod='lowcostexpress'}" class="button" />
+      <input id="submit_{$module_name|escape:'htmlall':'UTF-8'}_refresh_products" name="submit_{$module_name|escape:'htmlall':'UTF-8'}_refresh_products" type="submit" value="{l s='Initialize/refresh products' mod='lowcostexpress'}" class="button" />
     </p>
   </form>
 </fieldset>

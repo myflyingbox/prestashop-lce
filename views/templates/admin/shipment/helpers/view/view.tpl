@@ -1,6 +1,30 @@
+{*
+* 2016 MyFlyingBox
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the Academic Free License (AFL 3.0)
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://opensource.org/licenses/afl-3.0.php
+* If you did not receive a copy of the license and are unable to
+* obtain it through the world-wide-web, please send an email
+* to contact@myflyingbox.com so we can send you a copy immediately.
+*
+* DISCLAIMER
+*
+* Do not edit or add to this file if you wish to upgrade your module to newer
+* versions in the future.
+*
+*  @author MyFlyingBox <contact@myflyingbox.com>
+*  @copyright	2016 MyFlyingBox
+*  @version		1.0
+*  @license		http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+*}
+
 {block name="override_tpl"}
 
-<h2>{l s='LCE shipment for order:' mod='lowcostexpress'} {$order->reference}</h2>
+<h2>{l s='LCE shipment for order:' mod='lowcostexpress'} {$order->reference|escape:'htmlall':'UTF-8'}</h2>
 
 <a href="{$link_order|escape:'htmlall':'UTF-8'}"><img src="../img/admin/arrow-left.png" alt="{l s='Back to order' mod='lowcostexpress'}" /> {l s='Back to order' mod='lowcostexpress'} </a>
 {if $shipment->api_order_uuid eq false}
@@ -12,13 +36,13 @@
     <!-- Tracking -->
     {if $shipment->api_order_uuid}
       <fieldset>
-        <legend><img src="../img/admin/delivery.gif" alt="{l s='Tracking'}" />{l s='Tracking for all packages' mod='lowcostexpress'}</legend>
+        <legend><img src="../img/admin/delivery.gif" alt="{l s='Tracking' mod='lowcostexpress'}" />{l s='Tracking for all packages' mod='lowcostexpress'}</legend>
         {foreach $shipment->trackingStatus() item=events key=num}
           <div style="width: 49%; float:left;">
             <table class='table'>
               <thead>
                 <tr>
-                  <th colspan=3>{l s='Package #' mod='lowcostexpress'}{$num+1}</th>
+                  <th colspan=3>{l s='Package #' mod='lowcostexpress'}{$num+1|escape:'htmlall':'UTF-8'}</th>
                 </tr>
                 <tr>
                   <th>{l s='Event date' mod='lowcostexpress'}</th>
@@ -29,9 +53,9 @@
               <tbody>
               {foreach $events item=event}
                 <tr>
-                  <td>{$event['date']|date_format:"%Y-%m-%d %H:%M"}</td>
-                  <td>{$event['label']}</td>
-                  <td>{$event['location']}</td>
+                  <td>{$event['date']|date_format:"%Y-%m-%d %H:%M"|escape:'htmlall':'UTF-8'}</td>
+                  <td>{$event['label']|escape:'htmlall':'UTF-8'}</td>
+                  <td>{$event['location']|escape:'htmlall':'UTF-8'}</td>
                 </tr>
               {/foreach}
               </tbody>
@@ -47,13 +71,13 @@
       <!-- Invoice address -->
       <fieldset>
         <legend><img src="../img/admin/invoice.gif" alt="{l s='Delivery address' mod='lowcostexpress'}" />{l s='Delivery address' mod='lowcostexpress'}</legend>
-          <p><b>{$shipment->recipient_name}</b></p>
+          <p><b>{$shipment->recipient_name|escape:'htmlall':'UTF-8'}</b></p>
           <p>
-          {$shipment->recipient_street|nl2br}
+          {$shipment->recipient_street|nl2br|escape:'htmlall':'UTF-8'}
           <br/>
-          {$shipment->recipient_postal_code} {$shipment->recipient_city}
+          {$shipment->recipient_postal_code|escape:'htmlall':'UTF-8'} {$shipment->recipient_city|escape:'htmlall':'UTF-8'}
           <br/>
-          {$recipient_country}
+          {$recipient_country|escape:'htmlall':'UTF-8'}
           </p>
       </fieldset>
     </div>
@@ -61,13 +85,13 @@
         <!-- Shipper address -->
         <fieldset>
           <legend><img src="../img/admin/delivery.gif" alt="{l s='Pickup/shipper address' mod='lowcostexpress'}" />{l s='Pickup/shipper address' mod='lowcostexpress'}</legend>
-          <p><b>{$shipment->shipper_name}</b></p>
+          <p><b>{$shipment->shipper_name|escape:'htmlall':'UTF-8'}</b></p>
           <p>
-          {$shipment->shipper_street|nl2br}
+          {$shipment->shipper_street|nl2br|escape:'htmlall':'UTF-8'}
           <br/>
-          {$shipment->shipper_postal_code} {$shipment->shipper_city}
+          {$shipment->shipper_postal_code|escape:'htmlall':'UTF-8'} {$shipment->shipper_city|escape:'htmlall':'UTF-8'}
           <br/>
-          {$shipper_country}
+          {$shipper_country|escape:'htmlall':'UTF-8'}
           </p>
         </fieldset>
       </div>
@@ -80,7 +104,7 @@
     <legend>{l s='Packages to ship' mod='lowcostexpress'}</legend>
     
     {if $shipment->api_order_uuid eq false}
-      <a id="add-package" href="{$link_load_package_form}"><img src="../img/admin/add.gif" alt="{l s='Add package' mod='lowcostexpress'}" /> {l s='Add package' mod='lowcostexpress'}</a>
+      <a id="add-package" href="{$link_load_package_form|escape:'htmlall':'UTF-8'}"><img src="../img/admin/add.gif" alt="{l s='Add package' mod='lowcostexpress'}" /> {l s='Add package' mod='lowcostexpress'}</a>
     {/if}
     
     <table id="pack-list" class="table">
@@ -101,31 +125,31 @@
         {foreach from=$parcels item=p}
           <tr>
             <td>
-              {$number}
+              {$number|escape:'htmlall':'UTF-8'}
               {assign var=number value=$number+1}
             </td>
             {if $shipment->api_order_uuid eq false}
             <td>
-              <a class="delete-parcel" href="{$link_delete_package}{$p->id}"><img src="../img/admin/delete.gif" alt="{l s='delete' mod='lowcostexpress'}" /></a>
-               <a class="edit-parcel" href="{$link_load_update_package_form}{$p->id}"><img src="../img/admin/edit.gif" alt="{l s='edit' mod='lowcostexpress'}" /></a>
+              <a class="delete-parcel" href="{$link_delete_package|escape:'htmlall':'UTF-8'}{$p->id|escape:'htmlall':'UTF-8'}"><img src="../img/admin/delete.gif" alt="{l s='delete' mod='lowcostexpress'}" /></a>
+               <a class="edit-parcel" href="{$link_load_update_package_form|escape:'htmlall':'UTF-8'}{$p->id|escape:'htmlall':'UTF-8'}"><img src="../img/admin/edit.gif" alt="{l s='edit' mod='lowcostexpress'}" /></a>
             </td>
             {/if}
-            <td>{$p->length} x {$p->width} x {$p->height} cm, {$p->weight} kg</td>
+            <td>{$p->length|escape:'htmlall':'UTF-8'} x {$p->width|escape:'htmlall':'UTF-8'} x {$p->height|escape:'htmlall':'UTF-8'} cm, {$p->weight|escape:'htmlall':'UTF-8'} kg</td>
             <td>
               {if $p->value > 0}
-                {$p->value} {$p->currency}
+                {$p->value|escape:'htmlall':'UTF-8'} {$p->currency|escape:'htmlall':'UTF-8'}
               {/if}    
             </td>
-            <td>{$p->description}</td>
+            <td>{$p->description|escape:'htmlall':'UTF-8'}</td>
             <td>
               {if $p->shipper_reference != ''}
-                {l s='ref shipper:' mod='lowcostexpress'} {$p->shipper_reference}
+                {l s='ref shipper:' mod='lowcostexpress'} {$p->shipper_reference|escape:'htmlall':'UTF-8'}
               {/if}
               {if $p->recipient_reference != ''}
-              <br/>{l s='ref recipient:' mod='lowcostexpress'} {$p->recipient_reference}
+              <br/>{l s='ref recipient:' mod='lowcostexpress'} {$p->recipient_reference|escape:'htmlall':'UTF-8'}
               {/if}
               {if $p->customer_reference != ''}
-                <br/>{l s='ref customer:' mod='lowcostexpress'} {$p->customer_reference}
+                <br/>{l s='ref customer:' mod='lowcostexpress'} {$p->customer_reference|escape:'htmlall':'UTF-8'}
               {/if}
             </td>
           </tr>
@@ -144,9 +168,9 @@
         {l s='You must add parcels in order to access transport offers.' mod='lowcostexpress'}
       {else}
         {if $shipment->api_order_uuid eq false}
-          <a id="select-lce-offer" href="{$link_load_lce_offers}"><img src="../img/admin/search.gif" alt="{l s='Search LCE offer' mod='lowcostexpress'}" />{l s='Search a carrier offer' mod='lowcostexpress'}</a>
+          <a id="select-lce-offer" href="{$link_load_lce_offers|escape:'htmlall':'UTF-8'}"><img src="../img/admin/search.gif" alt="{l s='Search LCE offer' mod='lowcostexpress'}" />{l s='Search a carrier offer' mod='lowcostexpress'}</a>
         {else}
-          <a id="download-labels" href="{$link_download_labels}"><img src="../img/admin/pdf.gif" alt="{l s='Download labels' mod='lowcostexpress'}" /> {l s='Download labels' mod='lowcostexpress'}</a>
+          <a id="download-labels" href="{$link_download_labels|escape:'htmlall':'UTF-8'}"><img src="../img/admin/pdf.gif" alt="{l s='Download labels' mod='lowcostexpress'}" /> {l s='Download labels' mod='lowcostexpress'}</a>
         {/if}
       {/if}
     </p>
@@ -162,34 +186,34 @@
         </thead>
         <tbody>
         <tr>
-          <td>{$offer->product_name}
-              <br/>{l s='Total price:' mod='lowcostexpress'} <b>{$offer->total_price}</b>
+          <td>{$offer->product_name|escape:'htmlall':'UTF-8'}
+              <br/>{l s='Total price:' mod='lowcostexpress'} <b>{$offer->total_price|escape:'htmlall':'UTF-8'}</b>
           </td>
           
           <td>
-            {$offer->collection_informations|nl2br}
+            {$offer->collection_informations|nl2br|escape:'htmlall':'UTF-8'}
           </td>
 
           <td>
-            {$offer->delivery_informations|nl2br}
+            {$offer->delivery_informations|nl2br|escape:'htmlall':'UTF-8'}
           </td>
 
           <td>
-            {$offer->product_details|nl2br}
+            {$offer->product_details|nl2br|escape:'htmlall':'UTF-8'}
           </td>
         </tr>
         </tbody>
       </table>
       {if $shipment->api_order_uuid eq false}
         <form id="book-offer">
-          <input type='hidden' name='offer_uuid' value='{$offer->id}'>
+          <input type='hidden' name='offer_uuid' value='{$offer->id|escape:'htmlall':'UTF-8'}'>
           {if $collection_dates neq false}
           <p>
             <label for="collection_date">{l s='Preferred pickup date:' mod='lowcostexpress'}</label>
             <div class='margin-form'>
               <select id="collection_date" name="collection_date">
                 {foreach $collection_dates item=pickup_date}
-                  <option value="{$pickup_date}">{$pickup_date}</option>
+                  <option value="{$pickup_date|escape:'htmlall':'UTF-8'}">{$pickup_date|escape:'htmlall':'UTF-8'}</option>
                 {/foreach}
               </select>
               <sup>*</sup>
@@ -246,7 +270,7 @@ $(function() {
         e.preventDefault();
         $.ajax({
             type: 'POST',
-            url: '{$link_save_package_form}',
+            url: '{html_entity_decode($link_save_package_form|escape:'htmlall':'UTF-8')}',
             data: $(this).serialize(),
             success: function(json) {
               location.reload();
@@ -295,7 +319,7 @@ $(function() {
         e.preventDefault();
         $.ajax({
             type: 'POST',
-            url: '{$link_save_offer_form}',
+            url: '{$link_save_offer_form|escape:'htmlall':'UTF-8'}',
             data: $(this).serialize(),
             success: function(json) {
               location.reload();
@@ -314,7 +338,7 @@ $(function() {
     e.preventDefault();
     $.ajax({
       type: 'POST',
-      url: '{$link_book_offer_form}',
+      url: '{$link_book_offer_form|escape:'htmlall':'UTF-8'}',
       data: $(this).serialize(),
       success: function(json) {
         location.reload();
