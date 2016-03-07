@@ -1,14 +1,12 @@
-Module Prestashop LowCostExpress
+Module Prestashop MY FLYING BOX
 ==============
 
-Module prestashop fournissant une interface pour les services web LCE (cf. https://lce.io), fournis par LOW COST EXPRESS (société française).
-
-IMPORTANT: il s'agit d'une version beta, à ne pas utiliser en production sauf si vous êtes en contact direct avec l'équipe de développement.
+Module prestashop fournissant une interface pour les services de transport expresse fournis par MY FLYING BOX (société française, voir http://www.myflyingbox.com).
 
 ## Présentation
 
 Ce module fournit deux ensembles de fonctionnalités indépendants :
-- la commande d'expéditions à travers l'API LCE par une interface back-office dédiée
+- la commande d'expéditions à travers l'API MY FLYING BOX par une interface back-office dédiée
 - le calcul automatisé des coûts de transport pour le panier d'un client, au moment de la commande
 
 ## Installation
@@ -19,7 +17,6 @@ Pour utiliser ce module, vous avez besoin de :
 - un compte LCE actif et les clés d'API correspondantes
 
 Ce module n'est pas compatible avec Prestashop 1.4.
-Il a été développé et testé sur Prestashop 1.5.6.2 et peut donc ne pas être compatible avec d'anciennes version de la série 1.5. Si c'est le cas, merci de nous le signaler.
 
 ### Installation à partir des sources
 
