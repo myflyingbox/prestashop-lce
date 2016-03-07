@@ -88,6 +88,7 @@ class LowCostExpress extends CarrierModule
         $this->displayName = $this->l('LowCostExpress Module');
         $this->description = $this->l('BETA VERSION. Provides integration of all features of the LCE API (http://lce.io), offering access to many carriers at great rates.');
         $this->ps_versions_compliancy = array('min' => '1.5', 'max' => '1.7');
+        $this->module_key = '5100c5ae613ddfacd4bc468aee7ee59e';
 
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module?');
 
