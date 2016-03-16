@@ -55,6 +55,10 @@ class AdminParcelController extends ModuleAdminController
         foreach (Country::getCountries($this->context->language->id) as $key => $c) {
             $countries[$c['iso_code']] = array('country_code' => $c['iso_code'], 'name' => $c['name']);
         }
+        $currencies = array(
+          'EUR' => array('currency_code' => 'EUR', 'name' => 'EUR'),
+          'USD' => array('currency_code' => 'USD', 'name' => 'USD')
+        );
 
         $this->multiple_fieldsets = true;
         $this->fields_form = array();
@@ -79,7 +83,16 @@ class AdminParcelController extends ModuleAdminController
                 ),
                 'input' => array(
                         array('type' => 'text', 'label' => $this->l('Value:'), 'name' => 'value', 'size' => 5, 'class' => 'fixed-width-sm', 'desc' => $this->l('Declared value of the content.')),
-                        array('type' => 'text', 'label' => $this->l('Currency:'), 'name' => 'currency', 'size' => 5, 'class' => 'fixed-width-sm', 'desc' => $this->l('Currency code for the value.')),
+                        array('type' => 'select',
+                              'label' => $this->l('Currency:'),
+                              'desc' => $this->l('Currency code for the value.'),
+                              'name' => 'currency',
+                              'options' => array(
+                                'query' => $currencies,
+                                'id' => 'currency_code',
+                                'name' => 'name'
+                              )
+                            ),
                         array('type' => 'text', 'label' => $this->l('Description:'), 'name' => 'description', 'size' => 40, 'class' => 'fixed-width-xl', 'desc' => $this->l('Description of the goods.')),
                         array(  'type' => 'select',
                                 'label' => $this->l('Country of origin:'),
