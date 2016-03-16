@@ -301,7 +301,7 @@ class AdminShipmentController extends ModuleAdminController
             $this->fields_value['shipper_phone'] = Configuration::get('MOD_LCE_DEFAULT_PHONE');
             $this->fields_value['shipper_email'] = Configuration::get('MOD_LCE_DEFAULT_EMAIL');
 
-            $this->fields_value['recipient_name'] = $customer->firstname.' '.$customer->lastname;
+            $this->fields_value['recipient_name'] = $delivery_address->firstname.' '.$delivery_address->lastname;
             if (!empty($delivery_address->company)) {
                 $this->fields_value['recipient_is_a_company'] = 1;
             }
