@@ -86,7 +86,7 @@ class AdminShipmentController extends ModuleAdminController
 
         $parcels = LceParcel::findAllForShipmentId($shipment->id_shipment);
         $order = new Order((int)$shipment->order_id);
-
+        $offer = false;
         if ($shipment->api_offer_uuid) {
             $offer = Lce\Resource\Offer::find($shipment->api_offer_uuid);
             $offer_data = new stdClass();
