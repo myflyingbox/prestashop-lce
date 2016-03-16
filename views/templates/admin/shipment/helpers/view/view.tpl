@@ -319,7 +319,7 @@ $(function() {
         e.preventDefault();
         $.ajax({
             type: 'POST',
-            url: '{$link_save_offer_form|escape:'htmlall':'UTF-8'}',
+            url: '{html_entity_decode($link_save_offer_form|escape:'htmlall':'UTF-8')}',
             data: $(this).serialize(),
             success: function(json) {
               location.reload();
@@ -338,7 +338,7 @@ $(function() {
     e.preventDefault();
     $.ajax({
       type: 'POST',
-      url: '{$link_book_offer_form|escape:'htmlall':'UTF-8'}',
+      url: '{html_entity_decode($link_book_offer_form|escape:'htmlall':'UTF-8')}',
       data: $(this).serialize(),
       success: function(json) {
         location.reload();
