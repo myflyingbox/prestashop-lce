@@ -425,7 +425,7 @@ class AdminShipmentController extends ModuleAdminController
         // Redirecting to Order view after saving the shipment
         if (parent::postProcess()) {
             Tools::redirectAdmin(
-              $this->context->link->getAdminLink('AdminShipment').'&viewlce_shipments&id_shipment='.$this->object->id
+                $this->context->link->getAdminLink('AdminShipment').'&viewlce_shipments&id_shipment='.$this->object->id
             );
         }
     }
