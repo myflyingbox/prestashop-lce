@@ -1,7 +1,5 @@
 <?php
 /**
- * 2016 MyFlyingBox.
- *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Academic Free License (AFL 3.0)
@@ -24,6 +22,7 @@
  *
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -38,7 +37,7 @@ require_once _PS_MODULE_DIR_.'lowcostexpress/models/LceQuote.php';
 require_once _PS_MODULE_DIR_.'lowcostexpress/models/LceOffer.php';
 require_once _PS_MODULE_DIR_.'lowcostexpress/models/LceDimension.php';
 
-class lowcostexpress extends CarrierModule
+class LowCostExpress extends CarrierModule
 {
     public static $settings = array('MOD_LCE_API_LOGIN',
         'MOD_LCE_API_PASSWORD',
@@ -85,8 +84,8 @@ class lowcostexpress extends CarrierModule
         parent::__construct();
 
         $this->displayName = $this->l('MY FLYING BOX Express Shipping');
-        $this->description = $this->l('Provides integration of all features of the MY FLYING BOX API '
-                                .'(http://www.myflyingbox.com), offering access to many carriers at great rates.');
+        $this->description = $this->l('Provides integration of all features of the MY FLYING BOX API
+                                        (http://www.myflyingbox.com), offering access to many carriers at great rates.');
         $this->ps_versions_compliancy = array('min' => '1.5', 'max' => '1.7');
         $this->module_key = '5100c5ae613ddfacd4bc468aee7ee59e';
 
@@ -106,9 +105,10 @@ class lowcostexpress extends CarrierModule
         }
 
         $api = Lce\Lce::configure(
-                          Configuration::get('MOD_LCE_API_LOGIN'),
-                          Configuration::get('MOD_LCE_API_PASSWORD'),
-                          $env);
+          Configuration::get('MOD_LCE_API_LOGIN'),
+          Configuration::get('MOD_LCE_API_PASSWORD'),
+          $env
+        );
         $api->application = 'prestashop-lce';
         $api->application_version = $this->version.' (PS '._PS_VERSION_.')';
     }
@@ -343,8 +343,11 @@ class lowcostexpress extends CarrierModule
                     foreach ($languages as $language) {
                         $iso_code = Tools::strtolower($language['iso_code']);
                         if (Tools::strlen($product->delivery_informations->$iso_code) > 0) {
-                            $carrier->delay[$language['id_lang']] = Tools::substr($product->delivery_informations
-                                                                                          ->$iso_code, 0, 128);
+                            $carrier->delay[$language['id_lang']] = Tools::substr(
+                              $product->delivery_informations->$iso_code,
+                              0,
+                              128
+                            );
                         }
                     }
                     if (sizeof($carrier->delay) == 0) {
@@ -365,9 +368,10 @@ class lowcostexpress extends CarrierModule
                         // Assign all groups to carrier
                         $groups = Group::getgroups(true);
                         foreach ($groups as $group) {
-                            Db::getInstance()->Execute('INSERT INTO '._DB_PREFIX_.'carrier_group
-                                                          VALUE (\''.(int) ($carrier->id).'\',\''.
-                                                            (int) ($group['id_group']).'\')');
+                            Db::getInstance()->Execute(
+                              'INSERT INTO '._DB_PREFIX_.'carrier_group
+                              VALUE (\''.(int) ($carrier->id).'\',\''.(int) ($group['id_group']).'\')'
+                            );
                         }
 
                         $rangePrice = new RangePrice();
@@ -389,7 +393,10 @@ class lowcostexpress extends CarrierModule
                         }
 
                         //copy logo
-                        copy(dirname(__FILE__).'/views/img/'.$product->logo.'.jpg', _PS_SHIP_IMG_DIR_.'/'.$carrier->id.'.jpg');
+                        copy(
+                          dirname(__FILE__).'/views/img/'.$product->logo.'.jpg',
+                          _PS_SHIP_IMG_DIR_.'/'.$carrier->id.'.jpg'
+                        );
                     }
                 }
             }

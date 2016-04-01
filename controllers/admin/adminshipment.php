@@ -24,6 +24,7 @@
 *
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 */
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -182,13 +183,13 @@ class AdminShipmentController extends ModuleAdminController
                                       '&viewlce_shipments&download_labels&id_shipment='.$shipment->id_shipment,
           'shipment' => $shipment,
           'shipper_country' => Country::getNameById(
-                                          (int) Context::getContext()->language->id,
-                                          Country::getByIso($shipment->shipper_country)
-                                        ),
+            (int) Context::getContext()->language->id,
+            Country::getByIso($shipment->shipper_country)
+          ),
           'recipient_country' => Country::getNameById(
-                                          (int) Context::getContext()->language->id,
-                                          Country::getByIso($shipment->recipient_country)
-                                        ),
+            (int) Context::getContext()->language->id,
+            Country::getByIso($shipment->recipient_country)
+          ),
         );
 
         return parent::renderView();
@@ -307,7 +308,8 @@ class AdminShipmentController extends ModuleAdminController
                                     ),
                                   'id' => 'id',
                                   'name' => 'name', ),
-                                'desc' => $this->l('Select if this address is a company address, as opposed to personal address.'), ),
+                                'desc' => $this->l('Select if this address is a company address, '.
+                                                    'as opposed to personal address.'), ),
                           array('type' => 'textarea',
                                   'label' => $this->l('Delivery address:'),
                                   'name' => 'recipient_street',
@@ -408,7 +410,8 @@ class AdminShipmentController extends ModuleAdminController
             $country = new Country((int) $delivery_address->id_country);
             $this->fields_value['recipient_country'] = $country->iso_code;
 
-            $recipient_phone = (!empty($delivery_address->phone_mobile) ? $delivery_address->phone_mobile : $delivery_address->phone);
+            $recipient_phone = (!empty($delivery_address->phone_mobile) ?
+              $delivery_address->phone_mobile : $delivery_address->phone);
             $this->fields_value['recipient_phone'] = $recipient_phone;
 
             $this->fields_value['recipient_email'] = $customer->email;
@@ -421,7 +424,8 @@ class AdminShipmentController extends ModuleAdminController
     {
         // Redirecting to Order view after saving the shipment
         if (parent::postProcess()) {
-            Tools::redirectAdmin($this->context->link->getAdminLink('AdminShipment').'&viewlce_shipments&id_shipment='.$this->object->id);
+            Tools::redirectAdmin($this->context
+              ->link->getAdminLink('AdminShipment').'&viewlce_shipments&id_shipment='.$this->object->id);
         }
     }
 
@@ -494,8 +498,9 @@ class AdminShipmentController extends ModuleAdminController
         // Using Ajax Layout
         $this->layout = 'layout-ajax.tpl';
         // Telling smarty to look for templates in our module path
-        $this->context->smarty->addTemplateDir(_PS_ROOT_DIR_.
-                                      '/modules/lowcostexpress/views/templates/admin/shipment/helpers/view');
+        $this->context->smarty->addTemplateDir(
+          _PS_ROOT_DIR_.'/modules/lowcostexpress/views/templates/admin/shipment/helpers/view'
+        );
         // Loading content from the specified template
         $this->content .= $this->context->smarty->fetch('lce_offers.tpl');
         // Calling the generic display method of AdminController

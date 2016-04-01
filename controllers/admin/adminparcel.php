@@ -1,7 +1,5 @@
 <?php
 /**
- * 2016 MyFlyingBox.
- *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Academic Free License (AFL 3.0)
@@ -24,6 +22,7 @@
  *
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -147,19 +146,25 @@ class AdminParcelController extends ModuleAdminController
                                 'name' => 'shipper_reference',
                                 'size' => 5,
                                 'class' => 'fixed-width-lg',
-                                'desc' => $this->l('Your reference. May be printed on the label, depending on the carrier.'), ),
+                                'desc' => $this->l('Your reference. May be printed on the label, '.
+                                                    ' depending on the carrier.'),
+                              ),
                         array('type' => 'text',
                                 'label' => $this->l('Recipient reference:'),
                                 'name' => 'recipient_reference',
                                 'size' => 5,
                                 'class' => 'fixed-width-lg',
-                                'desc' => $this->l('Recipient\'s reference may be printed on the label, depending on the carrier.'), ),
+                                'desc' => $this->l('Recipient\'s reference may be printed on the label, '.
+                                                    'depending on the carrier.'),
+                              ),
                         array('type' => 'text',
                                 'label' => $this->l('Customer reference:'),
                                 'name' => 'customer_reference',
                                 'size' => 5,
                                 'class' => 'fixed-width-lg',
-                                'desc' => $this->l('If your customer is not the recipient, specific reference for the customer.'), ),
+                                'desc' => $this->l('If your customer is not the recipient, '.
+                                                    'specific reference for the customer.'),
+                              ),
                 ),
                 'submit' => array(
                         'title' => $this->l('Save'),

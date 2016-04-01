@@ -1,7 +1,5 @@
 <?php
 /**
- * 2016 MyFlyingBox.
- *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Academic Free License (AFL 3.0)
@@ -24,6 +22,7 @@
  *
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
+
 class LceQuote extends ObjectModel
 {
     public $id_quote;
