@@ -1,6 +1,6 @@
 <?php
 /**
- * 2016 MyFlyingBox
+ * 2016 MyFlyingBox.
  *
  * NOTICE OF LICENSE
  *
@@ -19,45 +19,43 @@
  *
  * @author    MyFlyingBox <contact@myflyingbox.com>
  * @copyright 2016 MyFlyingBox
+ *
  * @version   1.0
+ *
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
 class AdminParcelController extends ModuleAdminController
 {
-
     /**
-    * Constructor
-    */
+     * Constructor.
+     */
     public function __construct()
     {
-  
         $this->bootstrap = true;
-      
+
         // The below attributes are used for many automatic naming conventions
-        $this->table     = 'lce_parcels'; // Table containing the records
-        $this->className  = 'LceParcel'; // Class of the object managed by this controller
+        $this->table = 'lce_parcels'; // Table containing the records
+        $this->className = 'LceParcel'; // Class of the object managed by this controller
         $this->context = Context::getContext();
         $this->identifier = 'id_parcel'; // The unique identifier column for the corresponding object
 
         parent::__construct();
-
     }
 
     public function renderForm()
     {
         $countries = array();
         $countries[0] = array('country_code' => '', 'name' => '-');
-        foreach (Country::getCountries($this->context->language->id) as $key => $c) {
+        foreach (Country::getCountries($this->context->language->id) as $c) {
             $countries[$c['iso_code']] = array('country_code' => $c['iso_code'], 'name' => $c['name']);
         }
         $currencies = array(
           'EUR' => array('currency_code' => 'EUR', 'name' => 'EUR'),
-          'USD' => array('currency_code' => 'USD', 'name' => 'USD')
+          'USD' => array('currency_code' => 'USD', 'name' => 'USD'),
         );
 
         $this->multiple_fieldsets = true;
@@ -65,24 +63,49 @@ class AdminParcelController extends ModuleAdminController
         $this->fields_form[] = array('form' => array(
                 'legend' => array(
                         'title' => $this->l('Dimensions'),
-                        'image' => '../img/admin/cog.gif'
+                        'image' => '../img/admin/cog.gif',
                 ),
                 'input' => array(
                         array('type' => 'hidden', 'name' => 'shipment_id'),
-                        array('type' => 'text', 'label' => $this->l('Length (cm):'), 'name' => 'length', 'size' => 5, 'class' => 'fixed-width-sm', 'required' => true),
-                        array('type' => 'text', 'label' => $this->l('Width (cm):'), 'name' => 'width', 'size' => 5, 'class' => 'fixed-width-sm', 'required' => true),
-                        array('type' => 'text', 'label' => $this->l('Height (cm):'), 'name' => 'height', 'size' => 5, 'class' => 'fixed-width-sm', 'required' => true),
-                        array('type' => 'text', 'label' => $this->l('Weight (kg):'), 'name' => 'weight', 'size' => 5, 'class' => 'fixed-width-sm', 'required' => true)
-                )
+                        array('type' => 'text',
+                               'label' => $this->l('Length (cm):'),
+                               'name' => 'length',
+                               'size' => 5,
+                               'class' => 'fixed-width-sm',
+                               'required' => true, ),
+                        array('type' => 'text',
+                                'label' => $this->l('Width (cm):'),
+                                'name' => 'width',
+                                'size' => 5,
+                                'class' => 'fixed-width-sm',
+                                'required' => true, ),
+                        array('type' => 'text',
+                                'label' => $this->l('Height (cm):'),
+                                'name' => 'height',
+                                'size' => 5,
+                                'class' => 'fixed-width-sm',
+                                'required' => true, ),
+                        array('type' => 'text',
+                                'label' => $this->l('Weight (kg):'),
+                                'name' => 'weight',
+                                'size' => 5,
+                                'class' => 'fixed-width-sm',
+                                'required' => true, ),
+                ),
               ));
 
         $this->fields_form[] = array('form' => array(
                 'legend' => array(
                         'title' => $this->l('Customs'),
-                        'image' => '../img/admin/cog.gif'
+                        'image' => '../img/admin/cog.gif',
                 ),
                 'input' => array(
-                        array('type' => 'text', 'label' => $this->l('Value:'), 'name' => 'value', 'size' => 5, 'class' => 'fixed-width-sm', 'desc' => $this->l('Declared value of the content.')),
+                        array('type' => 'text',
+                                'label' => $this->l('Value:'),
+                                'name' => 'value',
+                                'size' => 5,
+                                'class' => 'fixed-width-sm',
+                                'desc' => $this->l('Declared value of the content.'), ),
                         array('type' => 'select',
                               'label' => $this->l('Currency:'),
                               'desc' => $this->l('Currency code for the value.'),
@@ -90,40 +113,59 @@ class AdminParcelController extends ModuleAdminController
                               'options' => array(
                                 'query' => $currencies,
                                 'id' => 'currency_code',
-                                'name' => 'name'
-                              )
+                                'name' => 'name',
+                              ),
                             ),
-                        array('type' => 'text', 'label' => $this->l('Description:'), 'name' => 'description', 'size' => 40, 'class' => 'fixed-width-xl', 'desc' => $this->l('Description of the goods.')),
-                        array(  'type' => 'select',
+                        array('type' => 'text',
+                                'label' => $this->l('Description:'),
+                                'name' => 'description',
+                                'size' => 40,
+                                'class' => 'fixed-width-xl',
+                                'desc' => $this->l('Description of the goods.'), ),
+                        array('type' => 'select',
                                 'label' => $this->l('Country of origin:'),
                                 'desc' => $this->l('Country code of the origin of the products in the package.'),
                                 'name' => 'country_of_origin',
                                 'options' => array(
                                   'query' => $countries,
                                   'id' => 'country_code',
-                                  'name' => 'name'
-                                )
-                              )
+                                  'name' => 'name',
+                                ),
+                              ),
 
-                )
+                ),
               ));
 
         $this->fields_form[] = array('form' => array(
                 'legend' => array(
                         'title' => $this->l('References'),
-                        'image' => '../img/admin/cog.gif'
+                        'image' => '../img/admin/cog.gif',
                 ),
                 'input' => array(
-                        array('type' => 'text', 'label' => $this->l('Shipper reference:'), 'name' => 'shipper_reference', 'size' => 5, 'class' => 'fixed-width-lg', 'desc' => $this->l('Your reference. May be printed on the label, depending on the carrier.')),
-                        array('type' => 'text', 'label' => $this->l('Recipient reference:'), 'name' => 'recipient_reference', 'size' => 5, 'class' => 'fixed-width-lg', 'desc' => $this->l('Recipient\'s reference may be printed on the label, depending on the carrier.')),
-                        array('type' => 'text', 'label' => $this->l('Customer reference:'), 'name' => 'customer_reference', 'size' => 5, 'class' => 'fixed-width-lg', 'desc' => $this->l('If your customer is not the recipient, specific reference for the customer.')),
+                        array('type' => 'text',
+                                'label' => $this->l('Shipper reference:'),
+                                'name' => 'shipper_reference',
+                                'size' => 5,
+                                'class' => 'fixed-width-lg',
+                                'desc' => $this->l('Your reference. May be printed on the label, depending on the carrier.'), ),
+                        array('type' => 'text',
+                                'label' => $this->l('Recipient reference:'),
+                                'name' => 'recipient_reference',
+                                'size' => 5,
+                                'class' => 'fixed-width-lg',
+                                'desc' => $this->l('Recipient\'s reference may be printed on the label, depending on the carrier.'), ),
+                        array('type' => 'text',
+                                'label' => $this->l('Customer reference:'),
+                                'name' => 'customer_reference',
+                                'size' => 5,
+                                'class' => 'fixed-width-lg',
+                                'desc' => $this->l('If your customer is not the recipient, specific reference for the customer.'), ),
                 ),
                 'submit' => array(
                         'title' => $this->l('Save'),
-                        'class' => 'button'
-                )
+                        'class' => 'button',
+                ),
               ));
-
 
         // Loading object, if possible; returning empty object otherwise
         if (!($obj = $this->loadObject(true))) {
@@ -132,7 +174,7 @@ class AdminParcelController extends ModuleAdminController
 
         // If we have a new object, we initialize default values
         if (!$obj->id) {
-            $shipment = new LceShipment((int)Tools::getValue('id_shipment'));
+            $shipment = new LceShipment((int) Tools::getValue('id_shipment'));
             $this->fields_value['id_shipment'] = $shipment->id;
         }
 
@@ -140,24 +182,24 @@ class AdminParcelController extends ModuleAdminController
 
         return parent::renderForm();
     }
-  
+
     // Creating a new parcel, from parameters submitted in Ajax
     public function ajaxProcessSaveForm()
     {
-        if ((int)Tools::getValue('id_parcel') > 0) {
-            $parcel = new LceParcel((int)Tools::getValue('id_parcel'));
+        if ((int) Tools::getValue('id_parcel') > 0) {
+            $parcel = new LceParcel((int) Tools::getValue('id_parcel'));
         } else {
             $parcel = new LceParcel();
         }
 
-        $shipment = new LceShipment((int)Tools::getValue('id_shipment'));
+        $shipment = new LceShipment((int) Tools::getValue('id_shipment'));
 
         $parcel->id_shipment = $shipment->id;
         // Dimensions
-        $parcel->length = (int)Tools::getValue('length');
-        $parcel->width = (int)Tools::getValue('width');
-        $parcel->height = (int)Tools::getValue('height');
-        $parcel->weight = (float)Tools::getValue('weight');
+        $parcel->length = (int) Tools::getValue('length');
+        $parcel->width = (int) Tools::getValue('width');
+        $parcel->height = (int) Tools::getValue('height');
+        $parcel->weight = (float) Tools::getValue('weight');
         // References
         $parcel->shipper_reference = Tools::getValue('shipper_reference');
         $parcel->recipient_reference = Tools::getValue('recipient_reference');
@@ -167,18 +209,18 @@ class AdminParcelController extends ModuleAdminController
         $parcel->currency = Tools::getValue('currency');
         $parcel->description = Tools::getValue('description');
         $parcel->country_of_origin = Tools::getValue('country_of_origin');
-    
+
         if ($parcel->id) {
             $action = 'save';
         } else {
             $action = 'add';
         }
-    
+
         if ($parcel->validateFields(false) && $parcel->{$action}()) {
             $shipment->invalidateOffer();
             die(Tools::jsonEncode($parcel));
         } else {
-            header("HTTP/1.0 422 Unprocessable Entity");
+            header('HTTP/1.0 422 Unprocessable Entity');
             die(Tools::jsonEncode(array('error' => $this->l('Parcel could not be saved.'))));
         }
     }
@@ -186,19 +228,19 @@ class AdminParcelController extends ModuleAdminController
     // Creating a new parcel, from parameters submitted in Ajax
     public function ajaxProcessDeleteParcel()
     {
-        $parcel = new LceParcel((int)Tools::getValue('id_parcel'));
+        $parcel = new LceParcel((int) Tools::getValue('id_parcel'));
 
         if (!$parcel) {
-            header("HTTP/1.0 404 Not Found");
+            header('HTTP/1.0 404 Not Found');
             die(Tools::jsonEncode(array('error' => $this->l('Parcel not found.'))));
         }
 
         $shipment = new LceShipment($parcel->id_shipment);
         if ($shipment->api_order_uuid) {
-            header("HTTP/1.0 422 Unprocessable Entity");
+            header('HTTP/1.0 422 Unprocessable Entity');
             die(Tools::jsonEncode(array('error' => $this->l('Shipment is already booked.'))));
         }
-    
+
         if ($parcel->delete()) {
             // When deleting a package, existing offers are not anymore valid.
             $shipment->invalidateOffer();

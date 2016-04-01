@@ -1,6 +1,6 @@
 <?php
 /**
- * 2016 MyFlyingBox
+ * 2016 MyFlyingBox.
  *
  * NOTICE OF LICENSE
  *
@@ -19,13 +19,13 @@
  *
  * @author    MyFlyingBox <contact@myflyingbox.com>
  * @copyright 2016 MyFlyingBox
+ *
  * @version   1.0
+ *
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
-
 class LceShipment extends ObjectModel
 {
-
     public $id_shipment;
     public $order_id;
     public $carrier_id;
@@ -55,7 +55,6 @@ class LceShipment extends ObjectModel
     public $date_upd;
     public $date_booking;
     public $parcels; // List of parcels, loaded at init
-
 
     public function __construct($id = null, $id_lang = null, $id_shop = null)
     {
@@ -96,23 +95,24 @@ class LceShipment extends ObjectModel
             'recipient_email' => array('type' => self::TYPE_STRING),
             'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat'),
             'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat'),
-            'date_booking' => array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat')
+            'date_booking' => array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat'),
         ),
         'associations' => array(
             'order' => array('type' => self::HAS_ONE, 'field' => 'order_id', 'object' => 'Order'),
             'carrier' => array('type' => self::HAS_ONE, 'field' => 'carrier_id', 'object' => 'Carrier'),
-        )
+        ),
     );
 
     public static function findAllForOrder($order_id)
     {
-        $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'lce_shipments WHERE (order_id = ' . (int)$order_id . ")";
+        $sql = 'SELECT * FROM '._DB_PREFIX_.'lce_shipments WHERE (order_id = '.(int) $order_id.')';
         $collection = array();
         if ($rows = Db:: getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS($sql)) {
-            foreach ($rows as $key => $row) {
-                $collection[] = new LceShipment((int)$row['id_shipment']);
+            foreach ($rows as $row) {
+                $collection[] = new self((int) $row['id_shipment']);
             }
         }
+
         return $collection;
     }
 
@@ -120,6 +120,7 @@ class LceShipment extends ObjectModel
     {
         $this->api_offer_uuid = '';
         $this->api_quote_uuid = '';
+
         return $this->save();
     }
 
@@ -132,20 +133,24 @@ class LceShipment extends ObjectModel
             $parcel_tracking = $order->tracking();
             $lang_iso = Context::getContext()->language->iso_code;
 
-            foreach ($parcel_tracking as $key => $parcel) {
+            foreach ($parcel_tracking as $parcel) {
                 $event_dates = array();
                 $events = array();
 
                 foreach ($parcel->events as $event) {
                     $event_dates[] = $event->happened_at;
                     $label = $event->label->$lang_iso ? $event->label->$lang_iso : $event->label->en;
-                    $events[] = array('code' => $event->code, 'date' => $event->happened_at, 'label' => $label, 'location' => LceShipment::formatTrackingLocation($event->location));
+                    $events[] = array('code' => $event->code,
+                                      'date' => $event->happened_at,
+                                      'label' => $label,
+                                      'location' => self::formatTrackingLocation($event->location), );
                 }
                 // Now we have all events for this parcel, neatly organized.
                 array_multisort($event_dates, $events); // Sorting $events following $event_dates
                 $data[$parcel->parcel_index] = $events;
             }
         }
+
         return $data;
     }
 
@@ -163,9 +168,9 @@ class LceShipment extends ObjectModel
         foreach ($parcels as $key => $parcel) {
             $data[$key] = array_pop($parcel);
         }
+
         return $data;
     }
-
 
     /*
      * Helper function to return a readable location, based on dynamic
@@ -189,20 +194,21 @@ class LceShipment extends ObjectModel
             $city .= $location->city;
 
             if (!empty($location->state)) {
-                $city .= ", " . $location->state;
+                $city .= ', '.$location->state;
             }
         }
         if (!empty($city)) {
             if (!empty($res)) {
-                $res .= ' (' . $city . ')';
+                $res .= ' ('.$city.')';
             } else {
                 $res .= $city;
             }
         }
 
         if (!empty($location->country)) {
-            $res .= ' - ' . $location->country;
+            $res .= ' - '.$location->country;
         }
+
         return $res;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * 2016 MyFlyingBox
+ * 2016 MyFlyingBox.
  *
  * NOTICE OF LICENSE
  *
@@ -19,10 +19,11 @@
  *
  * @author    MyFlyingBox <contact@myflyingbox.com>
  * @copyright 2016 MyFlyingBox
+ *
  * @version   1.0
+ *
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
-
 $sql = array();
 
 $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_shipments` (

@@ -1,6 +1,6 @@
 <?php
 /**
- * 2016 MyFlyingBox
+ * 2016 MyFlyingBox.
  *
  * NOTICE OF LICENSE
  *
@@ -19,10 +19,11 @@
  *
  * @author    MyFlyingBox <contact@myflyingbox.com>
  * @copyright 2016 MyFlyingBox
+ *
  * @version   1.0
+ *
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
-
 class LceParcel extends ObjectModel
 {
     public $id_parcel;
@@ -40,7 +41,6 @@ class LceParcel extends ObjectModel
     public $country_of_origin;
     public $date_add;
     public $date_upd;
-
 
     public static $definition = array(
         'table' => 'lce_parcels',
@@ -60,22 +60,24 @@ class LceParcel extends ObjectModel
             'description' => array('type' => self::TYPE_STRING),
             'country_of_origin' => array('type' => self::TYPE_STRING),
             'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-            'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDate')
+            'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
         ),
         'associations' => array(
-            'shipment' => array('type' => self::HAS_ONE, 'field' => 'id_shipment', 'object' => 'LceShipment')
-        )
+            'shipment' => array('type' => self::HAS_ONE, 'field' => 'id_shipment', 'object' => 'LceShipment'),
+        ),
     );
-  
+
     public static function findAllForShipmentId($id_shipment)
     {
-        $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'lce_parcels as p WHERE p.`delete` = 0 AND p.`id_shipment` = '.$id_shipment.' ORDER BY p.`id_parcel` ASC';
+        $sql = 'SELECT * FROM '._DB_PREFIX_.'lce_parcels as p
+                WHERE p.`delete` = 0 AND p.`id_shipment` = '.$id_shipment.' ORDER BY p.`id_parcel` ASC';
         $collection = array();
         if ($rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS($sql)) {
-            foreach ($rows as $key => $row) {
-                $collection[] = new LceParcel((int)$row['id_parcel']);
+            foreach ($rows as $row) {
+                $collection[] = new self((int) $row['id_parcel']);
             }
         }
+
         return $collection;
     }
 }

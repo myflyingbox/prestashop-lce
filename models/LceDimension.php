@@ -1,6 +1,6 @@
 <?php
 /**
- * 2016 MyFlyingBox
+ * 2016 MyFlyingBox.
  *
  * NOTICE OF LICENSE
  *
@@ -19,10 +19,11 @@
  *
  * @author    MyFlyingBox <contact@myflyingbox.com>
  * @copyright 2016 MyFlyingBox
+ *
  * @version   1.0
+ *
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
-
 class LceDimension extends ObjectModel
 {
     public $id_dimension;
@@ -48,7 +49,7 @@ class LceDimension extends ObjectModel
         12 => array(20, 50),
         13 => array(30, 55),
         14 => array(40, 59),
-        15 => array(50, 63)
+        15 => array(50, 63),
     );
 
     public static $definition = array(
@@ -62,15 +63,18 @@ class LceDimension extends ObjectModel
             'weight_from' => array('type' => self::TYPE_FLOAT, 'required' => true),
             'weight_to' => array('type' => self::TYPE_FLOAT, 'required' => true),
             'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-            'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDate')
-        )
+            'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
+        ),
     );
 
     public static function getForWeight($weight)
     {
-        $sql = 'SELECT `dimension`.`id_dimension` FROM ' . _DB_PREFIX_ . 'lce_dimensions AS dimension WHERE (`weight_from` <= ' . $weight . ' AND `weight_to` > "' . $weight . '")';
+        $sql = 'SELECT `dimension`.`id_dimension` FROM '.
+                _DB_PREFIX_.'lce_dimensions AS dimension
+                WHERE (`weight_from` <= '.$weight.' AND `weight_to` > "'.$weight.'")';
         if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql)) {
-            $dimension = new LceDimension($row['id_dimension']);
+            $dimension = new self($row['id_dimension']);
+
             return $dimension;
         } else {
             return false;
