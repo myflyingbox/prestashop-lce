@@ -105,9 +105,9 @@ class LowCostExpress extends CarrierModule
         }
 
         $api = Lce\Lce::configure(
-          Configuration::get('MOD_LCE_API_LOGIN'),
-          Configuration::get('MOD_LCE_API_PASSWORD'),
-          $env
+            Configuration::get('MOD_LCE_API_LOGIN'),
+            Configuration::get('MOD_LCE_API_PASSWORD'),
+            $env
         );
         $api->application = 'prestashop-lce';
         $api->application_version = $this->version.' (PS '._PS_VERSION_.')';
@@ -344,9 +344,9 @@ class LowCostExpress extends CarrierModule
                         $iso_code = Tools::strtolower($language['iso_code']);
                         if (Tools::strlen($product->delivery_informations->$iso_code) > 0) {
                             $carrier->delay[$language['id_lang']] = Tools::substr(
-                              $product->delivery_informations->$iso_code,
-                              0,
-                              128
+                                $product->delivery_informations->$iso_code,
+                                0,
+                                128
                             );
                         }
                     }
@@ -369,8 +369,8 @@ class LowCostExpress extends CarrierModule
                         $groups = Group::getgroups(true);
                         foreach ($groups as $group) {
                             Db::getInstance()->Execute(
-                              'INSERT INTO '._DB_PREFIX_.'carrier_group
-                              VALUE (\''.(int) ($carrier->id).'\',\''.(int) ($group['id_group']).'\')'
+                                'INSERT INTO '._DB_PREFIX_.'carrier_group
+                                VALUE (\''.(int) ($carrier->id).'\',\''.(int) ($group['id_group']).'\')'
                             );
                         }
 
@@ -394,8 +394,8 @@ class LowCostExpress extends CarrierModule
 
                         //copy logo
                         copy(
-                          dirname(__FILE__).'/views/img/'.$product->logo.'.jpg',
-                          _PS_SHIP_IMG_DIR_.'/'.$carrier->id.'.jpg'
+                            dirname(__FILE__).'/views/img/'.$product->logo.'.jpg',
+                            _PS_SHIP_IMG_DIR_.'/'.$carrier->id.'.jpg'
                         );
                     }
                 }
@@ -521,7 +521,7 @@ class LowCostExpress extends CarrierModule
                 $quote->api_quote_uuid = $api_quote->id;
                 if ($quote->add()) {
                     // Now we create the offers
-                    foreach ($api_quote->offers as $k => $api_offer) {
+                    foreach ($api_quote->offers as $api_offer) {
                         $offer = new LceOffer();
                         $offer->id_quote = $quote->id;
                         $offer->api_offer_uuid = $api_offer->id;
@@ -618,7 +618,7 @@ class LowCostExpress extends CarrierModule
 
             // Generating URLs to open the 'show' view of each shipment
             $shipment_urls = array();
-            foreach ($shipments as $k => $s) {
+            foreach ($shipments as $s) {
                 $shipment_urls[$s->id_shipment] = $this->context->link->getAdminLink('AdminShipment').
                                                                   '&viewlce_shipments&id_shipment='.$s->id_shipment;
             }
