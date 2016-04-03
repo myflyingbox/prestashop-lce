@@ -86,7 +86,7 @@ class LowCostExpress extends CarrierModule
         $this->displayName = $this->l('MY FLYING BOX Express Shipping');
         $this->description = $this->l('Provides integration of all features of the MY FLYING BOX API
                                         (http://www.myflyingbox.com), offering access to many carriers at great rates.');
-        $this->ps_versions_compliancy = array('min' => '1.5', 'max' => '1.7');
+        $this->ps_versions_compliancy = array('min' => '1.5', 'max' => _PS_VERSION_);
         $this->module_key = '5100c5ae613ddfacd4bc468aee7ee59e';
 
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module?');
