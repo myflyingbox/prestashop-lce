@@ -93,6 +93,11 @@ class LowCostExpress extends CarrierModule
 
         $this->context->smarty->assign('module_name', $this->name);
 
+        // If PS 1.6 or greater, we enable bootstrap
+        if (version_compare(_PS_VERSION_, '1.6.0') >= 0) {
+            $this->bootstrap = true;
+        }
+
         // Check is php-curl is available
         if (!extension_loaded('curl')) {
             $this->warning .= $this->l('php-curl does not seem te be installed on your system.
@@ -233,6 +238,10 @@ class LowCostExpress extends CarrierModule
 
         $this->_displayContent($message);
 
+        // If PS 1.6 or greater, we use bootstrap template
+        if (version_compare(_PS_VERSION_, '1.6.0') >= 0) {
+            return $this->display(__FILE__, 'views/templates/admin/settings.bootstrap.tpl');
+        }
         return $this->display(__FILE__, 'views/templates/admin/settings.tpl');
     }
 
