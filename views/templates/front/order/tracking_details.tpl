@@ -1,4 +1,4 @@
-/*
+{*
 * 2016 MyFlyingBox
 *
 * NOTICE OF LICENSE
@@ -20,8 +20,7 @@
 *  @copyright	2016 MyFlyingBox
 *  @version		1.0
 *  @license		http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*/
-
+*}
 {if !empty($shipments)}
   <!-- Tracking -->
   {foreach $shipments item=shipment}
@@ -29,7 +28,7 @@
       {foreach $shipment->trackingStatus() item=events key=num}
         {$parcel_num = $parcel_num+1}
         <h3>{l s='Tracking information, parcel #' mod='lowcostexpress'} {$parcel_num|escape:'htmlall':'UTF-8'}</h3>
-        <table class='std'>
+        <table class='table table-bordered'>
           <thead>
             <tr>
               <th>{l s='Event date' mod='lowcostexpress'}</th>
