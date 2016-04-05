@@ -43,7 +43,7 @@
       </select>
       <sup>*</sup>
     <p>
-    
+
     <p>
     {l s='The following fields are used to initialize shipper information when creating a new shipment. They can be overriden manually in the shipment form.' mod='lowcostexpress'}
     </p>
@@ -53,7 +53,7 @@
       <input id="MOD_LCE_DEFAULT_SHIPPER_NAME" name="MOD_LCE_DEFAULT_SHIPPER_NAME" type="text" value="{$MOD_LCE_DEFAULT_SHIPPER_NAME|escape:'htmlall':'UTF-8'}" />
       <sup>*</sup>
     </p>
-    
+
     <p>
       <label for="MOD_LCE_DEFAULT_SHIPPER_COMPANY">{l s='Shipper company (your shop):' mod='lowcostexpress'}</label>
       <input id="MOD_LCE_DEFAULT_SHIPPER_COMPANY" name="MOD_LCE_DEFAULT_SHIPPER_COMPANY" type="text" value="{$MOD_LCE_DEFAULT_SHIPPER_COMPANY|escape:'htmlall':'UTF-8'}" />
@@ -120,19 +120,19 @@
       <input id="MOD_LCE_PRICE_SURCHARGE_STATIC" name="MOD_LCE_PRICE_SURCHARGE_STATIC" type="text" value="{$MOD_LCE_PRICE_SURCHARGE_STATIC|escape:'htmlall':'UTF-8'}" />
       <p class='preference_description'>{l s='IN CENTS! If you want to add 5€ to all LCE prices, then write 500.' mod='lowcostexpress'}</p>
     </div>
-    
+
     <label for="MOD_LCE_PRICE_ROUND_INCREMENT">{l s='Increment for price rounding:' mod='lowcostexpress'}</label>
     <div class='margin-form'>
       <input id="MOD_LCE_PRICE_ROUND_INCREMENT" name="MOD_LCE_PRICE_ROUND_INCREMENT" type="text" value="{$MOD_LCE_PRICE_ROUND_INCREMENT|escape:'htmlall':'UTF-8'}" />
       <p class='preference_description'>{l s='IN CENTS! e.g. 20 will round 13.33 to 13.40, 100 will round 15.13 to 16.00.' mod='lowcostexpress'}</p>
     </div>
-    
+
     <label for="MOD_LCE_PRICE_TAX_RULES">{l s='Price returned:' mod='lowcostexpress'}</label>
     <select id="MOD_LCE_PRICE_TAX_RULES" name="MOD_LCE_PRICE_TAX_RULES">
       <option value="before_taxes"{if $MOD_LCE_PRICE_TAX_RULES eq 'before_taxes'} selected="selected"{/if}>{l s='before taxes' mod='lowcostexpress'}</option>
       <option value="taxes_included"{if $MOD_LCE_PRICE_TAX_RULES eq 'taxes_included'} selected="selected"{/if}>{l s='taxes included' mod='lowcostexpress'}</option>
     </select>
-    
+
     <p>
       <label>&nbsp;</label>
       <input id="submit_{$module_name|escape:'htmlall':'UTF-8'}" name="submit_{$module_name|escape:'htmlall':'UTF-8'}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="button" />
@@ -177,7 +177,7 @@
       </tr>
     {/foreach}
     </tbody>
-  </table>  
+  </table>
   <p>
     <label>&nbsp;</label>
     <input id="submit_{$module_name|escape:'htmlall':'UTF-8'}" name="submit_{$module_name|escape:'htmlall':'UTF-8'}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="button" />
@@ -191,7 +191,7 @@
   <p>
   {l s='Be aware that when new LCE products are added the corresponding carriers in Prestashop are NOT activated by default. You must activate them manually.' mod='lowcostexpress'}
   </p>
-  
+
   <p>
   {l s='You need to initialize LCE products only if you intend to propose the LCE offers directly to your customer during cart checkout. If you only intend to use the back-office features of the module, you do not need to initialize LCE products here.' mod='lowcostexpress'}
   </p>
@@ -212,7 +212,7 @@
     {/foreach}
     </tbody>
   </table>
-  
+
   <form method="post">
     <p>
       <label for="shipper_country">{l s='From which country do you ship your goods:' mod='lowcostexpress'}</label>
@@ -222,8 +222,8 @@
         {/foreach}
       </select>
     <p>
-    
-    
+
+
     <p>
       <label>&nbsp;</label>
       <input id="submit_{$module_name|escape:'htmlall':'UTF-8'}_refresh_products" name="submit_{$module_name|escape:'htmlall':'UTF-8'}_refresh_products" type="submit" value="{l s='Initialize/refresh products' mod='lowcostexpress'}" class="button" />
