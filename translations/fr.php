@@ -107,6 +107,9 @@ $_MODULE['<{lowcostexpress}prestashop>tracking_details_359ff4ae83f885f7d3227a435
 $_MODULE['<{lowcostexpress}prestashop>tracking_details_814843844c5a5bc0a38d814c53c2cf83'] = 'Description';
 $_MODULE['<{lowcostexpress}prestashop>tracking_details_ce5bf551379459c1c61d2a204061c455'] = 'Lieu';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_f4f70727dc34561dfde1a3c529b6205c'] = 'Paramètres';
+$_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_4dd73ecb3d59955407aac72007cde9e5'] = 'Pas encore d\'identifiants ?';
+$_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_bd52d9833ee91c515bcc959dd610db54'] = 'Créez votre compte MY FLYING BOX !';
+$_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_7946aa79a7c6b6d7bbcf82e3c9848cbd'] = 'C\'est gratuit et sans engagement.';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_b9422e608166d7e14e817b9eb54a9360'] = 'Votre identifiant MY FLYING BOX :';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_1c20681e21f0062309cd67bfe5098637'] = 'Votre mot de passe MY FLYING BOX :';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_22d42af1f2da89b427c7f3faf56ca09a'] = 'Environnement API :';

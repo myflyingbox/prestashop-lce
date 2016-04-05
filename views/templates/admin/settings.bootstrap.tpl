@@ -26,6 +26,18 @@
 <form method="post" class="form-horizontal">
 <fieldset>
     <legend>{l s='Settings' mod='lowcostexpress'}</legend>
+
+    <div class="form-group clearfix">
+        <p class="col-lg-3 col-lg-offset-3">
+          {l s='No credentials yet?' mod='lowcostexpress'}
+          <a href='https://www.myflyingbox.com/fr/api/prestashop?origin=module_settings' target='_blank'>
+            {l s='Create your MY FLYING BOX account!' mod='lowcostexpress'}
+          </a>
+          <br/>
+          {l s='No fee, no minimum requirements' mod='lowcostexpress'}
+        </p>
+    </div>
+
     <div class="form-group">
         <label for="MOD_LCE_API_LOGIN" class="control-label col-lg-3">{l s='Your LCE login:' mod='lowcostexpress'}</label>
         <sup class="required">*</sup>
@@ -219,7 +231,7 @@
   <p>
   {l s='Be aware that when new LCE products are added the corresponding carriers in Prestashop are NOT activated by default. You must activate them manually.' mod='lowcostexpress'}
   </p>
-  
+
   <p>
   {l s='You need to initialize LCE products only if you intend to propose the LCE offers directly to your customer during cart checkout. If you only intend to use the back-office features of the module, you do not need to initialize LCE products here.' mod='lowcostexpress'}
   </p>
@@ -240,7 +252,7 @@
     {/foreach}
     </tbody>
   </table>
-  
+
   <form method="post">
     <p>
       <label for="shipper_country">{l s='From which country do you ship your goods:' mod='lowcostexpress'}</label>
