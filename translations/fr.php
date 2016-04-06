@@ -147,6 +147,9 @@ $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_a1fa9a1d4c9a131993cea29
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_0f879183088d3e21c212cc8b845d6ff5'] = 'Vous ne devez initialiser les produits MY FLYING BOX que si vous souhaitez proposer les offres de transport MY FLYING BOX à vos clients directement, lors de la validation de la commande. Si vous ne souhaitez utiliser que les fonction de back-office du module, vous n\'avez pas besoin d\'utiliser les produits MY FLYING BOX ici.';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_d09911ca70181a942e0783643ae3e3b9'] = 'Pays duquel vous expédiez vos commandes :';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_cfcca484694b374eaede8c987e04d3d7'] = 'Initialiser/mettre à jour les produits';
+$_MODULE['<{lowcostexpress}prestashop>settings_4dd73ecb3d59955407aac72007cde9e5'] = 'Pas encore d\'identifiants ?';
+$_MODULE['<{lowcostexpress}prestashop>settings_bd52d9833ee91c515bcc959dd610db54'] = 'Créez votre compte MY FLYING BOX !';
+$_MODULE['<{lowcostexpress}prestashop>settings_7946aa79a7c6b6d7bbcf82e3c9848cbd'] = 'C\'est gratuit et sans engagement.';
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_df644ae155e79abf54175bd15d75f363'] = 'Nom du produit';
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_3ec365dd533ddb7ef3d1c111186ce872'] = 'Détails';
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_f7bf0110b8a7f32f448b77b63b29d5b0'] = 'Prix total :';

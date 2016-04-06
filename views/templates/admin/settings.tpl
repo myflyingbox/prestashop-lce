@@ -25,6 +25,16 @@
 {html_entity_decode($message|escape:'htmlall':'UTF-8')}
 <fieldset>
   <legend>{l s='Settings' mod='lowcostexpress'}</legend>
+    <div class="form-group clearfix">
+        <p class="col-lg-3 col-lg-offset-3">
+          {l s='No credentials yet?' mod='lowcostexpress'}
+          <a href='https://www.myflyingbox.com/fr/api/prestashop?origin=module_settings' target='_blank'>
+            {l s='Create your MY FLYING BOX account!' mod='lowcostexpress'}
+          </a>
+          <br/>
+          {l s='No fee, no minimum requirements' mod='lowcostexpress'}
+        </p>
+    </div>
   <form method="post">
     <p>
       <label for="MOD_LCE_API_LOGIN">{l s='Your LCE login:' mod='lowcostexpress'}</label>
