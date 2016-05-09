@@ -22,7 +22,7 @@
 *  @license		http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 
-{$message}
+{html_entity_decode($message|escape:'htmlall':'UTF-8')}
 <form method="post" class="form-horizontal">
 <fieldset>
     <legend>{l s='Settings' mod='lowcostexpress'}</legend>

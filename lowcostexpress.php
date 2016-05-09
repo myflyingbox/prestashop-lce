@@ -211,7 +211,7 @@ class LowCostExpress extends CarrierModule
     public function hookUpdateCarrier($params)
     {
         $sql = 'SELECT `lce_product_code`
-                FROM '._DB_PREFIX_.'carrier WHERE (`id_carrier` = "'.intval($params['id_carrier']).'")';
+                FROM '._DB_PREFIX_.'carrier WHERE (`id_carrier` = "'.(int)$params['id_carrier'].'")';
         $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
 
         Configuration::updateValue('LCE_'.$row['lce_product_code'], $params['carrier']->id);
