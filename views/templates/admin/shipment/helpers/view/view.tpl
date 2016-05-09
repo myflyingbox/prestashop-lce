@@ -32,7 +32,7 @@
 {/if}
 
   <div class="container-command container-command-top-spacing">
-  
+
     <!-- Tracking -->
     {if $shipment->api_order_uuid}
       <fieldset>
@@ -97,16 +97,16 @@
       </div>
     <div class="clear" style="margin-bottom: 10px;"></div>
   </div>
-  
-  
+
+
   <!-- Parcels -->
   <fieldset>
     <legend>{l s='Packages to ship' mod='lowcostexpress'}</legend>
-    
+
     {if $shipment->api_order_uuid eq false}
       <a id="add-package" href="{$link_load_package_form|escape:'htmlall':'UTF-8'}"><img src="../img/admin/add.gif" alt="{l s='Add package' mod='lowcostexpress'}" /> {l s='Add package' mod='lowcostexpress'}</a>
     {/if}
-    
+
     <table id="pack-list" class="table">
       <thead>
         <tr>
@@ -138,7 +138,7 @@
             <td>
               {if $p->value > 0}
                 {$p->value|escape:'htmlall':'UTF-8'} {$p->currency|escape:'htmlall':'UTF-8'}
-              {/if}    
+              {/if}
             </td>
             <td>{$p->description|escape:'htmlall':'UTF-8'}</td>
             <td>
@@ -157,9 +157,9 @@
       </tbody>
     </table>
   </fieldset>
-  
+
   <br/>
-  
+
   <!-- Booking -->
   <fieldset>
     <legend>{l s='Transport booking' mod='lowcostexpress'}</legend>
@@ -189,7 +189,7 @@
           <td>{$offer->product_name|escape:'htmlall':'UTF-8'}
               <br/>{l s='Total price:' mod='lowcostexpress'} <b>{$offer->total_price|escape:'htmlall':'UTF-8'}</b>
           </td>
-          
+
           <td>
             {$offer->collection_informations|nl2br|escape:'htmlall':'UTF-8'}
           </td>
@@ -255,7 +255,7 @@ $(function() {
                 collision: "none"
                 }
     });
-    
+
   $("body").on("click","a#add-package, a.edit-parcel", function(e) {
     e.preventDefault();
     var link = $(this);
@@ -264,13 +264,13 @@ $(function() {
     $( "#dialog-package-form" ).load(url, function( response, status, xhr ) {
       // displaying the form
       $(this).dialog("open");
-      
+
       // managing the Ajax submit of the form
       $(this).find("form").submit(function(e) {
         e.preventDefault();
         $.ajax({
             type: 'POST',
-            url: '{html_entity_decode($link_save_package_form|escape:'htmlall':'UTF-8')}',
+            url: '{$link_save_package_form|escape:'javascript'}',
             data: $(this).serialize(),
             success: function(json) {
               location.reload();
@@ -279,7 +279,7 @@ $(function() {
       });
     });
   });
-  
+
   $("table#pack-list").on("click", "a.delete-parcel", function(e) {
     e.preventDefault();
     var link = $(this);
@@ -295,7 +295,7 @@ $(function() {
         }
       });
   });
-  
+
   $("#dialog-lce-offers").dialog({
     autoOpen: false,
     modal: true,
@@ -319,7 +319,7 @@ $(function() {
         e.preventDefault();
         $.ajax({
             type: 'POST',
-            url: '{html_entity_decode($link_save_offer_form|escape:'htmlall':'UTF-8')}',
+            url: '{$link_save_offer_form|escape:'javascript'}',
             data: $(this).serialize(),
             success: function(json) {
               location.reload();
@@ -332,13 +332,13 @@ $(function() {
       });
     });
   });
-  
+
   // managing the Ajax submit of the form
   $("form#book-offer").submit(function(e) {
     e.preventDefault();
     $.ajax({
       type: 'POST',
-      url: '{html_entity_decode($link_book_offer_form|escape:'htmlall':'UTF-8')}',
+      url: '{$link_book_offer_form|escape:'javascript'}',
       data: $(this).serialize(),
       success: function(json) {
         location.reload();
@@ -349,7 +349,7 @@ $(function() {
       }
     });
   });
-  
+
   $("#dialog-confirm-booking").dialog({
       resizable: false,
       height: 220,

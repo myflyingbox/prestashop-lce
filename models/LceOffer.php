@@ -59,7 +59,7 @@ class LceOffer extends ObjectModel
         $sql = 'SELECT `offer`.`id_offer`
                 FROM '._DB_PREFIX_.'lce_offers AS offer
                 WHERE (`offer`.`id_quote` = '.(int) $quote->id.'
-                  AND `offer`.`lce_product_code` = "'.$lce_product_code.'")';
+                  AND `offer`.`lce_product_code` = "'.pSQL($lce_product_code).'")';
         if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql)) {
             $offer = new self($row['id_offer']);
 

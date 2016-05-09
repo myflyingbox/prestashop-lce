@@ -78,7 +78,7 @@ class LowCostExpress extends CarrierModule
     {
         $this->name = 'lowcostexpress';
         $this->tab = 'shipping_logistics';
-        $this->version = '0.0.17';
+        $this->version = '0.0.18';
         $this->author = 'MY FLYING BOX SAS';
 
         parent::__construct();
@@ -211,7 +211,7 @@ class LowCostExpress extends CarrierModule
     public function hookUpdateCarrier($params)
     {
         $sql = 'SELECT `lce_product_code`
-                FROM '._DB_PREFIX_.'carrier WHERE (`id_carrier` = "'.$params['id_carrier'].'")';
+                FROM '._DB_PREFIX_.'carrier WHERE (`id_carrier` = "'.intval($params['id_carrier']).'")';
         $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
 
         Configuration::updateValue('LCE_'.$row['lce_product_code'], $params['carrier']->id);
@@ -321,7 +321,7 @@ class LowCostExpress extends CarrierModule
                     // product code, and existing flag (deleted = 0)
                     $sql = 'SELECT `id_carrier` FROM '._DB_PREFIX_.'carrier
                             WHERE (`external_module_name` = "lowcostexpress"
-                            AND `lce_product_code` = "'.$product_code.'" AND `deleted` = 0)';
+                            AND `lce_product_code` = "'.pSQL($product_code).'" AND `deleted` = 0)';
                     if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql)) {
                         if ((int) $row['id_carrier'] > 0) {
                             $product_exists = true;
@@ -370,7 +370,7 @@ class LowCostExpress extends CarrierModule
 
                         // Setting the lce_product_code on carrier table
                         Db::getInstance()->Execute('UPDATE '._DB_PREFIX_.'carrier
-                                                    SET lce_product_code = "'.trim($product->code).'"
+                                                    SET lce_product_code = "'.trim(pSQL($product->code)).'"
                                                     WHERE `external_module_name` = "lowcostexpress"
                                                       AND `id_carrier` = '.(int) $carrier->id);
 

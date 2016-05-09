@@ -70,7 +70,7 @@ class LceDimension extends ObjectModel
     {
         $sql = 'SELECT `dimension`.`id_dimension` FROM '.
                 _DB_PREFIX_.'lce_dimensions AS dimension
-                WHERE (`weight_from` <= '.$weight.' AND `weight_to` > "'.$weight.'")';
+                WHERE (`weight_from` <= "'.pSQL($weight).'" AND `weight_to` > "'.pSQL($weight).'")';
         if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql)) {
             $dimension = new self($row['id_dimension']);
 
