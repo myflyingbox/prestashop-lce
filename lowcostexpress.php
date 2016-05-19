@@ -78,7 +78,7 @@ class LowCostExpress extends CarrierModule
     {
         $this->name = 'lowcostexpress';
         $this->tab = 'shipping_logistics';
-        $this->version = '0.0.18';
+        $this->version = '0.0.19';
         $this->author = 'MY FLYING BOX SAS';
 
         parent::__construct();
@@ -411,7 +411,7 @@ class LowCostExpress extends CarrierModule
             }
         } catch (Exception $e) {
             error_log($e->getMessage());
-            $message = $this->displayError($e->getMessage());
+            $message = $this->displayError(Tools::purifyHTML($e->getMessage()));
         }
 
         return $message;
