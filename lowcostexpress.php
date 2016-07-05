@@ -78,7 +78,7 @@ class LowCostExpress extends CarrierModule
     {
         $this->name = 'lowcostexpress';
         $this->tab = 'shipping_logistics';
-        $this->version = '0.0.19';
+        $this->version = '0.0.20';
         $this->author = 'MY FLYING BOX SAS';
 
         parent::__construct();
@@ -213,8 +213,8 @@ class LowCostExpress extends CarrierModule
         $sql = 'SELECT `lce_product_code`
                 FROM '._DB_PREFIX_.'carrier WHERE (`id_carrier` = "'.(int)$params['id_carrier'].'")';
         $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
-
-        Configuration::updateValue('LCE_'.$row['lce_product_code'], $params['carrier']->id);
+        $config_key = $this->_productConfigKey($row['lce_product_code']);
+        Configuration::updateValue($config_key, $params['carrier']->id);
     }
 
     //===============
@@ -306,6 +306,19 @@ class LowCostExpress extends CarrierModule
         return true;
     }
 
+    // For compatibility with PS 1.5, we mush hash the config key storing the carrier ID
+    // so that the config key name does not exceed 32 chars.
+    // PS16 allows longer config key names.
+    private function _productConfigKey($product_code) {
+      $length = strlen($product_code);
+      if ( $length > 28 && version_compare(_PS_VERSION_, '1.6.0') < 0 ) {
+        $config_key = md5('LCE_'.$product_code);
+      } else {
+        $config_key = 'LCE_'.$product_code;
+      }
+      return $config_key;
+    }
+
     private function _refreshLceProducts()
     {
         $message = '';
@@ -314,7 +327,9 @@ class LowCostExpress extends CarrierModule
 
             foreach ($products as $product) {
                 $product_code = trim($product->code);
-                if (!Configuration::get('LCE_'.$product_code)) {
+                $config_key = $this->_productConfigKey($product_code);
+
+                if ( !Configuration::get($config_key) ) {
                     $product_exists = false;
                 } else {
                     // Attempting to get the carrier directly via SQL, by module,
@@ -366,7 +381,8 @@ class LowCostExpress extends CarrierModule
                     }
 
                     if ($carrier->add()) {
-                        Configuration::updateValue('LCE_'.$product_code, (int) ($carrier->id));
+                        $config_key = $this->_productConfigKey($product_code);
+                        Configuration::updateValue($config_key, (int) ($carrier->id));
 
                         // Setting the lce_product_code on carrier table
                         Db::getInstance()->Execute('UPDATE '._DB_PREFIX_.'carrier
@@ -411,7 +427,7 @@ class LowCostExpress extends CarrierModule
             }
         } catch (Exception $e) {
             error_log($e->getMessage());
-            $message = $this->displayError(Tools::purifyHTML($e->getMessage()));
+            $message = $this->displayError($this->purify($e->getMessage()));
         }
 
         return $message;
@@ -500,9 +516,9 @@ class LowCostExpress extends CarrierModule
 
             // We only proceed if we have a delivery address, otherwise it is quite pointless to request rates
             if (!empty($delivery_address->city)) {
-                $weight = ceil($cart->getTotalWeight($cart->getProducts()));
-                if ($weight == 0) {
-                    $weight = 0.2;
+                $weight = round($cart->getTotalWeight($cart->getProducts()), 3);
+                if ($weight <= 0) {
+                    $weight = 0.1;
                 }
 
                 $dimension = LceDimension::getForWeight($weight);
@@ -554,6 +570,7 @@ class LowCostExpress extends CarrierModule
                 $lce_product_code = $row['lce_product_code'];
             }
 
+            // Note that we are working in cents
             if ($lce_product_code && $lce_offer = LceOffer::getForQuoteAndLceProduct($quote, $lce_product_code)) {
                 $increment = (int) Configuration::get('MOD_LCE_PRICE_ROUND_INCREMENT');
                 $surcharge_amount = (int) Configuration::get('MOD_LCE_PRICE_SURCHARGE_STATIC');
@@ -578,6 +595,7 @@ class LowCostExpress extends CarrierModule
                     $price = (ceil($price * $increment) / $increment);
                 }
 
+                // Converting from cents to normal price
                 return $price / 100;
             } else {
                 return false;
@@ -669,5 +687,14 @@ class LowCostExpress extends CarrierModule
         $smarty->assign('shipments', LceShipment::findAllForOrder((int) Tools::getValue('id_order')));
         // Rendering the partial view
         return $this->display(__FILE__, 'views/templates/front/order/tracking_details.tpl');
+    }
+
+    public function purify($string)
+    {
+      if (version_compare(_PS_VERSION_, '1.6.0') >= 0) {
+        return Tools::purifyHTML($string);
+      } else {
+        return Tools::htmlentitiesUTF8($string);
+      }
     }
 }
