@@ -309,14 +309,15 @@ class LowCostExpress extends CarrierModule
     // For compatibility with PS 1.5, we mush hash the config key storing the carrier ID
     // so that the config key name does not exceed 32 chars.
     // PS16 allows longer config key names.
-    private function _productConfigKey($product_code) {
-      $length = strlen($product_code);
-      if ( $length > 28 && version_compare(_PS_VERSION_, '1.6.0') < 0 ) {
-        $config_key = md5('LCE_'.$product_code);
-      } else {
-        $config_key = 'LCE_'.$product_code;
-      }
-      return $config_key;
+    private function _productConfigKey($product_code)
+    {
+        $length = Tools::strlen($product_code);
+        if ($length > 28 && version_compare(_PS_VERSION_, '1.6.0') < 0) {
+            $config_key = md5('LCE_'.$product_code);
+        } else {
+            $config_key = 'LCE_'.$product_code;
+        }
+        return $config_key;
     }
 
     private function _refreshLceProducts()
@@ -329,7 +330,7 @@ class LowCostExpress extends CarrierModule
                 $product_code = trim($product->code);
                 $config_key = $this->_productConfigKey($product_code);
 
-                if ( !Configuration::get($config_key) ) {
+                if (!Configuration::get($config_key)) {
                     $product_exists = false;
                 } else {
                     // Attempting to get the carrier directly via SQL, by module,
@@ -691,10 +692,10 @@ class LowCostExpress extends CarrierModule
 
     public function purify($string)
     {
-      if (version_compare(_PS_VERSION_, '1.6.0') >= 0) {
-        return Tools::purifyHTML($string);
-      } else {
-        return Tools::htmlentitiesUTF8($string);
-      }
+        if (version_compare(_PS_VERSION_, '1.6.0') >= 0) {
+            return Tools::purifyHTML($string);
+        } else {
+            return Tools::htmlentitiesUTF8($string);
+        }
     }
 }
