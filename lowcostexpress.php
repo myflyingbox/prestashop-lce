@@ -37,6 +37,10 @@ require_once _PS_MODULE_DIR_.'lowcostexpress/models/LceQuote.php';
 require_once _PS_MODULE_DIR_.'lowcostexpress/models/LceOffer.php';
 require_once _PS_MODULE_DIR_.'lowcostexpress/models/LceDimension.php';
 
+// Loading Controllers
+require_once _PS_MODULE_DIR_.'lowcostexpress/controllers/admin/adminparcel.php';
+require_once _PS_MODULE_DIR_.'lowcostexpress/controllers/admin/adminshipment.php';
+
 class LowCostExpress extends CarrierModule
 {
     public static $settings = array('MOD_LCE_API_LOGIN',
@@ -51,6 +55,9 @@ class LowCostExpress extends CarrierModule
         'MOD_LCE_DEFAULT_COUNTRY',
         'MOD_LCE_DEFAULT_PHONE',
         'MOD_LCE_DEFAULT_EMAIL',
+        'MOD_LCE_DEFAULT_ORIGIN',
+        'MOD_LCE_DEFAULT_CONTENT',
+        'MOD_LCE_FORCE_DIMENSIONS_TABLE',
         'MOD_LCE_PRICE_ROUND_INCREMENT',
         'MOD_LCE_PRICE_SURCHARGE_STATIC',
         'MOD_LCE_PRICE_SURCHARGE_PERCENT',
@@ -59,6 +66,8 @@ class LowCostExpress extends CarrierModule
     public static $mandatory_settings = array('MOD_LCE_API_LOGIN',
         'MOD_LCE_API_PASSWORD',
         'MOD_LCE_API_ENV',
+        'MOD_LCE_DEFAULT_ORIGIN',
+        'MOD_LCE_DEFAULT_CONTENT',
         'MOD_LCE_DEFAULT_SHIPPER_NAME',
         'MOD_LCE_DEFAULT_SHIPPER_COMPANY',
         'MOD_LCE_DEFAULT_STREET',
@@ -492,6 +501,9 @@ class LowCostExpress extends CarrierModule
             'MOD_LCE_DEFAULT_COUNTRY' => Configuration::get('MOD_LCE_DEFAULT_COUNTRY'),
             'MOD_LCE_DEFAULT_PHONE' => Configuration::get('MOD_LCE_DEFAULT_PHONE'),
             'MOD_LCE_DEFAULT_EMAIL' => Configuration::get('MOD_LCE_DEFAULT_EMAIL'),
+            'MOD_LCE_DEFAULT_ORIGIN' => Configuration::get('MOD_LCE_DEFAULT_ORIGIN'),
+            'MOD_LCE_DEFAULT_CONTENT' => Configuration::get('MOD_LCE_DEFAULT_CONTENT'),
+            'MOD_LCE_FORCE_DIMENSIONS_TABLE' => Configuration::get('MOD_LCE_FORCE_DIMENSIONS_TABLE'),
             'MOD_LCE_PRICE_ROUND_INCREMENT' => Configuration::get('MOD_LCE_PRICE_ROUND_INCREMENT'),
             'MOD_LCE_PRICE_SURCHARGE_STATIC' => Configuration::get('MOD_LCE_PRICE_SURCHARGE_STATIC'),
             'MOD_LCE_PRICE_SURCHARGE_PERCENT' => Configuration::get('MOD_LCE_PRICE_SURCHARGE_PERCENT'),
@@ -527,17 +539,20 @@ class LowCostExpress extends CarrierModule
                     'shipper' => array(
                         'city' => Configuration::get('MOD_LCE_DEFAULT_CITY'),
                         'postal_code' => Configuration::get('MOD_LCE_DEFAULT_POSTAL_CODE'),
-                        'country' => Configuration::get('MOD_LCE_DEFAULT_COUNTRY'), ),
+                        'country' => Configuration::get('MOD_LCE_DEFAULT_COUNTRY'),
+                    ),
                     'recipient' => array(
                         'city' => $delivery_address->city,
                         'postal_code' => $delivery_address->postcode,
                         'country' => $delivery_country->iso_code,
-                        'is_a_company' => false, ),
+                        'is_a_company' => false,
+                    ),
                     'parcels' => array(
                         array('length' => $dimension->length,
                               'height' => $dimension->height,
                               'width' => $dimension->width,
-                              'weight' => $weight, ),
+                              'weight' => $weight,
+                        ),
                     ),
                 );
                 $api_quote = Lce\Resource\Quote::request($params);

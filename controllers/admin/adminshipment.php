@@ -215,6 +215,21 @@ class AdminShipmentController extends ModuleAdminController
 
     public function renderForm()
     {
+
+      // We try to create a shipment. If we fail, we will show the form (see below)
+      if (Tools::isSubmit('addlce_shipments')) {
+        $order = new Order((int) Tools::getValue('order_id'));
+        $new_shipment = LceShipment::create_from_order( $order );
+        if ( $new_shipment ) {
+            Tools::redirectAdmin(
+                $this->context->link->getAdminLink('AdminShipment').'&viewlce_shipments&id_shipment='.$new_shipment->id
+            );
+        }
+      }
+
+      // We are editing an existing shipment, or we have failed to automatically create a new one
+      if ( !Tools::isSubmit('addlce_shipments') || !$new_shipment ) {
+
         $countries = array();
         foreach (Country::getCountries($this->context->language->id) as $c) {
             $countries[$c['iso_code']] = array('country_code' => $c['iso_code'], 'name' => $c['name']);
@@ -418,6 +433,7 @@ class AdminShipmentController extends ModuleAdminController
         }
 
         return parent::renderForm();
+      }
     }
 
     public function postProcess()

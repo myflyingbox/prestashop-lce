@@ -152,6 +152,29 @@
 
 <br/>
 <fieldset>
+  <legend>{l s='Default parcel values' mod='lowcostexpress'}</legend>
+    <p>{l s='The following settings are used to automatically fill some values when initializing parcels for your shipment. You can still change these values manually on each shipment if needed.' mod='lowcostexpress'}</p>
+
+    <p>
+      <label for="MOD_LCE_DEFAULT_ORIGIN">{l s='Country of origin:' mod='lowcostexpress'}</label>
+      <select id="MOD_LCE_DEFAULT_ORIGIN" name="MOD_LCE_DEFAULT_ORIGIN">
+        {foreach $countries item=country}
+          <option value="{$country['iso_code']|escape:'htmlall':'UTF-8'}"{if $country['iso_code'] eq $MOD_LCE_DEFAULT_ORIGIN|escape:'htmlall':'UTF-8'} selected="selected"{/if}>{$country['name']|escape:'htmlall':'UTF-8'}</option>
+        {/foreach}
+      </select>
+      <sup>*</sup>
+      <p class='preference_description'>{l s='Country of manufacture of the goods you are shipping.' mod='lowcostexpress'}</p>
+    </p>
+
+    <label for="MOD_LCE_DEFAULT_CONTENT">{l s='Default parcel content:' mod='lowcostexpress'}</label>
+    <div class='margin-form'>
+      <input id="MOD_LCE_DEFAULT_CONTENT" name="MOD_LCE_DEFAULT_CONTENT" type="text" value="{$MOD_LCE_DEFAULT_CONTENT|escape:'htmlall':'UTF-8'}" />
+      <p class='preference_description'>{l s='Describe the type of goods you are sending. Please note that some carriers will refuse generic descriptions when shipping abroad, so you might have to correct this value on a per-shipment basis.' mod='lowcostexpress'}</p>
+    </div>
+</fieldset>
+
+<br/>
+<fieldset>
   <legend>{l s='Default dimensions' mod='lowcostexpress'}</legend>
   <p>
     {l s='When trying to obtain transportation prices for the cart of the customer, the module must send dimensions and weight. As the module cannot guess your standard packaging strategies, the following table allows you to define a correspondance between a weight and packaging dimensions. The module will always use the calculated weight of the cart (rounded to the upper integer), and will then obtain the corresponding packaging dimensions from this table. Please note that you will be able to specify the exact dimensions and weights of your final packaging when booking a shipment through the order back-office page.' mod='lowcostexpress'}

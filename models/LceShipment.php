@@ -210,4 +210,139 @@ class LceShipment extends ObjectModel
 
         return $res;
     }
+
+    public static function create_from_order( $order )
+    {
+
+        $shipment = new self();
+        $shipment->order_id = $order->id;
+
+        $customer = new Customer((int) $order->id_customer);
+        $delivery_address = new Address((int) $order->id_address_delivery);
+
+        $shipment->shipper_name = Configuration::get('MOD_LCE_DEFAULT_SHIPPER_NAME');
+        $shipment->shipper_company_name = Configuration::get('MOD_LCE_DEFAULT_SHIPPER_COMPANY');
+        $shipment->shipper_street = Configuration::get('MOD_LCE_DEFAULT_STREET');
+        $shipment->shipper_city = Configuration::get('MOD_LCE_DEFAULT_CITY');
+        $shipment->shipper_postal_code = Configuration::get('MOD_LCE_DEFAULT_POSTAL_CODE');
+        $shipment->shipper_state = Configuration::get('MOD_LCE_DEFAULT_STATE');
+        $shipment->shipper_country = Configuration::get('MOD_LCE_DEFAULT_COUNTRY');
+        $shipment->shipper_phone = Configuration::get('MOD_LCE_DEFAULT_PHONE');
+        $shipment->shipper_email = Configuration::get('MOD_LCE_DEFAULT_EMAIL');
+
+        $shipment->recipient_name = $delivery_address->firstname.' '.$delivery_address->lastname;
+        if ( !empty($delivery_address->company) ) {
+            $shipment->recipient_is_a_company = 1;
+        }
+
+        $shipment->recipient_company_name = $delivery_address->company;
+
+        $address_street = $delivery_address->address1;
+        if ($delivery_address->address2) {
+            $address_street = $address_street."\n".$delivery_address->address2;
+        }
+        $shipment->recipient_street = $address_street;
+        $shipment->recipient_city = $delivery_address->city;
+        $shipment->recipient_postal_code = $delivery_address->postcode;
+
+        if ($delivery_address->id_state) {
+            $state = new State((int) $delivery_address->id_state);
+            $shipment->recipient_state = $state->name;
+        }
+
+        $country = new Country((int) $delivery_address->id_country);
+        $shipment->recipient_country = $country->iso_code;
+
+        $recipient_phone = (!empty($delivery_address->phone_mobile) ?
+            $delivery_address->phone_mobile : $delivery_address->phone);
+
+        $shipment->recipient_phone = $recipient_phone;
+
+        $shipment->recipient_email = $customer->email;
+
+
+        if ($shipment->validateFields(false) && $shipment->add()) {
+            // Trying to initialize parcels
+            $weight = round($order->getTotalWeight(), 3);
+            if ($weight <= 0) $weight = 0.1;
+
+            $dimension = LceDimension::getForWeight($weight);
+            $currency = new Currency( $order->id_currency );
+
+            $parcel = new LceParcel();
+            $parcel->id_shipment = $shipment->id;
+            // Dimensions
+            $parcel->length = $dimension->length;
+            $parcel->width = $dimension->width;
+            $parcel->height = $dimension->height;
+            $parcel->weight = $weight;
+
+            // Customs
+            $parcel->value = $order->getTotalProductsWithoutTaxes();
+            $parcel->currency = $currency->iso_code;
+            $parcel->description = Configuration::get('MOD_LCE_DEFAULT_CONTENT');
+            $parcel->country_of_origin = Configuration::get('MOD_LCE_DEFAULT_ORIGIN');
+
+            // If parcel creation is successful, we automatically select an offer.
+            if ( $parcel->add() ) {
+                $shipment->autoselect_offer( $order );
+            }
+
+            return $shipment;
+        } else {
+            return false;
+        }
+    }
+
+
+    public function autoselect_offer( $order )
+    {
+        $params = array(
+            'shipper' => array('city' => $this->shipper_city,
+                                'postal_code' => $this->shipper_postal_code,
+                                'country' => $this->shipper_country, ),
+            'recipient' => array('city' => $this->recipient_city,
+                                  'postal_code' => $this->recipient_postal_code,
+                                  'country' => $this->recipient_country,
+                                  'is_a_company' => $this->recipient_is_a_company, ),
+            'parcels' => array(),
+        );
+        $parcels = LceParcel::findAllForShipmentId($this->id);
+        foreach ($parcels as $parcel) {
+            $params['parcels'][] = array('length' => $parcel->length,
+                                          'width' => $parcel->width,
+                                          'height' => $parcel->height,
+                                          'weight' => $parcel->weight
+                                        );
+        }
+
+        try {
+            $api_quote = Lce\Resource\Quote::request($params);
+
+            $quote = new LceQuote();
+
+            $lce_product_code = false;
+            $sql = 'SELECT `carrier`.`lce_product_code`
+                FROM '._DB_PREFIX_.'carrier AS carrier
+                WHERE (`carrier`.`id_carrier` = '.(int) $order->id_carrier.')';
+
+            if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql)) {
+                $lce_product_code = $row['lce_product_code'];
+            }
+
+            if ( $lce_product_code ) {
+                // Now we parse the offers and select
+                foreach ($api_quote->offers as $api_offer) {
+                    if ( $api_offer->product->code == $lce_product_code ) {
+                        $this->api_quote_uuid = $api_quote->id;
+                        $this->api_offer_uuid = $api_offer->id;
+                        $this->save();
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+
+        }
+
+    }
 }

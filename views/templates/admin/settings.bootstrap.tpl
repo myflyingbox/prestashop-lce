@@ -179,6 +179,38 @@
 </fieldset>
 
 <br/>
+<fieldset>
+    <legend>{l s='Default parcel values' mod='lowcostexpress'}</legend>
+    <div class="form-group clearfix">
+        <p class="col-lg-12">{l s='The following settings are used to automatically fill some values when initializing parcels for your shipment.' mod='lowcostexpress'}</p>
+    </div>
+
+    <div class="form-group">
+        <label for="MOD_LCE_DEFAULT_ORIGIN" class="control-label col-lg-3">{l s='Country of origin:' mod='lowcostexpress'}</label>
+        <sup class="required">*</sup>
+        <div class="col-lg-8">
+            <select id="MOD_LCE_DEFAULT_ORIGIN" name="MOD_LCE_DEFAULT_ORIGIN">
+            {foreach $countries item=country}
+                <option value="{$country['iso_code']|escape:'htmlall':'UTF-8'}"{if $country['iso_code'] eq $MOD_LCE_DEFAULT_ORIGIN|escape:'htmlall':'UTF-8'} selected="selected"{/if}>{$country['name']|escape:'htmlall':'UTF-8'}</option>
+            {/foreach}
+            </select>
+            <p class="help-block">{l s='Country of manufacture of the goods you are shipping.' mod='lowcostexpress'}</p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="MOD_LCE_DEFAULT_CONTENT" class="control-label col-lg-3">{l s='Default parcel content:' mod='lowcostexpress'}</label>
+        <div class="col-lg-8">
+            <input id="MOD_LCE_DEFAULT_CONTENT" name="MOD_LCE_DEFAULT_CONTENT" type="text" value="{$MOD_LCE_DEFAULT_CONTENT|escape:'htmlall':'UTF-8'}" />
+            <p class="help-block">{l s='Describe the type of goods you are sending. Please note that some carriers will refuse generic descriptions when shipping abroad, so you might have to correct this value on a per-shipment basis.' mod='lowcostexpress'}</p>
+        </div>
+    </div>
+    <div class="form-group" style="text-align:center">
+      <input id="submit_{$module_name|escape:'htmlall':'UTF-8'}" name="submit_{$module_name|escape:'htmlall':'UTF-8'}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="btn btn-default" />
+    </div>
+</fieldset>
+
+<br/>
 
 <fieldset>
   <legend>{l s='Default dimensions' mod='lowcostexpress'}</legend>
