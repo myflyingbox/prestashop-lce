@@ -1,6 +1,6 @@
 <?php
 /**
- * NOTICE OF LICENSE
+ * NOTICE OF LICENSE.
  *
  * This source file is subject to the Academic Free License (AFL 3.0)
  * that is bundled with this package in the file LICENSE.txt.
@@ -22,7 +22,6 @@
  *
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
-
 class LceShipment extends ObjectModel
 {
     public $id_shipment;
@@ -211,9 +210,8 @@ class LceShipment extends ObjectModel
         return $res;
     }
 
-    public static function create_from_order( $order )
+    public static function createFromOrder($order)
     {
-
         $shipment = new self();
         $shipment->order_id = $order->id;
 
@@ -231,7 +229,7 @@ class LceShipment extends ObjectModel
         $shipment->shipper_email = Configuration::get('MOD_LCE_DEFAULT_EMAIL');
 
         $shipment->recipient_name = $delivery_address->firstname.' '.$delivery_address->lastname;
-        if ( !empty($delivery_address->company) ) {
+        if (!empty($delivery_address->company)) {
             $shipment->recipient_is_a_company = 1;
         }
 
@@ -260,14 +258,15 @@ class LceShipment extends ObjectModel
 
         $shipment->recipient_email = $customer->email;
 
-
         if ($shipment->validateFields(false) && $shipment->add()) {
             // Trying to initialize parcels
             $weight = round($order->getTotalWeight(), 3);
-            if ($weight <= 0) $weight = 0.1;
+            if ($weight <= 0) {
+                $weight = 0.1;
+            }
 
             $dimension = LceDimension::getForWeight($weight);
-            $currency = new Currency( $order->id_currency );
+            $currency = new Currency($order->id_currency);
 
             $parcel = new LceParcel();
             $parcel->id_shipment = $shipment->id;
@@ -284,8 +283,8 @@ class LceShipment extends ObjectModel
             $parcel->country_of_origin = Configuration::get('MOD_LCE_DEFAULT_ORIGIN');
 
             // If parcel creation is successful, we automatically select an offer.
-            if ( $parcel->add() ) {
-                $shipment->autoselect_offer( $order );
+            if ($parcel->add()) {
+                $shipment->autoselectOffer($order);
             }
 
             return $shipment;
@@ -294,8 +293,7 @@ class LceShipment extends ObjectModel
         }
     }
 
-
-    public function autoselect_offer( $order )
+    public function autoselectOffer($order)
     {
         $params = array(
             'shipper' => array('city' => $this->shipper_city,
@@ -312,14 +310,12 @@ class LceShipment extends ObjectModel
             $params['parcels'][] = array('length' => $parcel->length,
                                           'width' => $parcel->width,
                                           'height' => $parcel->height,
-                                          'weight' => $parcel->weight
+                                          'weight' => $parcel->weight,
                                         );
         }
 
         try {
             $api_quote = Lce\Resource\Quote::request($params);
-
-            $quote = new LceQuote();
 
             $lce_product_code = false;
             $sql = 'SELECT `carrier`.`lce_product_code`
@@ -330,10 +326,10 @@ class LceShipment extends ObjectModel
                 $lce_product_code = $row['lce_product_code'];
             }
 
-            if ( $lce_product_code ) {
+            if ($lce_product_code) {
                 // Now we parse the offers and select
                 foreach ($api_quote->offers as $api_offer) {
-                    if ( $api_offer->product->code == $lce_product_code ) {
+                    if ($api_offer->product->code == $lce_product_code) {
                         $this->api_quote_uuid = $api_quote->id;
                         $this->api_offer_uuid = $api_offer->id;
                         $this->save();
@@ -341,8 +337,6 @@ class LceShipment extends ObjectModel
                 }
             }
         } catch (\Exception $e) {
-
         }
-
     }
 }

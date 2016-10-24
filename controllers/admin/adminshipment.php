@@ -24,7 +24,6 @@
 *
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -216,28 +215,27 @@ class AdminShipmentController extends ModuleAdminController
     public function renderForm()
     {
 
-      // We try to create a shipment. If we fail, we will show the form (see below)
-      if (Tools::isSubmit('addlce_shipments')) {
-        $order = new Order((int) Tools::getValue('order_id'));
-        $new_shipment = LceShipment::create_from_order( $order );
-        if ( $new_shipment ) {
-            Tools::redirectAdmin(
-                $this->context->link->getAdminLink('AdminShipment').'&viewlce_shipments&id_shipment='.$new_shipment->id
-            );
-        }
-      }
-
-      // We are editing an existing shipment, or we have failed to automatically create a new one
-      if ( !Tools::isSubmit('addlce_shipments') || !$new_shipment ) {
-
-        $countries = array();
-        foreach (Country::getCountries($this->context->language->id) as $c) {
-            $countries[$c['iso_code']] = array('country_code' => $c['iso_code'], 'name' => $c['name']);
+        // We try to create a shipment. If we fail, we will show the form (see below)
+        if (Tools::isSubmit('addlce_shipments')) {
+            $order = new Order((int) Tools::getValue('order_id'));
+            $new_shipment = LceShipment::createFromOrder($order);
+            if ($new_shipment) {
+                Tools::redirectAdmin(
+                    $this->context->link->getAdminLink('AdminShipment').'&viewlce_shipments&id_shipment='.$new_shipment->id
+                );
+            }
         }
 
-        $this->multiple_fieldsets = true;
-        $this->fields_form = array();
-        $this->fields_form[] = array('form' => array(
+        // We are editing an existing shipment, or we have failed to automatically create a new one
+        if (!Tools::isSubmit('addlce_shipments') || !$new_shipment) {
+            $countries = array();
+            foreach (Country::getCountries($this->context->language->id) as $c) {
+                $countries[$c['iso_code']] = array('country_code' => $c['iso_code'], 'name' => $c['name']);
+            }
+
+            $this->multiple_fieldsets = true;
+            $this->fields_form = array();
+            $this->fields_form[] = array('form' => array(
                   'legend' => array(
                           'title' => $this->l('Pickup and delivery'),
                           'image' => '../img/admin/cog.gif',
@@ -373,67 +371,67 @@ class AdminShipmentController extends ModuleAdminController
                           'title' => $this->l('Save'),
                           'class' => 'button',
                   ),
-                ));
+            ));
 
-        // Always forcing reset of quote and offer whenever trying to update
-        // a shipment
-        $this->fields_value['api_quote_uuid'] = '';
-        $this->fields_value['api_offer_uuid'] = '';
+            // Always forcing reset of quote and offer whenever trying to update
+            // a shipment
+            $this->fields_value['api_quote_uuid'] = '';
+            $this->fields_value['api_offer_uuid'] = '';
 
-        // Loading object, if possible; returning empty object otherwise
-        if (!($obj = $this->loadObject(true))) {
-            return;
+            // Loading object, if possible; returning empty object otherwise
+            if (!($obj = $this->loadObject(true))) {
+                return;
+            }
+
+            // If we have a new object, we initialize default values
+            if (!$obj->id) {
+                $order = new Order((int) Tools::getValue('order_id'));
+                $customer = new Customer((int) $order->id_customer);
+                $delivery_address = new Address((int) $order->id_address_delivery);
+
+                $this->fields_value['order_id'] = $order->id;
+                $this->fields_value['shipper_name'] = Configuration::get('MOD_LCE_DEFAULT_SHIPPER_NAME');
+                $this->fields_value['shipper_company_name'] = Configuration::get('MOD_LCE_DEFAULT_SHIPPER_COMPANY');
+                $this->fields_value['shipper_street'] = Configuration::get('MOD_LCE_DEFAULT_STREET');
+                $this->fields_value['shipper_city'] = Configuration::get('MOD_LCE_DEFAULT_CITY');
+                $this->fields_value['shipper_postal_code'] = Configuration::get('MOD_LCE_DEFAULT_POSTAL_CODE');
+                $this->fields_value['shipper_state'] = Configuration::get('MOD_LCE_DEFAULT_STATE');
+                $this->fields_value['shipper_country'] = Configuration::get('MOD_LCE_DEFAULT_COUNTRY');
+                $this->fields_value['shipper_phone'] = Configuration::get('MOD_LCE_DEFAULT_PHONE');
+                $this->fields_value['shipper_email'] = Configuration::get('MOD_LCE_DEFAULT_EMAIL');
+
+                $this->fields_value['recipient_name'] = $delivery_address->firstname.' '.$delivery_address->lastname;
+                if (!empty($delivery_address->company)) {
+                    $this->fields_value['recipient_is_a_company'] = 1;
+                }
+
+                $this->fields_value['recipient_company_name'] = $delivery_address->company;
+
+                $address_street = $delivery_address->address1;
+                if ($delivery_address->address2) {
+                    $address_street = $address_street."\n".$delivery_address->address2;
+                }
+                $this->fields_value['recipient_street'] = $address_street;
+                $this->fields_value['recipient_city'] = $delivery_address->city;
+                $this->fields_value['recipient_postal_code'] = $delivery_address->postcode;
+
+                if ($delivery_address->id_state) {
+                    $state = new State((int) $delivery_address->id_state);
+                    $this->fields_value['recipient_state'] = $state->name;
+                }
+
+                $country = new Country((int) $delivery_address->id_country);
+                $this->fields_value['recipient_country'] = $country->iso_code;
+
+                $recipient_phone = (!empty($delivery_address->phone_mobile) ?
+                  $delivery_address->phone_mobile : $delivery_address->phone);
+                $this->fields_value['recipient_phone'] = $recipient_phone;
+
+                $this->fields_value['recipient_email'] = $customer->email;
+            }
+
+            return parent::renderForm();
         }
-
-        // If we have a new object, we initialize default values
-        if (!$obj->id) {
-            $order = new Order((int) Tools::getValue('order_id'));
-            $customer = new Customer((int) $order->id_customer);
-            $delivery_address = new Address((int) $order->id_address_delivery);
-
-            $this->fields_value['order_id'] = $order->id;
-            $this->fields_value['shipper_name'] = Configuration::get('MOD_LCE_DEFAULT_SHIPPER_NAME');
-            $this->fields_value['shipper_company_name'] = Configuration::get('MOD_LCE_DEFAULT_SHIPPER_COMPANY');
-            $this->fields_value['shipper_street'] = Configuration::get('MOD_LCE_DEFAULT_STREET');
-            $this->fields_value['shipper_city'] = Configuration::get('MOD_LCE_DEFAULT_CITY');
-            $this->fields_value['shipper_postal_code'] = Configuration::get('MOD_LCE_DEFAULT_POSTAL_CODE');
-            $this->fields_value['shipper_state'] = Configuration::get('MOD_LCE_DEFAULT_STATE');
-            $this->fields_value['shipper_country'] = Configuration::get('MOD_LCE_DEFAULT_COUNTRY');
-            $this->fields_value['shipper_phone'] = Configuration::get('MOD_LCE_DEFAULT_PHONE');
-            $this->fields_value['shipper_email'] = Configuration::get('MOD_LCE_DEFAULT_EMAIL');
-
-            $this->fields_value['recipient_name'] = $delivery_address->firstname.' '.$delivery_address->lastname;
-            if (!empty($delivery_address->company)) {
-                $this->fields_value['recipient_is_a_company'] = 1;
-            }
-
-            $this->fields_value['recipient_company_name'] = $delivery_address->company;
-
-            $address_street = $delivery_address->address1;
-            if ($delivery_address->address2) {
-                $address_street = $address_street."\n".$delivery_address->address2;
-            }
-            $this->fields_value['recipient_street'] = $address_street;
-            $this->fields_value['recipient_city'] = $delivery_address->city;
-            $this->fields_value['recipient_postal_code'] = $delivery_address->postcode;
-
-            if ($delivery_address->id_state) {
-                $state = new State((int) $delivery_address->id_state);
-                $this->fields_value['recipient_state'] = $state->name;
-            }
-
-            $country = new Country((int) $delivery_address->id_country);
-            $this->fields_value['recipient_country'] = $country->iso_code;
-
-            $recipient_phone = (!empty($delivery_address->phone_mobile) ?
-              $delivery_address->phone_mobile : $delivery_address->phone);
-            $this->fields_value['recipient_phone'] = $recipient_phone;
-
-            $this->fields_value['recipient_email'] = $customer->email;
-        }
-
-        return parent::renderForm();
-      }
     }
 
     public function postProcess()
