@@ -224,6 +224,10 @@ class LowCostExpress extends CarrierModule
         $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
         $config_key = $this->_productConfigKey($row['lce_product_code']);
         Configuration::updateValue($config_key, $params['carrier']->id);
+
+        // Forcing need_range at true, so that price calculation gets shipping cost as calculated based on static rules, when applicable
+        $query = "UPDATE "._DB_PREFIX_."carrier SET need_range = 1 WHERE external_module_name = 'lowcostexpress' AND id_carrier = ".$params['carrier']->id."";
+        Db::getInstance()->Execute($query);
     }
 
     //===============
@@ -371,7 +375,7 @@ class LowCostExpress extends CarrierModule
                     $carrier->is_module = false;
                     $carrier->shipping_external = true;
                     $carrier->external_module_name = 'lowcostexpress';
-                    $carrier->need_range = 'false';
+                    $carrier->need_range = 'true';
 
                     $languages = Language::getLanguages(true);
                     foreach ($languages as $language) {
@@ -518,6 +522,10 @@ class LowCostExpress extends CarrierModule
     // Calculation of shipping cost, based on API requests
     public function getOrderShippingCost($cart, $shipping_cost)
     {
+        // If a shipping cost was calculated based on PS carrier native settings, we use this price.
+        if ($shipping_cost && $shipping_cost > 0) {
+            return $shipping_cost;
+        }
 
         // We check if we already have a LceQuote for this cart. If not, we request one.
         $quote = LceQuote::getLatestForCart($cart);
