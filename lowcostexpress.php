@@ -519,11 +519,35 @@ class LowCostExpress extends CarrierModule
      * CARRIER-RELATED
      */
 
+    // Returns true if current carrier setup has any sort of manual pricing rule
+    // defined. Can be either a carrier set as 'free', or any pricing rule with a price above 0.
+    public function carrierHasStaticPricelist()
+    {
+        $carrier = new Carrier((int)$this->id_carrier);
+        if ($carrier->is_free) {
+            return true;
+        }
+
+        $sql = 'SELECT COUNT(*)
+                    FROM `'._DB_PREFIX_.'delivery` d
+                    WHERE d.`id_carrier` = '.(int)$carrier->id.'
+                        AND d.`price` > 0';
+
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+
+
+        if ((int)$result > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     // Calculation of shipping cost, based on API requests
     public function getOrderShippingCost($cart, $shipping_cost)
     {
         // If a shipping cost was calculated based on PS carrier native settings, we use this price.
-        if ($shipping_cost && $shipping_cost > 0) {
+        if ($this->carrierHasStaticPricelist()) {
             return $shipping_cost;
         }
 
