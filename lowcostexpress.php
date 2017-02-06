@@ -132,6 +132,7 @@ class LowCostExpress extends CarrierModule
     //===============
     public function install()
     {
+
         // Creating SQL tables
         $sql = include dirname(__FILE__).'/sql-install.php';
         foreach ($sql as $s) {
@@ -172,14 +173,53 @@ class LowCostExpress extends CarrierModule
             return false;
         }
 
-        // register hooks
-        if (!$this->registerHook('displayOrderDetail') || // Front-side parcel tracking
-            !$this->registerHook('displayBackOfficeHeader') || // Adding CSS
-            !$this->registerHook('updateCarrier') || // For update of carrier IDs
-            !$this->registerHook('displayAdminOrder') // Displaying LCE Shipments on order admin page
-        ) {
-            return false;
+        // Register both controllers
+        $tab = new Tab();
+        $tab->class_name = 'AdminShipment';
+        $tab->id_parent = (int)Tab::getIdFromClassName('AdminParentShipping');
+        $tab->module = 'lowcostexpress';
+        $tab->active = false; // Not displaying in menu
+        $languages = DB::getInstance()->executeS(
+            'SELECT id_lang, iso_code FROM `' . _DB_PREFIX_ . 'lang`'
+        );
+        foreach ($languages as $value) {
+            $tab->name[$value['id_lang']] = ($value['iso_code'] == 'fr') ? 'My Flying Box (expéditions)' : 'My Flying Box (shipments)';
         }
+        $tab->add();
+
+        $tab = new Tab();
+        $tab->class_name = 'AdminParcel';
+        $tab->id_parent = (int)Tab::getIdFromClassName('AdminParentShipping');
+        $tab->module = 'lowcostexpress';
+        $tab->active = false; // Not displaying in menu
+        $languages = DB::getInstance()->executeS(
+            'SELECT id_lang, iso_code FROM `' . _DB_PREFIX_ . 'lang`'
+        );
+        foreach ($languages as $value) {
+            $tab->name[$value['id_lang']] = ($value['iso_code'] == 'fr') ? 'My Flying Box (colis)' : 'My Flying Box (parcels)';
+        }
+        $tab->add();
+
+        // Registering some default values for settings
+        $default_parcel_origin = Configuration::get('MOD_LCE_DEFAULT_ORIGIN');
+        if (strlen($default_parcel_origin) == 0) {
+            Configuration::updateValue('MOD_LCE_DEFAULT_ORIGIN', 'FR');
+        }
+        $default_shipper_country = Configuration::get('MOD_LCE_DEFAULT_COUNTRY');
+        if (strlen($default_shipper_country) == 0) {
+            Configuration::updateValue('MOD_LCE_DEFAULT_COUNTRY', 'FR');
+        }
+        $default_content = Configuration::get('MOD_LCE_DEFAULT_CONTENT');
+        if (strlen($default_content) == 0) {
+            Configuration::updateValue('MOD_LCE_DEFAULT_CONTENT', 'N/A');
+        }
+
+        // register hooks
+        $this->registerHook('displayOrderDetail'); // Front-side parcel tracking
+        $this->registerHook('displayBackOfficeHeader'); // Adding CSS
+        $this->registerHook('updateCarrier'); // For update of carrier IDs
+        $this->registerHook('displayAdminOrder'); // Displaying LCE Shipments on order admin page
+
 
         return true;
     }
@@ -206,6 +246,19 @@ class LowCostExpress extends CarrierModule
             $carrier->active = false;
             $carrier->save();
         }
+
+        // Remove tabs
+        $tabs = Tab::getCollectionFromModule('lowcostexpress');
+        foreach ($tabs as $tab) {
+            $tab->delete();
+        }
+
+        // unregister hooks
+        $this->unregisterHook('displayOrderDetail');
+        $this->unregisterHook('displayBackOfficeHeader');
+        $this->unregisterHook('updateCarrier');
+        $this->unregisterHook('displayAdminOrder');
+
 
         return parent::uninstall();
     }
