@@ -31,7 +31,7 @@ function upgrade_module_0_0_24($module)
 {
 
     // Added table to store selected relay delivery location code for a given cart
-    $result = Db::getInstance()->execute(
+    Db::getInstance()->execute(
         'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_cart_selected_relay` (
         `id_cart` int(10) NOT null,
         `relay_code` varchar(10) NOT null,
@@ -40,7 +40,7 @@ function upgrade_module_0_0_24($module)
     );
 
     // Storing all services in a separate table, for more flexibility
-    $result = Db::getInstance()->execute(
+    Db::getInstance()->execute(
         'CREATE TABLE IF NOT EXISTS '._DB_PREFIX_.'lce_services (
           `id_service` int(11) NOT NULL AUTO_INCREMENT,
           `id_carrier` int(11) NOT NULL,
@@ -57,43 +57,54 @@ function upgrade_module_0_0_24($module)
           ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;'
     );
 
-    $result = Db::getInstance()->execute(
-        'ALTER TABLE `'._DB_PREFIX_.'lce_shipments` ADD COLUMN `lce_service_id` int(11) AFTER carrier_id;'
+    Db::getInstance()->execute(
+        'ALTER TABLE `'._DB_PREFIX_.'lce_shipments`
+         ADD COLUMN `lce_service_id` int(11) AFTER carrier_id;'
     );
 
-    $result = Db::getInstance()->execute(
-        'ALTER TABLE `'._DB_PREFIX_.'lce_quotes` ADD COLUMN `id_shipment` int(11) AFTER id_cart;'
+    Db::getInstance()->execute(
+        'ALTER TABLE `'._DB_PREFIX_.'lce_quotes`
+         ADD COLUMN `id_shipment` int(11) AFTER id_cart;'
     );
 
-    $result = Db::getInstance()->execute(
-        'ALTER TABLE `'._DB_PREFIX_.'lce_offers` ADD COLUMN `lce_service_id` int(11) AFTER id_quote;'
+    Db::getInstance()->execute(
+        'ALTER TABLE `'._DB_PREFIX_.'lce_offers`
+         ADD COLUMN `lce_service_id` int(11) AFTER id_quote;'
     );
 
-    $result = Db::getInstance()->execute(
-        'ALTER TABLE `'._DB_PREFIX_.'lce_offers` ADD COLUMN `pickup_available` BOOLEAN NOT NULL DEFAULT "1" AFTER currency;'
+    Db::getInstance()->execute(
+        'ALTER TABLE `'._DB_PREFIX_.'lce_offers`
+         ADD COLUMN `pickup_available` BOOLEAN NOT NULL DEFAULT "1" AFTER currency;'
     );
 
-    $result = Db::getInstance()->execute(
-        'ALTER TABLE `'._DB_PREFIX_.'lce_offers` ADD COLUMN `dropoff_available` BOOLEAN NOT NULL DEFAULT "1" AFTER pickup_available;'
+    Db::getInstance()->execute(
+        'ALTER TABLE `'._DB_PREFIX_.'lce_offers`
+         ADD COLUMN `dropoff_available` BOOLEAN NOT NULL DEFAULT "1" AFTER pickup_available;'
     );
 
-    $result = Db::getInstance()->execute(
-        'ALTER TABLE `'._DB_PREFIX_.'lce_shipments` ADD COLUMN `ad_valorem_insurance` BOOLEAN NOT NULL DEFAULT "0" AFTER recipient_email;'
+    Db::getInstance()->execute(
+        'ALTER TABLE `'._DB_PREFIX_.'lce_shipments`
+         ADD COLUMN `ad_valorem_insurance` BOOLEAN NOT NULL DEFAULT "0" AFTER recipient_email;'
     );
 
-    $result = Db::getInstance()->execute(
-        'ALTER TABLE `'._DB_PREFIX_.'lce_parcels` ADD COLUMN `value_to_insure` DECIMAL(6,2) NOT NULL DEFAULT "0" AFTER currency;'
+    Db::getInstance()->execute(
+        'ALTER TABLE `'._DB_PREFIX_.'lce_parcels`
+         ADD COLUMN `value_to_insure` DECIMAL(6,2) NOT NULL DEFAULT "0" AFTER currency;'
     );
 
-    $result = Db::getInstance()->execute(
-        'ALTER TABLE `'._DB_PREFIX_.'lce_parcels` ADD COLUMN `insured_value_currency` VARCHAR(255) NOT NULL DEFAULT "" AFTER value_to_insure;'
+    Db::getInstance()->execute(
+        'ALTER TABLE `'._DB_PREFIX_.'lce_parcels`
+         ADD COLUMN `insured_value_currency` VARCHAR(255) NOT NULL DEFAULT "" AFTER value_to_insure;'
     );
 
-    $result = Db::getInstance()->execute(
-        'ALTER TABLE `'._DB_PREFIX_.'lce_offers` ADD COLUMN `insurance_price_in_cents` INT(11) AFTER total_price_in_cents;'
+    Db::getInstance()->execute(
+        'ALTER TABLE `'._DB_PREFIX_.'lce_offers`
+         ADD COLUMN `insurance_price_in_cents` INT(11) AFTER total_price_in_cents;'
     );
-    // Forcing need_range at true, so that price calculation gets shipping cost as calculated based on static rules, when applicable
-    $result = Db::getInstance()->execute(
+
+    // Forcing need_range at true, so that price calculation gets shipping cost
+    // as calculated based on static rules, when applicable
+    Db::getInstance()->execute(
         "UPDATE "._DB_PREFIX_."carrier SET need_range = 1 WHERE external_module_name = 'lowcostexpress';"
     );
 

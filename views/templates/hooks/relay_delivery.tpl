@@ -23,16 +23,16 @@
  *}
 
 <script type="text/javascript">
-    var customer_full_address="{$customer_full_address|escape:'javascript'}";
-    var customer_address_street="{$customer_address_street|escape:'javascript'}";
-    var customer_city="{$customer_city|escape:'javascript'}";
-    var customer_country="{$customer_country|escape:'javascript'}";
-    var customer_postal_code="{$customer_postal_code|escape:'javascript'}";
-    var customer_lastname="{$customer_lastname|escape:'javascript'}";
-    var customer_firstname="{$customer_firstname|escape:'javascript'}";
-    var cart_id="{$cart_id|escape:'javascript'}";
-    var carrier_ids="{$carrier_ids|escape:'javascript'}".split('-');
-    var ajax_url="{$module_uri|escape:'javascript'}";
+    var customer_full_address="{$customer_full_address|escape:'javascript':'UTF-8'}";
+    var customer_address_street="{$customer_address_street|escape:'javascript':'UTF-8'}";
+    var customer_city="{$customer_city|escape:'javascript':'UTF-8'}";
+    var customer_country="{$customer_country|escape:'javascript':'UTF-8'}";
+    var customer_postal_code="{$customer_postal_code|escape:'javascript':'UTF-8'}";
+    var customer_lastname="{$customer_lastname|escape:'javascript':'UTF-8'}";
+    var customer_firstname="{$customer_firstname|escape:'javascript':'UTF-8'}";
+    var cart_id="{$cart_id|escape:'javascript':'UTF-8'}";
+    var carrier_ids="{$carrier_ids|escape:'javascript':'UTF-8'}".split('-');
+    var ajax_url="{$module_uri|escape:'javascript':'UTF-8'}";
     var oldCodePostal=null;
     var errormessage="{l s='No relay location has been selected ! Please select a location to continue.' mod='lowcostexpress'}";
 

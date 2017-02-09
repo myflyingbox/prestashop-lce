@@ -23,7 +23,6 @@
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
-
 header('Content-type: text/plain');
 include_once '../../../config/config.inc.php';
 
@@ -38,7 +37,10 @@ if ($cart->id_customer!=(int)Context::getContext()->customer->id) {
     die('KO');
 }
 
-Db::getInstance()->execute('INSERT INTO `'._DB_PREFIX_.'lce_cart_selected_relay` VALUES ('
-  .(int)Tools::getValue('cart_id').', "'.pSQL(Tools::getValue('relay_code')).'") ON DUPLICATE KEY UPDATE relay_code="'.pSQL(Tools::getValue('relay_code')).'"');
+Db::getInstance()->execute(
+    'INSERT INTO `'._DB_PREFIX_.'lce_cart_selected_relay` VALUES ('
+    .(int)Tools::getValue('cart_id').', "'.pSQL(Tools::getValue('relay_code')).'")
+    ON DUPLICATE KEY UPDATE relay_code="'.pSQL(Tools::getValue('relay_code')).'"'
+);
 
 echo 'Success';

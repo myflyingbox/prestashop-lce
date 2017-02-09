@@ -62,7 +62,6 @@ class LceService extends ObjectModel
     {
         $sql = 'SELECT * FROM '._DB_PREFIX_.'lce_services as s
                 WHERE s.`id_carrier` = '.(int)$id_carrier;
-        $collection = array();
         $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
         $service = new self((int) $row['id_service']);
 
@@ -73,7 +72,6 @@ class LceService extends ObjectModel
     {
         $sql = 'SELECT * FROM '._DB_PREFIX_.'lce_services as s
                 WHERE s.`code` = "'.$service_code.'"';
-        $collection = array();
         $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
         if ($row) {
             $service = new self((int) $row['id_service']);
@@ -97,8 +95,6 @@ class LceService extends ObjectModel
 
     public function logoFileName()
     {
-        $filename = '';
-
         if ($this->carrier_code == 'ups') {
             return 'ups.png';
         } else if ($this->carrier_code == 'dhl') {
@@ -127,7 +123,8 @@ class LceService extends ObjectModel
         return $collection;
     }
 
-    public static function totalCount() {
+    public static function totalCount()
+    {
         $sql = 'SELECT COUNT(*) as total FROM '._DB_PREFIX_.'lce_services';
         $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
         return $row['total'];

@@ -95,7 +95,8 @@ class LowCostExpress extends CarrierModule
         parent::__construct();
 
         $this->displayName = $this->l('MY FLYING BOX Express Shipping');
-        $this->description = $this->l('Vos expéditions simplifiées avec les principaux transporteurs express (DHL, UPS, Chronopost...) à tarifs négociés ultra-compétitifs.');
+        $this->description = $this->l('Vos expéditions simplifiées avec les principaux transporteurs express
+            (DHL, UPS, Chronopost...) à tarifs négociés ultra-compétitifs.');
         $this->ps_versions_compliancy = array('min' => '1.5', 'max' => _PS_VERSION_);
         $this->module_key = '5100c5ae613ddfacd4bc468aee7ee59e';
 
@@ -184,7 +185,8 @@ class LowCostExpress extends CarrierModule
             'SELECT id_lang, iso_code FROM `' . _DB_PREFIX_ . 'lang`'
         );
         foreach ($languages as $value) {
-            $tab->name[$value['id_lang']] = ($value['iso_code'] == 'fr') ? 'My Flying Box (expéditions)' : 'My Flying Box (shipments)';
+            $tab->name[$value['id_lang']] = ($value['iso_code'] == 'fr') ?
+                'My Flying Box (expéditions)' : 'My Flying Box (shipments)';
         }
         $tab->add();
 
@@ -197,21 +199,22 @@ class LowCostExpress extends CarrierModule
             'SELECT id_lang, iso_code FROM `' . _DB_PREFIX_ . 'lang`'
         );
         foreach ($languages as $value) {
-            $tab->name[$value['id_lang']] = ($value['iso_code'] == 'fr') ? 'My Flying Box (colis)' : 'My Flying Box (parcels)';
+            $tab->name[$value['id_lang']] = ($value['iso_code'] == 'fr') ?
+                'My Flying Box (colis)' : 'My Flying Box (parcels)';
         }
         $tab->add();
 
         // Registering some default values for settings
         $default_parcel_origin = Configuration::get('MOD_LCE_DEFAULT_ORIGIN');
-        if (strlen($default_parcel_origin) == 0) {
+        if (Tools::strlen($default_parcel_origin) == 0) {
             Configuration::updateValue('MOD_LCE_DEFAULT_ORIGIN', 'FR');
         }
         $default_shipper_country = Configuration::get('MOD_LCE_DEFAULT_COUNTRY');
-        if (strlen($default_shipper_country) == 0) {
+        if (Tools::strlen($default_shipper_country) == 0) {
             Configuration::updateValue('MOD_LCE_DEFAULT_COUNTRY', 'FR');
         }
         $default_content = Configuration::get('MOD_LCE_DEFAULT_CONTENT');
-        if (strlen($default_content) == 0) {
+        if (Tools::strlen($default_content) == 0) {
             Configuration::updateValue('MOD_LCE_DEFAULT_CONTENT', 'N/A');
         }
 
@@ -587,7 +590,9 @@ class LowCostExpress extends CarrierModule
 
         $api_login = Configuration::get('MOD_LCE_API_LOGIN');
         $api_password = Configuration::get('MOD_LCE_API_PASSWORD');
-        $show_connection_error = ($api_login != '' && $api_password != '' && !$this->testApiConnection()) ? true : false;
+        $show_connection_error = ($api_login != '' &&
+                                  $api_password != '' &&
+                                  !$this->testApiConnection()) ? true : false;
 
         $countries = Country::getCountries($this->context->language->id);
 
@@ -798,13 +803,6 @@ class LowCostExpress extends CarrierModule
         }
         $currentIndex .= '&id_order='.(int) ($params['id_order']);
 
-        // Obtaining the selected carrier. Even if the carrier is not LCE,
-        // we will offer the possibility to use LCE shipments
-        $carrier_name = Db::getInstance()->getRow('
-                              SELECT c.external_module_name
-                              FROM `'._DB_PREFIX_.'carrier` as c, `'._DB_PREFIX_.'orders` as o
-                              WHERE c.id_carrier = o.id_carrier AND o.id_order = "'.(int) ($params['id_order']).'"');
-
         if (!Configuration::get('MOD_LCE_API_LOGIN') || !Configuration::get('MOD_LCE_API_PASSWORD')) {
             $var = array(
                 'error' => $this->l('You have not configured your LCE account'),
@@ -868,7 +866,11 @@ class LowCostExpress extends CarrierModule
         }
         $module_uri = _MODULE_DIR_.$this->name;
         $this->context->controller->addCSS($module_uri.'/views/css/style.css', 'all');
-        $this->context->controller->addJS('https://maps.google.com/maps/api/js?key=AIzaSyBDTbHvOQcvZG4EmPI5GDAHge7ivXVvIKA');
+
+        $this->context
+             ->controller
+             ->addJS('https://maps.google.com/maps/api/js?key=AIzaSyBDTbHvOQcvZG4EmPI5GDAHge7ivXVvIKA');
+
         $this->context->controller->addJS($module_uri.'/views/js/delivery_locations.js');
     }
 

@@ -181,7 +181,7 @@ class AdminShipmentController extends ModuleAdminController
             $api_response = $api_offer->available_delivery_locations($params);
 
             $relay_delivery_locations = array();
-            foreach ($api_response as $key => $location) {
+            foreach ($api_response as $location) {
                 $relay_delivery_locations[] = array(
                     'code' => $location->code,
                     'name' => $location->company,
@@ -281,7 +281,8 @@ class AdminShipmentController extends ModuleAdminController
             $new_shipment = LceShipment::createFromOrder($order);
             if ($new_shipment) {
                 Tools::redirectAdmin(
-                    $this->context->link->getAdminLink('AdminShipment').'&viewlce_shipments&id_shipment='.$new_shipment->id
+                    $this->context->link->getAdminLink('AdminShipment').
+                        '&viewlce_shipments&id_shipment='.$new_shipment->id
                 );
             }
         }
@@ -647,7 +648,9 @@ class AdminShipmentController extends ModuleAdminController
 
         if (!$lce_service) {
             header('HTTP/1.0 404 Not Found');
-            die(Tools::jsonEncode(array('error' => $this->l('Service not found. Please refresh your services in module config.'))));
+            die(Tools::jsonEncode(array(
+                'error' => $this->l('Service not found. Please refresh your services in module config.')
+            )));
         }
 
         // Everything looks good, proceeding with booking
@@ -741,9 +744,15 @@ class AdminShipmentController extends ModuleAdminController
 
         if (!$shipment->save()) {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(Tools::jsonEncode(array('status' => 'error', 'message' => $this->l('Shipment could not be updated.'))));
+            die(Tools::jsonEncode(array(
+                'status' => 'error',
+                'message' => $this->l('Shipment could not be updated.')
+            )));
         } else {
-            die(Tools::jsonEncode(array('status' => 'success', 'message' => $this->l('Shipment updated with order uuid.'))));
+            die(Tools::jsonEncode(array(
+                'status' => 'success',
+                'message' => $this->l('Shipment updated with order uuid.')
+            )));
         }
     }
 }

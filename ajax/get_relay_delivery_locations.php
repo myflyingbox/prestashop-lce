@@ -23,7 +23,6 @@
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
-
 header('Content-type: text/plain');
 require('../../../config/config.inc.php');
 require('../lowcostexpress.php');
@@ -35,7 +34,8 @@ $lce_service = LceService::findByCarrierId($carrier_id);
 
 $cart_id = (int)Tools::getValue('cart_id');
 $cart = new Cart($cart_id);
-// Getting latest quote for this cart, regardless of any time constraint. We are not getting a tariff here, just relay locations.
+// Getting latest quote for this cart, regardless of any time constraint.
+// We are not getting a tariff here, just relay locations.
 $quote = LceQuote::getLatestForCart($cart, false);
 
 $offer = LceOffer::getForQuoteAndLceService($quote, $lce_service);

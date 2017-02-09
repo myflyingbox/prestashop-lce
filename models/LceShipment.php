@@ -394,7 +394,8 @@ class LceShipment extends ObjectModel
         return $parcels;
     }
 
-    public static function totalConfirmed() {
+    public static function totalConfirmed()
+    {
         $sql = 'SELECT COUNT(*) as total FROM '._DB_PREFIX_.'lce_shipments as s
                 WHERE s.`api_order_uuid` != ""';
         $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
