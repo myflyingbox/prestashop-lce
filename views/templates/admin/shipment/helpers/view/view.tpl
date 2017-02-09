@@ -258,9 +258,9 @@
                           <label for="ad_valorem_insurance">{l s='Ad-valorem insurance:' mod='lowcostexpress'}</label>
                           <input id="ad_valorem_insurance" name="ad_valorem_insurance" type="checkbox" value="1"{if $shipment->ad_valorem_insurance eq true} CHECKED{/if} />
                           <p>
-                            {l s='Insurable value:' mod='lowcostexpress'} <b>{$insurable_value}</b>
+                            {l s='Insurable value:' mod='lowcostexpress'} <b>{$insurable_value|escape:'htmlall':'UTF-8'}</b>
                             <br/>
-                            {l s='Insurance cost:' mod='lowcostexpress'} <b>{$insurance_cost}</b>
+                            {l s='Insurance cost:' mod='lowcostexpress'} <b>{$insurance_cost|escape:'htmlall':'UTF-8'}</b>
                           </p>
                         </div>
                     {/if}

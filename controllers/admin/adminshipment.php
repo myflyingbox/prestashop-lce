@@ -282,7 +282,7 @@ class AdminShipmentController extends ModuleAdminController
             if ($new_shipment) {
                 Tools::redirectAdmin(
                     $this->context->link->getAdminLink('AdminShipment').
-                        '&viewlce_shipments&id_shipment='.$new_shipment->id
+                    '&viewlce_shipments&id_shipment='.$new_shipment->id
                 );
             }
         }
