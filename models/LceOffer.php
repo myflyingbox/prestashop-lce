@@ -27,10 +27,12 @@ class LceOffer extends ObjectModel
 {
     public $id_offer;
     public $id_quote;
+    public $lce_service_id;
     public $api_offer_uuid;
     public $lce_product_code;
     public $base_price_in_cents;
     public $total_price_in_cents;
+    public $insurance_price_in_cents;
     public $currency;
     public $date_add;
     public $date_upd;
@@ -41,10 +43,12 @@ class LceOffer extends ObjectModel
         'multilang' => false,
         'fields' => array(
             'id_quote' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
+            'lce_service_id' => array('type' => self::TYPE_INT),
             'api_offer_uuid' => array('type' => self::TYPE_STRING, 'required' => true),
             'lce_product_code' => array('type' => self::TYPE_STRING, 'required' => true),
             'base_price_in_cents' => array('type' => self::TYPE_INT, 'required' => true),
             'total_price_in_cents' => array('type' => self::TYPE_INT, 'required' => true),
+            'insurance_price_in_cents' => array('type' => self::TYPE_INT),
             'currency' => array('type' => self::TYPE_STRING, 'required' => true),
             'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
             'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
@@ -54,12 +58,12 @@ class LceOffer extends ObjectModel
         ),
     );
 
-    public static function getForQuoteAndLceProduct($quote, $lce_product_code)
+    public static function getForQuoteAndLceService($quote, $lce_service)
     {
         $sql = 'SELECT `offer`.`id_offer`
                 FROM '._DB_PREFIX_.'lce_offers AS offer
                 WHERE (`offer`.`id_quote` = '.(int) $quote->id.'
-                  AND `offer`.`lce_product_code` = "'.pSQL($lce_product_code).'")';
+                  AND `offer`.`lce_service_id` = '.(int) $lce_service->id_service.')';
         if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql)) {
             $offer = new self($row['id_offer']);
 
@@ -67,5 +71,16 @@ class LceOffer extends ObjectModel
         } else {
             return false;
         }
+    }
+    /**
+     * Get available delivery locations from API.
+     * Expects an array containing 'street' and 'city', to pass to the request.
+     */
+    public function getDeliveryLocations($params)
+    {
+
+        $api_offer = Lce\Resource\Offer::find($this->api_offer_uuid);
+
+        return $api_offer->available_delivery_locations($params);
     }
 }

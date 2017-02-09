@@ -12,3 +12,118 @@ table tbody td:first {
 table tbody td {
   border-top: 1px solid #999999;
 }
+
+#relay_container #map-canvas {
+ height:500px;
+}
+
+span.lce-select-location {
+  font-weight: bold;
+  color: blue;
+  cursor: pointer;
+}
+
+div.lce-opening-hours {
+  padding-top: 15px;
+}
+
+div.lce-opening-hours table tbody td {
+  border-top: 0px solid white;
+}
+
+div.myflyingbox-settings-header {
+  background-color: #55aae0;
+  color: #4c255a;
+  padding: 25px 10px;
+  font-family: Raleway;
+  font-size: 18px;
+  margin-bottom: 30px;
+}
+
+div.myflyingbox-settings-header img.logo {
+  margin: 15px;
+  width: 200px;
+}
+
+div.myflyingbox-settings-header.no-bootstrap img.logo {
+  float: left;
+}
+
+
+div.myflyingbox-settings-header img.happy-box {
+  margin: 15px;
+  width: 150px;
+}
+
+div.myflyingbox-settings-header.no-bootstrap img.happy-box {
+  float: right;
+}
+
+div.myflyingbox-settings-header.no-bootstrap div.mfb-content {
+  margin-left: 250px;
+}
+
+div.myflyingbox-settings-header a.btn-mfb {
+  padding: 2px 6px;
+  background-color: #ffd400;
+  color: #4c255a;
+  font-weight: normal;
+  border: 1px solid #ffd400;
+}
+
+div.myflyingbox-settings-header a.btn-mfb:hover {
+  text-decoration: none;
+  border: 1px solid #4c255a;
+}
+
+div.myflyingbox-settings-header ul.mfb-advantages li::before {
+    content: "+";
+    color: #ffd400;
+    font-size: 26px;
+    font-family: Grota-ExtraBoldItalic;
+    margin-right: 5px;
+    vertical-align: -7px;
+}
+
+div.myflyingbox-settings-header ul.mfb-advantages li {
+    list-style-type: none;
+}
+
+div.myflyingbox-settings-header ol.getting-started {
+    font-size: 14px;
+}
+
+div.myflyingbox-settings-header.no-bootstrap ol.getting-started {
+    list-style-type: decimal;
+    list-style-position: inside;
+}
+
+@font-face {
+    font-family:'Grota-ExtraBoldItalic';
+    src:url(../fonts/grota/Grota-ExtraBoldItalic.otf) format("opentype");
+    font-weight:normal;
+    font-style:normal
+}
+
+@font-face {
+    font-family:'Raleway';
+    src:url(../fonts/raleway/Raleway.ttf) format("truetype");
+    font-weight:normal;
+    font-style:normal
+}
+@font-face {
+    font-family:'Raleway-Bold';
+    src:url(../fonts/raleway/Raleway-Bold.ttf) format("truetype");
+    font-weight:normal;
+    font-style:normal
+}
+@font-face {
+    font-family:'Raleway-ExtraBold';
+    src:url(../fonts/raleway/Raleway-ExtraBold.ttf) format("truetype");
+    font-weight:normal;
+    font-style:normal
+}
+
+div.myflyingbox-settings p.error {
+    color: red;
+}

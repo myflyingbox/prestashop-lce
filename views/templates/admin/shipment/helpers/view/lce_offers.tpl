@@ -36,11 +36,14 @@
 {foreach from=$offers item=offer}
   <tr>
     <td><input type='radio' name='offer_uuid' value='{$offer->id|escape:'htmlall':'UTF-8'}'></td>
-    
+
     <td>{$offer->product_name|escape:'htmlall':'UTF-8'}
         <br/>{l s='Total price:' mod='lowcostexpress'} <b>{$offer->total_price|escape:'htmlall':'UTF-8'}</b>
+        {if $offer->insurance_price}
+        <br/>{l s='Insurance price:' mod='lowcostexpress'} <b>{$offer->insurance_price|escape:'htmlall':'UTF-8'}</b>
+        {/if}
     </td>
-    
+
     <td>
       <ul>
         <li>{$offer->collection_informations|nl2br|escape:'htmlall':'UTF-8'}</li>

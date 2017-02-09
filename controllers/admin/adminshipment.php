@@ -85,34 +85,45 @@ class AdminShipmentController extends ModuleAdminController
 
         $parcels = LceParcel::findAllForShipmentId($shipment->id_shipment);
         $order = new Order((int) $shipment->order_id);
-        $offer = false;
+        $api_offer = false;
+
         if ($shipment->api_offer_uuid) {
-            $offer = Lce\Resource\Offer::find($shipment->api_offer_uuid);
+
+            $api_offer = Lce\Resource\Offer::find($shipment->api_offer_uuid);
+
+            // We need to keep some sort of backward compatibility for past shipments
+            // that do not have a service id
+            if ($shipment->lce_service_id) {
+                $lce_service = new LceService($shipment->lce_service_id);
+            } else {
+                $lce_service = LceService::findByCode($api_offer->product->code);
+            }
+
             $offer_data = new stdClass();
-            $offer_data->id = $offer->id;
-            $offer_data->product_name = $offer->product->name;
-            $offer_data->total_price = $offer->total_price->formatted;
+            $offer_data->id = $api_offer->id;
+            $offer_data->product_name = $api_offer->product->name;
+            $offer_data->total_price = $api_offer->total_price->formatted;
 
-            if (property_exists($offer->product->collection_informations, $this->context->language->iso_code)) {
+            if (property_exists($api_offer->product->collection_informations, $this->context->language->iso_code)) {
                 $lang = $this->context->language->iso_code;
             } else {
                 $lang = 'en';
             }
-            $offer_data->collection_informations = $offer->product->collection_informations->$lang;
+            $offer_data->collection_informations = $api_offer->product->collection_informations->$lang;
 
-            if (property_exists($offer->product->delivery_informations, $this->context->language->iso_code)) {
+            if (property_exists($api_offer->product->delivery_informations, $this->context->language->iso_code)) {
                 $lang = $this->context->language->iso_code;
             } else {
                 $lang = 'en';
             }
-            $offer_data->delivery_informations = $offer->product->delivery_informations->$lang;
+            $offer_data->delivery_informations = $api_offer->product->delivery_informations->$lang;
 
-            if (property_exists($offer->product->details, $this->context->language->iso_code)) {
+            if (property_exists($api_offer->product->details, $this->context->language->iso_code)) {
                 $lang = $this->context->language->iso_code;
             } else {
                 $lang = 'en';
             }
-            $offer_data->product_details = $offer->product->details->$lang;
+            $offer_data->product_details = $api_offer->product->details->$lang;
         } else {
             $offer_data = false;
         }
@@ -138,11 +149,11 @@ class AdminShipmentController extends ModuleAdminController
 
         // Collection dates (pickup only)
         $collection_dates = false;
-        if ($offer && $offer->product->pick_up) {
+        if ($api_offer && $api_offer->product->pick_up) {
             $collection_dates = array();
             // We use dates returned by the API if available
-            if (count($offer->collection_dates) > 0) {
-                foreach ($offer->collection_dates as $date) {
+            if (count($api_offer->collection_dates) > 0) {
+                foreach ($api_offer->collection_dates as $date) {
                     $collection_dates[] = $date->date;
                 }
             } else {
@@ -156,12 +167,58 @@ class AdminShipmentController extends ModuleAdminController
             }
         }
 
+        // Case of relay delivery service
+        $relay_delivery_locations = false;
+        $selected_relay_location = false;
+        if ($api_offer && $lce_service && $lce_service->relay_delivery) {
+            // First, we need a list of available relay delivery locations
+            $delivery_address = new Address((int) $order->id_address_delivery);
+
+            $params = array(
+                'city' => $delivery_address->city,
+                'street' => $delivery_address->address1
+            );
+            $api_response = $api_offer->available_delivery_locations($params);
+
+            $relay_delivery_locations = array();
+            foreach ($api_response as $key => $location) {
+                $relay_delivery_locations[] = array(
+                    'code' => $location->code,
+                    'name' => $location->company,
+                    'address' => $location->street,
+                    'postal_code' => $location->postal_code,
+                    'city' => $location->city,
+                    'description' => $location->company.' - '.$location->street.' - '.$location->city
+                  );
+            }
+
+            $sql = 'SELECT `relay_code`
+                            FROM '._DB_PREFIX_.'lce_cart_selected_relay AS selected_relay
+                            WHERE `selected_relay`.`id_cart` = '.(int)$order->id_cart;
+
+            if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql)) {
+                $selected_relay_location = $row['relay_code'];
+            }
+        }
+
+        // For Ad Valorem insurance
+        $insurable_value = number_format($shipment->insurableValue(), 2, ',', ' ').' EUR';
+        if ($api_offer->insurance_price) {
+            $insurance_cost = $api_offer->insurance_price->formatted;
+        } else {
+            $insurance_cost = false;
+        }
+
+
         // Smarty assign
         $this->tpl_view_vars = array(
           'order' => $order,
           'offer' => $offer_data,
+          'service' => $lce_service,
           'parcels' => $parcels,
           'collection_dates' => $collection_dates,
+          'relay_delivery_locations' => $relay_delivery_locations,
+          'selected_relay_location' => $selected_relay_location,
           'link_order' => $this->context->link->getAdminLink('AdminOrders').'&vieworder&id_order='.$order->id,
           'link_edit_shipment' => $this->context->link->getAdminLink('AdminShipment').
                                       '&updatelce_shipments&id_shipment='.$shipment->id,
@@ -190,6 +247,8 @@ class AdminShipmentController extends ModuleAdminController
               (int) Context::getContext()->language->id,
               Country::getByIso($shipment->recipient_country)
           ),
+          'insurable_value' => $insurable_value,
+          'insurance_cost' => $insurance_cost,
         );
 
         return parent::renderView();
@@ -463,7 +522,10 @@ class AdminShipmentController extends ModuleAdminController
             $params['parcels'][] = array('length' => $parcel->length,
                                           'width' => $parcel->width,
                                           'height' => $parcel->height,
-                                          'weight' => $parcel->weight, );
+                                          'weight' => $parcel->weight,
+                                          'insured_value' => $parcel->value_to_insure,
+                                          'insured_currency' => $parcel->insured_value_currency
+                                        );
         }
 
         try {
@@ -478,6 +540,9 @@ class AdminShipmentController extends ModuleAdminController
             $data->id = $offer->id;
             $data->product_name = $offer->product->name;
             $data->total_price = $offer->total_price->formatted;
+            if ($offer->insurance_price) {
+                $data->insurance_price =  $offer->insurance_price->formatted;
+            }
 
             if (property_exists($offer->product->collection_informations, $this->context->language->iso_code)) {
                 $lang = $this->context->language->iso_code;
@@ -536,9 +601,16 @@ class AdminShipmentController extends ModuleAdminController
             header('HTTP/1.0 422 Unprocessable Entity');
             die(Tools::jsonEncode(array('error' => $this->l('Shipment is already booked.'))));
         }
+        $offer_uuid = Tools::getValue('offer_uuid');
+        $quote_uuid = Tools::getValue('quote_uuid');
 
-        $shipment->api_quote_uuid = Tools::getValue('quote_uuid');
-        $shipment->api_offer_uuid = Tools::getValue('offer_uuid');
+        $api_offer = Lce\Resource\Offer::find($offer_uuid);
+        $lce_service = LceService::findByCode($api_offer->product->code);
+
+        $shipment->lce_service_id = $lce_service->id_service;
+        $shipment->api_quote_uuid = $quote_uuid;
+        $shipment->api_offer_uuid = $offer_uuid;
+
         if (!$shipment->save()) {
             header('HTTP/1.0 422 Unprocessable Entity');
             die(Tools::jsonEncode(array('error' => $this->l('Shipment could not be updated.'))));
@@ -571,6 +643,13 @@ class AdminShipmentController extends ModuleAdminController
             )));
         }
 
+        $lce_service = new LceService($shipment->lce_service_id);
+
+        if (!$lce_service) {
+            header('HTTP/1.0 404 Not Found');
+            die(Tools::jsonEncode(array('error' => $this->l('Service not found. Please refresh your services in module config.'))));
+        }
+
         // Everything looks good, proceeding with booking
 
         $params = array(
@@ -600,30 +679,71 @@ class AdminShipmentController extends ModuleAdminController
             $params['shipper']['collection_date'] = $collection_date;
         }
 
+        // Relay delivery location
+        $selected_relay_location = Tools::getValue('selected_relay_location');
+        if ($lce_service->relay_delivery && $selected_relay_location) {
+            $params['recipient']['location_code'] = $selected_relay_location;
+        }
+
         $parcels = LceParcel::findAllForShipmentId($shipment->id);
         foreach ($parcels as $parcel) {
             $params['parcels'][] = array('description' => $parcel->description,
                                           'value' => $parcel->value,
                                           'currency' => $parcel->currency,
-                                          'country_of_origin' => $parcel->country_of_origin, );
+                                          'country_of_origin' => $parcel->country_of_origin);
+        }
+
+        // Ad valorem insurance
+        $ad_valorem_insurance = Tools::getValue('ad_valorem_insurance');
+        if ($ad_valorem_insurance == '1') {
+            $params['insure_shipment'] = true;
         }
 
         // Placing the order on the API
         try {
-            $order = Lce\Resource\Order::place($shipment->api_offer_uuid, $params);
+            $order_api = Lce\Resource\Order::place($shipment->api_offer_uuid, $params);
         } catch (\Exception $e) {
-            die('<div class="bootstrap"><div class="alert alert-danger">'.$e->getMessage().'</div></div>');
+            header('Content-type: application/json');
+            header('HTTP/1.0 422 Unprocessable Entity');
+            die(Tools::jsonEncode(array('status' => 'error', 'message' => $e->getMessage())));
         }
 
         // Saving the order uuid
-        $shipment->api_order_uuid = $order->id;
+        $shipment->api_order_uuid = $order_api->id;
         $shipment->date_booking = date('Y-m-d H:i:s');
+
+        // Recording the tracking number using standard Prestashop mechanisms
+        $id_order_carrier = Db::getInstance()->getValue('
+            SELECT `id_order_carrier`
+            FROM `'._DB_PREFIX_.'order_carrier`
+            WHERE `id_order` = '.(int)$shipment->order_id.'
+                AND (`tracking_number` IS NULL OR `tracking_number` = "")');
+
+        if ($id_order_carrier) {
+            $order_carrier = new OrderCarrier($id_order_carrier);
+            $order_carrier->tracking_number = $order_api->parcels[0]->reference;
+            $order_carrier->id_order = $shipment->order_id;
+            $order_carrier->id_carrier = $lce_service->id_carrier;
+            $order_carrier->update();
+        } else {
+            $order_carrier = new OrderCarrier();
+            $order_carrier->tracking_number = $order_api->parcels[0]->reference;
+            $order_carrier->id_order = $shipment->order_id;
+            $order_carrier->id_carrier = $lce_service->id_carrier;
+            $order_carrier->save();
+        }
+
+        $history = new OrderHistory();
+        $history->id_order = (int)($shipment->order_id);
+        $history->id_order_state = _PS_OS_SHIPPING_;
+        $history->changeIdOrderState(_PS_OS_SHIPPING_, $shipment->order_id);
+        $history->save();
 
         if (!$shipment->save()) {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(Tools::jsonEncode(array('error' => $this->l('Shipment could not be updated.'))));
+            die(Tools::jsonEncode(array('status' => 'error', 'message' => $this->l('Shipment could not be updated.'))));
         } else {
-            die(Tools::jsonEncode(array('result' => $this->l('Shipment updated with order uuid.'))));
+            die(Tools::jsonEncode(array('status' => 'success', 'message' => $this->l('Shipment updated with order uuid.'))));
         }
     }
 }

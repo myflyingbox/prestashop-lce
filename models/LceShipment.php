@@ -28,9 +28,10 @@ class LceShipment extends ObjectModel
     public $id_shipment;
     public $order_id;
     public $carrier_id;
-    public $api_quote_uuid;
-    public $api_offer_uuid;
-    public $api_order_uuid;
+    public $lce_service_id; // Store currently selected service
+    public $api_quote_uuid; // Store currently valid quote UUID for this shipment
+    public $api_offer_uuid; // store selected offer UUID
+    public $api_order_uuid; // Store valid order UUID
     public $shipper_name;
     public $shipper_company_name;
     public $shipper_street;
@@ -50,6 +51,7 @@ class LceShipment extends ObjectModel
     public $recipient_country;
     public $recipient_phone;
     public $recipient_email;
+    public $ad_valorem_insurance;
     public $date_add;
     public $date_upd;
     public $date_booking;
@@ -70,6 +72,7 @@ class LceShipment extends ObjectModel
         'fields' => array(
             'order_id' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
             'carrier_id' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
+            'lce_service_id' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
             'api_quote_uuid' => array('type' => self::TYPE_STRING),
             'api_offer_uuid' => array('type' => self::TYPE_STRING),
             'api_order_uuid' => array('type' => self::TYPE_STRING),
@@ -92,6 +95,7 @@ class LceShipment extends ObjectModel
             'recipient_country' => array('type' => self::TYPE_STRING),
             'recipient_phone' => array('type' => self::TYPE_STRING),
             'recipient_email' => array('type' => self::TYPE_STRING),
+            'ad_valorem_insurance' => array('type' => self::TYPE_BOOL),
             'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat'),
             'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat'),
             'date_booking' => array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat'),
@@ -117,6 +121,7 @@ class LceShipment extends ObjectModel
 
     public function invalidateOffer()
     {
+        $this->lce_service_id = null;
         $this->api_offer_uuid = '';
         $this->api_quote_uuid = '';
 
@@ -228,6 +233,7 @@ class LceShipment extends ObjectModel
         $shipment->shipper_country = Configuration::get('MOD_LCE_DEFAULT_COUNTRY');
         $shipment->shipper_phone = Configuration::get('MOD_LCE_DEFAULT_PHONE');
         $shipment->shipper_email = Configuration::get('MOD_LCE_DEFAULT_EMAIL');
+        $shipment->ad_valorem_insurance = Configuration::get('MOD_LCE_DEFAULT_INSURE');
 
         $shipment->recipient_name = $delivery_address->firstname.' '.$delivery_address->lastname;
         if (!empty($delivery_address->company)) {
@@ -283,6 +289,10 @@ class LceShipment extends ObjectModel
             $parcel->description = Configuration::get('MOD_LCE_DEFAULT_CONTENT');
             $parcel->country_of_origin = Configuration::get('MOD_LCE_DEFAULT_ORIGIN');
 
+            // Insurance
+            $parcel->value_to_insure = $order->getTotalProductsWithoutTaxes();
+            $parcel->insured_value_currency = $currency->iso_code;
+
             // If parcel creation is successful, we automatically select an offer.
             if ($parcel->add()) {
                 $shipment->autoselectOffer($order);
@@ -312,25 +322,41 @@ class LceShipment extends ObjectModel
                                           'width' => $parcel->width,
                                           'height' => $parcel->height,
                                           'weight' => $parcel->weight,
+                                          'insured_value' => $parcel->value_to_insure,
+                                          'insured_currency' => $parcel->insured_value_currency
                                         );
         }
 
         try {
             $api_quote = Lce\Resource\Quote::request($params);
+            $lce_service = LceService::findByCarrierId($order->id_carrier);
 
-            $lce_product_code = false;
-            $sql = 'SELECT `carrier`.`lce_product_code`
-                FROM '._DB_PREFIX_.'carrier AS carrier
-                WHERE (`carrier`.`id_carrier` = '.(int) $order->id_carrier.')';
+            if ($lce_service) {
 
-            if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql)) {
-                $lce_product_code = $row['lce_product_code'];
-            }
+                // $quote = new LceQuote();
+                // $quote->id_shipment = $shipment->id;
+                // $quote->add();
 
-            if ($lce_product_code) {
                 // Now we parse the offers and select
                 foreach ($api_quote->offers as $api_offer) {
-                    if ($api_offer->product->code == $lce_product_code) {
+
+                    if ($api_offer->product->code == $lce_service->code) {
+
+                        // $offer = new LceOffer();
+                        // $offer->id_quote = $quote->id;
+                        // $offer->lce_service_id = $lce_service->id_service;
+                        // $offer->api_offer_uuid = $api_offer->id;
+                        // $offer->lce_product_code = $api_offer->product->code;
+                        // $offer->base_price_in_cents = $api_offer->price->amount_in_cents;
+                        // $offer->total_price_in_cents = $api_offer->total_price->amount_in_cents;
+                        // if ($api_offer->insurance_price) {
+                        //     $offer->insurance_price_in_cents = $api_offer->insurance_price->amount_in_cents;
+                        // }
+                        // $offer->currency = $api_offer->total_price->currency;
+                        // $offer->add();
+
+                        // saving this offer info at shipment level
+                        $this->lce_service_id = $lce_service->id_service;
                         $this->api_quote_uuid = $api_quote->id;
                         $this->api_offer_uuid = $api_offer->id;
                         $this->save();
@@ -339,5 +365,39 @@ class LceShipment extends ObjectModel
             }
         } catch (\Exception $e) {
         }
+    }
+
+    public function getOrder()
+    {
+        $order = new Order((int) $this->order_id);
+        return $order;
+    }
+
+    // Rules for insurable value:
+    //  - the sum of parcels insurable value
+    //  - maximum of 2000 per shipment
+    public function insurableValue()
+    {
+        $parcels = $this->getParcels();
+        $counter = 0.0;
+        foreach ($parcels as $parcel) {
+            $counter = $counter + $parcel->value_to_insure;
+        }
+        $max_insurable = 2000;
+        $insurable_value = min($counter, $max_insurable);
+        return $insurable_value;
+    }
+
+    public function getParcels()
+    {
+        $parcels = LceParcel::findAllForShipmentId($this->id);
+        return $parcels;
+    }
+
+    public static function totalConfirmed() {
+        $sql = 'SELECT COUNT(*) as total FROM '._DB_PREFIX_.'lce_shipments as s
+                WHERE s.`api_order_uuid` != ""';
+        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+        return $row['total'];
     }
 }

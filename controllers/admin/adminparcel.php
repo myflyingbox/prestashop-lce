@@ -137,6 +137,32 @@ class AdminParcelController extends ModuleAdminController
 
         $this->fields_form[] = array('form' => array(
                 'legend' => array(
+                        'title' => $this->l('Ad Valorem Insurance'),
+                        'image' => '../img/admin/cog.gif',
+                ),
+                'input' => array(
+                        array('type' => 'text',
+                                'label' => $this->l('Value to insure:'),
+                                'name' => 'value_to_insure',
+                                'size' => 5,
+                                'class' => 'fixed-width-sm',
+                                'desc' => $this->l('You can leave blank if you do not intend to purchase insurance. Maximum 2000€ total per shipment.'), ),
+                        array('type' => 'select',
+                              'label' => $this->l('Currency:'),
+                              'desc' => $this->l('Currency code for the value to insure.'),
+                              'name' => 'insured_value_currency',
+                              'options' => array(
+                                'query' => $currencies,
+                                'id' => 'currency_code',
+                                'name' => 'name',
+                              ),
+                            ),
+                ),
+              ));
+
+
+        $this->fields_form[] = array('form' => array(
+                'legend' => array(
                         'title' => $this->l('References'),
                         'image' => '../img/admin/cog.gif',
                 ),
@@ -214,6 +240,10 @@ class AdminParcelController extends ModuleAdminController
         $parcel->currency = Tools::getValue('currency');
         $parcel->description = Tools::getValue('description');
         $parcel->country_of_origin = Tools::getValue('country_of_origin');
+        // Insurance
+        $parcel->value_to_insure = Tools::getValue('value_to_insure');
+        $parcel->insured_value_currency = Tools::getValue('insured_value_currency');
+
 
         if ($parcel->id) {
             $action = 'save';

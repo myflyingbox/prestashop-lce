@@ -22,38 +22,87 @@
 *  @license		http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 
-{html_entity_decode($message|escape:'htmlall':'UTF-8')}
-<fieldset>
-  <legend>{l s='Settings' mod='lowcostexpress'}</legend>
-    <div class="form-group clearfix">
-        <p class="col-lg-3 col-lg-offset-3">
-          {l s='No credentials yet?' mod='lowcostexpress'}
-          <a href='https://www.myflyingbox.com/fr/api/prestashop?origin=module_settings' target='_blank'>
-            {l s='Create your MY FLYING BOX account!' mod='lowcostexpress'}
-          </a>
-          <br/>
-          {l s='No fee, no minimum requirements' mod='lowcostexpress'}
-        </p>
+<div class="myflyingbox-settings">
+<div class='row myflyingbox-settings-header no-bootstrap'>
+    <img class='happy-box' src="{$mfb_base_dir|escape:'htmlall':'UTF-8'}/views/img/happy_box.png">
+    <img class='logo' src="{$mfb_base_dir|escape:'htmlall':'UTF-8'}/views/img/mfb_logo.png">
+    <div class='mfb-content'>
+        <p>Expédiez vos commandes aux mêmes conditions que les grands comptes :</p>
+        <ul class='mfb-advantages'>
+            <li>
+                Des <strong>tarifs négociés</strong> sans <strong>aucunes conditions de volume</strong>,
+            </li>
+            <li>
+                Une facturation <strong>mensualisée</strong> avec <strong>paiement à 30 jours</strong>,
+            </li>
+            <li>
+                Une <strong>équipe de professionnels</strong> du transport international <strong>à l’écoute</strong>,
+            </li>
+            <li>
+                Des <strong>services express reconnus</strong> (DHL, UPS, Chronopost, etc.).
+            </li>
+        </ul>
+        {if $show_starting_instructions}
+            <p>Pour bien commencer :</p>
+            <ol class='getting-started'>
+                <li>
+                  {l s='No credentials yet?' mod='lowcostexpress'}
+                  <a href='https://www.myflyingbox.com/fr/companies/new?origin=prestashop_module_settings' class='btn-mfb' target='_blank'>
+                    {l s='Create your MY FLYING BOX account!' mod='lowcostexpress'}
+                  </a>
+                </li>
+                <li>
+                    Renseignez et enregistrez tous les paramètres ci-dessous.
+                </li>
+                <li>
+                    Configurez et activez les transporteurs de votre choix en utilisant les mécanismes standards de Prestashop (menu Transport -> Transporteurs)
+                </li>
+                <li>
+                    Ouvrez une commande en back-office puis dans la section "Expéditions MY FLYING BOX" cliquez sur "Ajouter une expédition". Vous pourrez modifier les paramètres de l'expédition (adresses, colisage, options) et télécharger le bordereau.
+                </li>
+            </ol>
+        {/if}
+        <p>Une question ? Un problème ? <strong>Contactez-nous</strong> à l'adresse support@myflyingbox.com !</p>
     </div>
-  <form method="post">
-    <p>
-      <label for="MOD_LCE_API_LOGIN">{l s='Your LCE login:' mod='lowcostexpress'}</label>
-      <input id="MOD_LCE_API_LOGIN" name="MOD_LCE_API_LOGIN" type="text" value="{$MOD_LCE_API_LOGIN|escape:'htmlall':'UTF-8'}" />
-      <sup>*</sup>
-    </p>
-    <p>
-      <label for="MOD_LCE_API_PASSWORD">{l s='Your LCE password:' mod='lowcostexpress'}</label>
-      <input id="MOD_LCE_API_PASSWORD" name="MOD_LCE_API_PASSWORD" type="text" value="{$MOD_LCE_API_PASSWORD|escape:'htmlall':'UTF-8'}" />
-      <sup>*</sup>
-    </p>
-      <label for="MOD_LCE_API_ENV">{l s='API Environment:' mod='lowcostexpress'}</label>
-      <select id="MOD_LCE_API_ENV" name="MOD_LCE_API_ENV">
-        <option value="staging"{if $MOD_LCE_API_ENV eq 'staging'} selected="selected"{/if}>staging (test)</option>
-        <option value="production"{if $MOD_LCE_API_ENV eq 'production'} selected="selected"{/if}>production</option>
-      </select>
-      <sup>*</sup>
-    <p>
+</div>
 
+{html_entity_decode($message|escape:'htmlall':'UTF-8')}
+<form method="post">
+<fieldset>
+  <legend>{l s='Connection settings' mod='lowcostexpress'}</legend>
+
+    <p class="col-lg-12">{l s='The connection identifiers can be found in your account creation confirmation email. Note that you must use the account identifier and the API key corresponding to the environment you want to use (staging if you just want to test, production for real operations). If you cannot find your identifiers, contact us at support@myflyingbox.com so we can generate new ones.' mod='lowcostexpress'}</p>
+
+
+    <label for="MOD_LCE_API_LOGIN">{l s='Your MFB account identifier:' mod='lowcostexpress'}</label>
+    <div class='margin-form'>
+      <input id="MOD_LCE_API_LOGIN" name="MOD_LCE_API_LOGIN" type="text" value="{$MOD_LCE_API_LOGIN|escape:'htmlall':'UTF-8'}" />
+      <p class='preference_description'>{l s='This is NOT your email address, but your account identifier (usually derived from the name of your company).' mod='lowcostexpress'}</p>
+    </div>
+
+
+    <label for="MOD_LCE_API_PASSWORD">{l s='Your MFB API key:' mod='lowcostexpress'}</label>
+    <div class='margin-form'>
+        <input id="MOD_LCE_API_PASSWORD" name="MOD_LCE_API_PASSWORD" type="text" value="{$MOD_LCE_API_PASSWORD|escape:'htmlall':'UTF-8'}" />
+        <p class="preference_description">{l s='You can find the password in the section "API accounts" of your account confirmation email.' mod='lowcostexpress'}</p>
+        {if $show_connection_error}
+            <p class="error">{l s='We could not connect to the API using these credentials. Please make sure that you are using the correct identifier and password for the selected environment.' mod='lowcostexpress'}
+            </p>
+        {/if}
+    </div>
+
+    <label for="MOD_LCE_API_ENV">{l s='API Environment:' mod='lowcostexpress'}</label>
+    <div class='margin-form'>
+        <select id="MOD_LCE_API_ENV" name="MOD_LCE_API_ENV">
+            <option value="staging"{if $MOD_LCE_API_ENV eq 'staging'} selected="selected"{/if}>staging (test)</option>
+            <option value="production"{if $MOD_LCE_API_ENV eq 'production'} selected="selected"{/if}>production</option>
+        </select>
+        <p class="preference_description">{l s='Select "staging" to play around and test the module, but note that the prices returned may be higher than the real prices. Select "production" when you are ready to place real shipping orders.' mod='lowcostexpress'}</p>
+    </div>
+</fieldset>
+
+<fieldset>
+    <legend>{l s='Shipper address and contact' mod='lowcostexpress'}</legend>
     <p>
     {l s='The following fields are used to initialize shipper information when creating a new shipment. They can be overriden manually in the shipment form.' mod='lowcostexpress'}
     </p>
@@ -107,7 +156,6 @@
       <input id="MOD_LCE_DEFAULT_EMAIL" name="MOD_LCE_DEFAULT_EMAIL" type="text" value="{$MOD_LCE_DEFAULT_EMAIL|escape:'htmlall':'UTF-8'}" />
       <sup>*</sup>
     </p>
-
     <p>
       <label>&nbsp;</label>
       <input id="submit_{$module_name|escape:'htmlall':'UTF-8'}" name="submit_{$module_name|escape:'htmlall':'UTF-8'}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="button" />
@@ -138,10 +186,19 @@
     </div>
 
     <label for="MOD_LCE_PRICE_TAX_RULES">{l s='Price returned:' mod='lowcostexpress'}</label>
-    <select id="MOD_LCE_PRICE_TAX_RULES" name="MOD_LCE_PRICE_TAX_RULES">
-      <option value="before_taxes"{if $MOD_LCE_PRICE_TAX_RULES eq 'before_taxes'} selected="selected"{/if}>{l s='before taxes' mod='lowcostexpress'}</option>
-      <option value="taxes_included"{if $MOD_LCE_PRICE_TAX_RULES eq 'taxes_included'} selected="selected"{/if}>{l s='taxes included' mod='lowcostexpress'}</option>
-    </select>
+    <div class='margin-form'>
+        <select id="MOD_LCE_PRICE_TAX_RULES" name="MOD_LCE_PRICE_TAX_RULES">
+          <option value="before_taxes"{if $MOD_LCE_PRICE_TAX_RULES eq 'before_taxes'} selected="selected"{/if}>{l s='before taxes' mod='lowcostexpress'}</option>
+          <option value="taxes_included"{if $MOD_LCE_PRICE_TAX_RULES eq 'taxes_included'} selected="selected"{/if}>{l s='taxes included' mod='lowcostexpress'}</option>
+        </select>
+    </div>
+
+
+    <label for="MOD_LCE_DEFAULT_INSURE">{l s='Insure by default:' mod='lowcostexpress'}</label>
+    <div class='margin-form'>
+        <input id="MOD_LCE_DEFAULT_INSURE" name="MOD_LCE_DEFAULT_INSURE" type="checkbox" value="1"{if $MOD_LCE_DEFAULT_INSURE eq true} CHECKED{/if} />
+        <p class="preference_description">{l s='If checked, the price displayed to the customer will include the cost of insurance, based on cart value (max 2000€).' mod='lowcostexpress'}</p>
+    </div>
 
     <p>
       <label>&nbsp;</label>
@@ -153,7 +210,7 @@
 <br/>
 <fieldset>
   <legend>{l s='Default parcel values' mod='lowcostexpress'}</legend>
-    <p>{l s='The following settings are used to automatically fill some values when initializing parcels for your shipment. You can still change these values manually on each shipment if needed.' mod='lowcostexpress'}</p>
+    <p>{l s='The following settings are used to automatically fill some values when initializing parcels for your shipment.' mod='lowcostexpress'}</p>
 
     <p>
       <label for="MOD_LCE_DEFAULT_ORIGIN">{l s='Country of origin:' mod='lowcostexpress'}</label>
@@ -232,15 +289,41 @@
   <table class="table" width="100%">
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Name</th>
+        <th>{l s='Carrier ID' mod='lowcostexpress'}</th>
+        <th>{l s='MFB Service name' mod='lowcostexpress'}</th>
+        <th>{l s='Prestashop carrier name' mod='lowcostexpress'}</th>
+        <th>{l s='Pickup available' mod='lowcostexpress'}</th>
+        <th>{l s='Drop-off available' mod='lowcostexpress'}</th>
+        <th>{l s='Relay delivery' mod='lowcostexpress'}</th>
       </tr>
     </thead>
     <tbody>
-    {foreach from=$carriers key=k item=c}
+    {foreach from=$services key=k item=s}
       <tr>
-        <td>{$c->id|escape:'htmlall':'UTF-8'}</td>
-        <td>{$c->name|escape:'htmlall':'UTF-8'}</td>
+        <td>{$s->id_carrier|escape:'htmlall':'UTF-8'}</td>
+        <td>{$s->name|escape:'htmlall':'UTF-8'}</td>
+        <td>{$s->getCarrier()->name|escape:'htmlall':'UTF-8'}</td>
+        <td>
+            {if $s->pickup_available }
+                {l s='Yes' mod='lowcostexpress'}
+            {else}
+                {l s='No' mod='lowcostexpress'}
+            {/if}
+        </td>
+        <td>
+            {if $s->dropoff_available }
+                {l s='Yes' mod='lowcostexpress'}
+            {else}
+                {l s='No' mod='lowcostexpress'}
+            {/if}
+        </td>
+        <td>
+            {if $s->relay_delivery }
+                {l s='Yes' mod='lowcostexpress'}
+            {else}
+                {l s='No' mod='lowcostexpress'}
+            {/if}
+        </td>
       </tr>
     {/foreach}
     </tbody>

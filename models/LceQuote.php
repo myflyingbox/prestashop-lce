@@ -46,12 +46,20 @@ class LceQuote extends ObjectModel
         ),
     );
 
-    public static function getLatestForCart($cart)
+    public static function getLatestForCart($cart, $timelimit = true)
     {
-        $sql = 'SELECT `quote`.`id_quote` FROM '._DB_PREFIX_.'lce_quotes AS quote
-                LEFT JOIN '._DB_PREFIX_.'cart AS cart ON `quote`.`id_cart` = `cart`.`id_cart`
-                WHERE (`cart`.`id_cart` = '.(int) $cart->id.' AND `quote`.`date_add` > `cart`.`date_upd`)
-                ORDER BY `quote`.`date_upd` DESC';
+        # We accept a margin of 5 seconds between cart update and quote creation
+        if ($timelimit) {
+            $sql = 'SELECT `quote`.`id_quote` FROM '._DB_PREFIX_.'lce_quotes AS quote
+                    LEFT JOIN '._DB_PREFIX_.'cart AS cart ON `quote`.`id_cart` = `cart`.`id_cart`
+                    WHERE (`cart`.`id_cart` = '.(int) $cart->id.' AND `quote`.`date_upd` > `cart`.`date_upd`)
+                    ORDER BY `quote`.`date_upd` DESC';
+        } else {
+            $sql = 'SELECT `quote`.`id_quote` FROM '._DB_PREFIX_.'lce_quotes AS quote
+                    LEFT JOIN '._DB_PREFIX_.'cart AS cart ON `quote`.`id_cart` = `cart`.`id_cart`
+                    WHERE (`cart`.`id_cart` = '.(int) $cart->id.')
+                    ORDER BY `quote`.`date_upd` DESC';
+        }
         if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql)) {
             $quote = new self($row['id_quote']);
 

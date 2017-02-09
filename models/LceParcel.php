@@ -36,6 +36,8 @@ class LceParcel extends ObjectModel
     public $customer_reference;
     public $value;
     public $currency;
+    public $value_to_insure;
+    public $insured_value_currency;
     public $description;
     public $country_of_origin;
     public $date_add;
@@ -56,6 +58,8 @@ class LceParcel extends ObjectModel
             'customer_reference' => array('type' => self::TYPE_STRING),
             'value' => array('type' => self::TYPE_INT),
             'currency' => array('type' => self::TYPE_STRING),
+            'value_to_insure' => array('type' => self::TYPE_FLOAT),
+            'insured_value_currency' => array('type' => self::TYPE_STRING),
             'description' => array('type' => self::TYPE_STRING),
             'country_of_origin' => array('type' => self::TYPE_STRING),
             'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
