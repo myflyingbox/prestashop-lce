@@ -482,7 +482,7 @@ class LowCostExpress extends CarrierModule
                     $carrier->is_module = false;
                     $carrier->shipping_external = true;
                     $carrier->external_module_name = 'lowcostexpress';
-                    $carrier->need_range = 'true';
+                    $carrier->need_range = true;
 
                     $languages = Language::getLanguages(true);
                     foreach ($languages as $language) {
