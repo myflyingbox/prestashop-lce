@@ -27,42 +27,42 @@
     <img class='happy-box' src="{$mfb_base_dir|escape:'htmlall':'UTF-8'}/views/img/happy_box.png">
     <img class='logo' src="{$mfb_base_dir|escape:'htmlall':'UTF-8'}/views/img/mfb_logo.png">
     <div class='mfb-content'>
-        <p>Expédiez vos commandes aux mêmes conditions que les grands comptes :</p>
+        <p>{l s='Ship your orders in the same conditions as large accounts:' mod='lowcostexpress'}</p>
         <ul class='mfb-advantages'>
             <li>
-                Des <strong>tarifs négociés</strong> sans <strong>aucunes conditions de volume</strong>,
+                {l s='[1]Negotiated rates[/1] without minimum volume,' tags=['<strong>'] mod='lowcostexpress'}
             </li>
             <li>
-                Une facturation <strong>mensualisée</strong> avec <strong>paiement à 30 jours</strong>,
+                {l s='[1]Monthly invoicing[/1] with 30-day payment deadline,' tags=['<strong>'] mod='lowcostexpress'}
             </li>
             <li>
-                Une <strong>équipe de professionnels</strong> du transport international <strong>à l’écoute</strong>,
+                {l s='A [1]team of professionals[/1] with long experience in shipping,' tags=['<strong>'] mod='lowcostexpress'}
             </li>
             <li>
-                Des <strong>services express reconnus</strong> (DHL, UPS, Chronopost, etc.).
+                {l s='[1]Well established express operators[/1] (DHL, UPS, Chronopost, etc.).' tags=['<strong>'] mod='lowcostexpress'}
             </li>
         </ul>
         {if $show_starting_instructions}
-            <p>Pour bien commencer :</p>
+            <p>{l s='Getting started:' mod='lowcostexpress'}</p>
             <ol class='getting-started'>
                 <li>
-                  {l s='No credentials yet?' mod='lowcostexpress'}
                   <a href='https://www.myflyingbox.com/fr/companies/new?origin=prestashop_module_settings' class='btn-mfb' target='_blank'>
-                    {l s='Create your MY FLYING BOX account!' mod='lowcostexpress'}
+                    {l s='Open an account' mod='lowcostexpress'}
                   </a>
+                  {l s='or retrieve your credentials from the confirmation email' mod='lowcostexpress'}
                 </li>
                 <li>
-                    Renseignez et enregistrez tous les paramètres ci-dessous.
+                    {l s='Fill in and save the module settings below.' mod='lowcostexpress'}
                 </li>
                 <li>
-                    Configurez et activez les transporteurs de votre choix en utilisant les mécanismes standards de Prestashop (menu Transport -> Transporteurs)
+                    {l s='Setup and activate carriers you with to present to your customers during checkout, using standard Prestashop mechanisms.' mod='lowcostexpress'}
                 </li>
                 <li>
-                    Ouvrez une commande en back-office puis dans la section "Expéditions MY FLYING BOX" cliquez sur "Ajouter une expédition". Vous pourrez modifier les paramètres de l'expédition (adresses, colisage, options) et télécharger le bordereau.
+                    {l s='Open an order in back-office, find the section called "MY FLYING BOX Shipments" and click "Add a shipment". You can adjust your shipment data (addresses, packing list, options) and download labels.' mod='lowcostexpress'}
                 </li>
             </ol>
         {/if}
-        <p>Une question ? Un problème ? <strong>Contactez-nous</strong> à l'adresse support@myflyingbox.com !</p>
+        <p>{l s='Questions? Issues? [1]Contact us[/1] at support@myflyingbox.com.' tags=['<strong>'] mod='lowcostexpress'}</p>
     </div>
 </div>
 
