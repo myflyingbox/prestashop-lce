@@ -125,6 +125,7 @@ $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_5bb3172ac3a459c045dcdaa
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_a1fa9a1d4c9a131993cea29b318d380f'] = 'Lorsque de nouveaux produits MY FLYING BOX sont ajoutés, les transporteurs correspondant ne sont PAS activés par défaut. Vous devez les activer manuellement.';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_0f879183088d3e21c212cc8b845d6ff5'] = 'Vous ne devez initialiser les produits MY FLYING BOX que si vous souhaitez proposer les offres de transport MY FLYING BOX à vos clients directement, lors de la validation de la commande. Si vous ne souhaitez utiliser que les fonction de back-office du module, vous n\'avez pas besoin d\'utiliser les produits MY FLYING BOX ici.';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_3ca8dd06633377351f09515abbf2d432'] = 'ID transporteur';
+$_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_914419aa32f04011357d3b604a86d7eb'] = 'Transporteur';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_6a83649fdf277b8cea4d5554d053368e'] = 'Nom du service MFB';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_b1267bf7d35011ec77b4172fab712573'] = 'Nom du transporteur (dans Prestashop)';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_38d21c0d8e5b7aba43b986d4c66f037a'] = 'Enlèvement sur site ?';
@@ -197,6 +198,7 @@ $_MODULE['<{lowcostexpress}prestashop>settings_5bb3172ac3a459c045dcdaa85653ca5c'
 $_MODULE['<{lowcostexpress}prestashop>settings_a1fa9a1d4c9a131993cea29b318d380f'] = 'Lorsque de nouveaux produits MY FLYING BOX sont ajoutés, les transporteurs correspondant ne sont PAS activés par défaut. Vous devez les activer manuellement.';
 $_MODULE['<{lowcostexpress}prestashop>settings_0f879183088d3e21c212cc8b845d6ff5'] = 'Vous ne devez initialiser les produits MY FLYING BOX que si vous souhaitez proposer les offres de transport MY FLYING BOX à vos clients directement, lors de la validation de la commande. Si vous ne souhaitez utiliser que les fonction de back-office du module, vous n\'avez pas besoin d\'utiliser les produits MY FLYING BOX ici.';
 $_MODULE['<{lowcostexpress}prestashop>settings_3ca8dd06633377351f09515abbf2d432'] = 'ID transporteur';
+$_MODULE['<{lowcostexpress}prestashop>settings_914419aa32f04011357d3b604a86d7eb'] = 'Transporteur';
 $_MODULE['<{lowcostexpress}prestashop>settings_6a83649fdf277b8cea4d5554d053368e'] = 'Nom du service MFB';
 $_MODULE['<{lowcostexpress}prestashop>settings_b1267bf7d35011ec77b4172fab712573'] = 'Nom du transporteur (dans Prestashop)';
 $_MODULE['<{lowcostexpress}prestashop>settings_38d21c0d8e5b7aba43b986d4c66f037a'] = 'Enlèvement sur site ?';
