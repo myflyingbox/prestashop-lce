@@ -95,10 +95,8 @@ class LceService extends ObjectModel
 
     public function logoFileName()
     {
-        if ($this->carrier_code == 'ups') {
-            return 'ups.png';
-        } else if ($this->carrier_code == 'dhl') {
-            return 'dhl.png';
+        if (!empty($this->carrier_code)) {
+            return $this->carrier_code + '.png';
         } else {
             return 'myflyingbox.png';
         }

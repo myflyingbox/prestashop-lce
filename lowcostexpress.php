@@ -551,9 +551,13 @@ class LowCostExpress extends CarrierModule
                         }
 
                         //copy logo
+                        $logo_file_name = $lce_service->logoFileName();
+                        if (file_exists(dirname(__FILE__).'/views/img/carriers/'.$logo_file_name)) {
+                            $logo_file_name = 'myflyingbox.png';
+                        }
                         copy(
-                            dirname(__FILE__).'/views/img/'.$product->logo.'.jpg',
-                            _PS_SHIP_IMG_DIR_.'/'.$carrier->id.'.jpg'
+                            dirname(__FILE__).'/views/img/carriers/'.$logo_file_name,
+                            _PS_SHIP_IMG_DIR_.'/'.$carrier->id.'.png'
                         );
                     }
                 }
