@@ -332,6 +332,7 @@
     <thead>
       <tr>
         <th>{l s='Carrier ID' mod='lowcostexpress'}</th>
+        <th>{l s='Carrier' mod='lowcostexpress'}</th>
         <th>{l s='MFB Service name' mod='lowcostexpress'}</th>
         <th>{l s='Prestashop carrier name' mod='lowcostexpress'}</th>
         <th>{l s='Pickup available' mod='lowcostexpress'}</th>
@@ -343,6 +344,7 @@
     {foreach from=$services key=k item=s}
       <tr>
         <td>{$s->id_carrier|escape:'htmlall':'UTF-8'}</td>
+        <td>{$s->carrierName()|escape:'htmlall':'UTF-8'}</td>
         <td>{$s->name|escape:'htmlall':'UTF-8'}</td>
         <td>{$s->getCarrier()->name|escape:'htmlall':'UTF-8'}</td>
         <td>

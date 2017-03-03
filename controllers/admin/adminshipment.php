@@ -86,6 +86,7 @@ class AdminShipmentController extends ModuleAdminController
         $parcels = LceParcel::findAllForShipmentId($shipment->id_shipment);
         $order = new Order((int) $shipment->order_id);
         $api_offer = false;
+        $lce_service = false;
 
         if ($shipment->api_offer_uuid) {
 
@@ -101,7 +102,7 @@ class AdminShipmentController extends ModuleAdminController
 
             $offer_data = new stdClass();
             $offer_data->id = $api_offer->id;
-            $offer_data->product_name = $api_offer->product->name;
+            $offer_data->product_name = $lce_service->carrierName().' '.$api_offer->product->name;
             $offer_data->total_price = $api_offer->total_price->formatted;
 
             if (property_exists($api_offer->product->collection_informations, $this->context->language->iso_code)) {
@@ -203,7 +204,7 @@ class AdminShipmentController extends ModuleAdminController
 
         // For Ad Valorem insurance
         $insurable_value = number_format($shipment->insurableValue(), 2, ',', ' ').' EUR';
-        if ($api_offer->insurance_price) {
+        if ($api_offer && $api_offer->insurance_price) {
             $insurance_cost = $api_offer->insurance_price->formatted;
         } else {
             $insurance_cost = false;
@@ -537,9 +538,11 @@ class AdminShipmentController extends ModuleAdminController
 
         $offers = array();
         foreach ($quote->offers as $offer) {
+            $lce_service = LceService::findByCode($offer->product->code);
+
             $data = new stdClass();
             $data->id = $offer->id;
-            $data->product_name = $offer->product->name;
+            $data->product_name = $lce_service->carrierName().' '.$offer->product->name;
             $data->total_price = $offer->total_price->formatted;
             if ($offer->insurance_price) {
                 $data->insurance_price =  $offer->insurance_price->formatted;

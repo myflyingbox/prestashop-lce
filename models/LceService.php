@@ -93,10 +93,19 @@ class LceService extends ObjectModel
         return $collection;
     }
 
+    public function carrierName()
+    {
+        if (Tools::strlen($this->carrier_code) > 4) {
+            return ucfirst($this->carrier_code);
+        } else {
+            return strtoupper($this->carrier_code);
+        }
+    }
+
     public function logoFileName()
     {
         if (!empty($this->carrier_code)) {
-            return $this->carrier_code + '.png';
+            return $this->carrier_code.'.png';
         } else {
             return 'myflyingbox.png';
         }

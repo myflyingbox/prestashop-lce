@@ -478,7 +478,7 @@ class LowCostExpress extends CarrierModule
                     in_array(Tools::strtoupper($service_from), $product->export_from)
                 ) {
                     $carrier = new Carrier();
-                    $carrier->name = $product->name;
+                    $carrier->name = $lce_service->carrierName().' '.$lce_service->name;
                     $carrier->id_tax_rules_group = 1;
                     $carrier->url = '';
                     $carrier->active = false;
@@ -552,12 +552,13 @@ class LowCostExpress extends CarrierModule
 
                         //copy logo
                         $logo_file_name = $lce_service->logoFileName();
-                        if (file_exists(dirname(__FILE__).'/views/img/carriers/'.$logo_file_name)) {
+                        if (!file_exists(dirname(__FILE__).'/views/img/carriers/'.$logo_file_name)) {
                             $logo_file_name = 'myflyingbox.png';
                         }
+                        // Note: PS stores the logos as JPG files even if they are really PNG...
                         copy(
                             dirname(__FILE__).'/views/img/carriers/'.$logo_file_name,
-                            _PS_SHIP_IMG_DIR_.'/'.$carrier->id.'.png'
+                            _PS_SHIP_IMG_DIR_.'/'.$carrier->id.'.jpg'
                         );
                     }
                 }
