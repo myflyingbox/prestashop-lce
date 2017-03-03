@@ -89,7 +89,7 @@ class LowCostExpress extends CarrierModule
     {
         $this->name = 'lowcostexpress';
         $this->tab = 'shipping_logistics';
-        $this->version = '0.0.24';
+        $this->version = '1.0.0';
         $this->author = 'MY FLYING BOX SAS';
 
         parent::__construct();
@@ -122,7 +122,8 @@ class LowCostExpress extends CarrierModule
         $api = Lce\Lce::configure(
             Configuration::get('MOD_LCE_API_LOGIN'),
             Configuration::get('MOD_LCE_API_PASSWORD'),
-            $env
+            $env,
+            '2'
         );
         $api->application = 'prestashop-lce';
         $api->application_version = $this->version.' (PS '._PS_VERSION_.')';
@@ -369,7 +370,7 @@ class LowCostExpress extends CarrierModule
         $login = Configuration::get('MOD_LCE_API_LOGIN');
         $password = Configuration::get('MOD_LCE_API_PASSWORD');
 
-        $api = Lce\Lce::configure($login, $password, $env);
+        $api = Lce\Lce::configure($login, $password, $env, '2'); // Now using API v2
         $api->application = 'prestashop-lce';
         $api->application_version = $this->version.' (PS '._PS_VERSION_.')';
 
@@ -435,18 +436,24 @@ class LowCostExpress extends CarrierModule
                     $lce_service = new LceService();
                     $service_save_action = 'add';
                     $lce_service->code          = $product->code;
-                    $lce_service->name   = $product->name;
+                    $lce_service->carrier_code  = $product->carrier_code;
+                    $lce_service->name          = $product->name;
                     $lce_service->pickup_available   = $product->pick_up;
-                    $lce_service->dropoff_available   = $product->drop_off;
-                    $lce_service->relay_delivery   = $product->preset_delivery_location;
+                    $lce_service->dropoff_available  = $product->drop_off;
+                    $lce_service->relay_delivery     = $product->preset_delivery_location;
                 } else {
+                    $lce_service->name          = $product->name;
                     $service_save_action = 'save';
                 }
 
                 $product_code = trim($product->code);
                 $config_key = $this->_productConfigKey($product_code);
 
-                if (!Configuration::get($config_key)) {
+                if ($service_save_action == 'add' && !Configuration::get($config_key)) {
+                    // We consider a service as non existing only if we have no existing LceService (new approach) and no
+                    // config key storing carrier id (old method)
+                    // During the transition time, either of these tests can return 'true' even if the carrier exists;
+                    // but taken together we can be sure whether a carrier exists or not.
                     $carrier_exists = false;
                 } else {
                     // Attempting to get the carrier directly via SQL, by module,
@@ -501,6 +508,9 @@ class LowCostExpress extends CarrierModule
                     }
 
                     if ($carrier->add()) {
+                        // DEPRECATED: Strictly speaking this is not necessary anymore, as this method is now obsolete.
+                        // This will be removed in the future, when the mechanisms based on LceService are fully
+                        // used by all customers and there is no remaining bug.
                         $config_key = $this->_productConfigKey($product_code);
                         Configuration::updateValue($config_key, (int) ($carrier->id));
 
