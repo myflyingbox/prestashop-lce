@@ -70,6 +70,12 @@ function upgrade_module_1_0_0($module)
             `carrier_code` = '".$new_service[1]."'
             WHERE `code` = '".$old_code."';"
         );
+
+        Db::getInstance()->execute(
+            "UPDATE `"._DB_PREFIX_."carrier` SET
+            `lce_product_code` = '".$new_service[0]."'
+            WHERE `external_module_name` = 'lowcostexpress' AND `lce_product_code` = '".$old_code."';"
+        );
     }
 
     // Forcing a product refresh, to initialize all new LceService rows.
