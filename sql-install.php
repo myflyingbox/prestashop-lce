@@ -141,4 +141,10 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS '._DB_PREFIX_.'lce_services (
           PRIMARY KEY  (`id_service`)
           ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
 
+$sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_cart_selected_relay` (
+        `id_cart` int(10) NOT null,
+        `relay_code` varchar(10) NOT null,
+        PRIMARY KEY (`id_cart`)
+        ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
+
 return $sql;
