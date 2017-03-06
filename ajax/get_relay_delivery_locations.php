@@ -37,6 +37,9 @@ $cart = new Cart($cart_id);
 // Getting latest quote for this cart, regardless of any time constraint.
 // We are not getting a tariff here, just relay locations.
 $quote = LceQuote::getLatestForCart($cart, false);
+if (!$quote) {
+  $quote = LceQuote::getNewForCart($cart);
+}
 
 $offer = LceOffer::getForQuoteAndLceService($quote, $lce_service);
 
