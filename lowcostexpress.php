@@ -881,22 +881,30 @@ class LowCostExpress extends CarrierModule
 
             $module_uri = _MODULE_DIR_.$this->name;
             $this->context->controller->addCSS($module_uri.'/views/css/style.css', 'all');
+            $this->context->controller->addjQueryPlugin(array('scrollTo' ));
+            $this->context->controller->registerJavascript(
+                'module-dpdfrance-jquery',
+                '/js/jquery/jquery-1.11.0.min.js',
+                array('position' => 'head', 'priority' => 1)
+            );
 
-            // $this->context->controller->registerJavascript(
-            //     'google-maps',
-            //     'https://maps.google.com/maps/api/js?key=AIzaSyBDTbHvOQcvZG4EmPI5GDAHge7ivXVvIKA',
-            //     [
-            //       'position' => 'head',
-            //       'inline' => true,
-            //       'priority' => 10,
-            //     ]
-            // );
+            $this->context->controller->registerJavascript(
+                'module-lowcostexpress-gmaps',
+                'https://maps.google.com/maps/api/js?key=AIzaSyBDTbHvOQcvZG4EmPI5GDAHge7ivXVvIKA',
+                [
+                  'server' => 'remote',
+                  'priority' => 100,
+                ]
+            );
 
-            $this->context
-                 ->controller
-                 ->addJS('https://maps.google.com/maps/api/js?key=AIzaSyBDTbHvOQcvZG4EmPI5GDAHge7ivXVvIKA');
-
-            $this->context->controller->addJS($module_uri.'/views/js/delivery_locations.js');
+            $this->context->controller->registerJavascript(
+                'module-lowcostexpress-delivery-locations',
+                '/modules/lowcostexpress/views/js/delivery_locations.js',
+                [
+                  'position' => 'head',
+                  'priority' => 10,
+                ]
+            );
         }
     }
 

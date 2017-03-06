@@ -30,9 +30,15 @@ var geocoder = null;
 var markers = [];
 var locations_data = [];
 
+var chronodata=new Array();
+var relay_map=null; // our map
+var infowindow=null; // currently displayed infowindow
+var map_markers=new Array();
+
+
 function toggle_map_display(e)
 {
-    var selected_carrier_id = $("input.delivery_option_radio:checked").val().split(',')[0];
+    var selected_carrier_id = $('form#js-delivery input[type="radio"]:checked').val().split(',')[0];
     // Checking if we have a carrier that supports relay delivery
     if (carrier_ids.indexOf(selected_carrier_id) >= 0)
     {
@@ -183,11 +189,13 @@ function select_location(source){
   var loc = lce_locations[jQuery(source.target).attr('data')];
   var relay_description = loc.company + '<br/> ' + loc.street + ' - ' + loc.city;
   $.ajax({
-      url: ajax_url+'/ajax/save_relay_delivery_location.php?relay_code='+loc.code+'&cart_id='+cart_id
+      url: ajax_url+'/ajax/save_relay_delivery_location.php?relay_code='+loc.code+'&cart_id='+cart_id,
+      success: function(data) {
+        jQuery('#input_selected_relay').html('<input type="hidden" name="selected_relay_code" value="'+loc.code+'"/>');
+        jQuery('#selected_relay_description').html(relay_description);
+        infowindow.close();
+      }
   });
-  jQuery('#input_selected_relay').html('<input type="hidden" name="selected_relay_code" value="'+loc.code+'"/>');
-  jQuery('#selected_relay_description').html(relay_description);
-  infowindow.close();
 }
 
 function error_loading_locations(jqXHR, textStatus, errorThrown ) {
