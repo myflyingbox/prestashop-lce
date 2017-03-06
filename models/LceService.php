@@ -96,9 +96,9 @@ class LceService extends ObjectModel
     public function carrierName()
     {
         if (Tools::strlen($this->carrier_code) > 4) {
-            return ucfirst($this->carrier_code);
+            return Tools::ucfirst($this->carrier_code);
         } else {
-            return strtoupper($this->carrier_code);
+            return Tools::strtoupper($this->carrier_code);
         }
     }
 
