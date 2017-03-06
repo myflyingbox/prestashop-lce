@@ -26,9 +26,9 @@
 
 <h2>{l s='LCE shipment for order:' mod='lowcostexpress'} {$order->reference|escape:'htmlall':'UTF-8'}</h2>
 
-<a href="{$link_order|escape:'htmlall':'UTF-8'}"><img src="../img/admin/arrow-left.png" alt="{l s='Back to order' mod='lowcostexpress'}" /> {l s='Back to order' mod='lowcostexpress'} </a>
+<a href="{$link_order|escape:'htmlall':'UTF-8'}"><i class='icon-chevron-left'></i> {l s='Back to order' mod='lowcostexpress'} </a>
 {if $shipment->api_order_uuid eq false}
-  <a href="{$link_edit_shipment|escape:'htmlall':'UTF-8'}"><img src="../img/admin/edit.gif" alt="{l s='Edit shipment' mod='lowcostexpress'}" /> {l s='Edit shipment' mod='lowcostexpress'}</a>
+  <a href="{$link_edit_shipment|escape:'htmlall':'UTF-8'}"><i class='icon-pencil'></i> {l s='Edit shipment' mod='lowcostexpress'}</a>
 {/if}
 
   <div class="container-command container-command-top-spacing">
@@ -38,7 +38,7 @@
       <div class='row'>
         <div class='col-md-12'>
           <fieldset>
-            <legend><img src="../img/admin/delivery.gif" alt="{l s='Tracking' mod='lowcostexpress'}" />{l s='Tracking for all packages' mod='lowcostexpress'}</legend>
+            <legend><i class='icon-search'></i> {l s='Tracking for all packages' mod='lowcostexpress'}</legend>
             {foreach $shipment->trackingStatus() item=events key=num}
               <div style="width: 49%; float:left;">
                 <table class='table'>
@@ -75,7 +75,7 @@
       <div class='col-md-6'>
           <!-- Invoice address -->
           <fieldset>
-            <legend><img src="../img/admin/invoice.gif" alt="{l s='Delivery address' mod='lowcostexpress'}" />{l s='Delivery address' mod='lowcostexpress'}</legend>
+            <legend><i class='icon-map-marker'></i> {l s='Delivery address' mod='lowcostexpress'}</legend>
               <p><b>{$shipment->recipient_name|escape:'htmlall':'UTF-8'}</b></p>
               <p>
               {$shipment->recipient_street|nl2br|escape:'htmlall':'UTF-8'}
@@ -89,7 +89,7 @@
         <div class='col-md-6'>
             <!-- Shipper address -->
             <fieldset>
-              <legend><img src="../img/admin/delivery.gif" alt="{l s='Pickup/shipper address' mod='lowcostexpress'}" />{l s='Pickup/shipper address' mod='lowcostexpress'}</legend>
+              <legend><i class='icon-map-marker'></i> {l s='Pickup/shipper address' mod='lowcostexpress'}</legend>
               <p><b>{$shipment->shipper_name|escape:'htmlall':'UTF-8'}</b></p>
               <p>
               {$shipment->shipper_street|nl2br|escape:'htmlall':'UTF-8'}
@@ -187,7 +187,7 @@
             {if $shipment->api_order_uuid eq false}
               <a id="select-lce-offer" href="{$link_load_lce_offers|escape:'htmlall':'UTF-8'}"><img src="../img/admin/search.gif" alt="{l s='Search LCE offer' mod='lowcostexpress'}" />{l s='Search a carrier offer' mod='lowcostexpress'}</a>
             {else}
-              <a id="download-labels" href="{$link_download_labels|escape:'htmlall':'UTF-8'}"><img src="../img/admin/pdf.gif" alt="{l s='Download labels' mod='lowcostexpress'}" /> {l s='Download labels' mod='lowcostexpress'}</a>
+              <a id="download-labels" href="{$link_download_labels|escape:'htmlall':'UTF-8'}"><i class='icon-file-pdf-o'></i> {l s='Download labels' mod='lowcostexpress'}</a>
             {/if}
           {/if}
         </p>

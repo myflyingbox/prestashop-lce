@@ -24,11 +24,11 @@
 
 <div class='panel'>
 <fieldset>
-  <legend><img src="../img/admin/delivery.gif" />{l s='LCE Shipments' mod='lowcostexpress'}</legend>
+  <legend><i class='icon-truck'></i> {l s='LCE Shipments' mod='lowcostexpress'}</legend>
   <p>
     <a href="{$var.new_shipment_path|escape:'htmlall':'UTF-8'}"><img src="../img/admin/add.gif" alt="{l s='Add shipment' mod='lowcostexpress'}" /> {l s='Add shipment' mod='lowcostexpress'}</a>
   </p>
-  
+
   <table class="table" width="100%">
     <thead>
       <tr>
@@ -61,6 +61,6 @@
     </tr>
   {/foreach}
   </table>
-  
+
 </fieldset>
 </div>
