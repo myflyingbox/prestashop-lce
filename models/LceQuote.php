@@ -68,4 +68,73 @@ class LceQuote extends ObjectModel
             return false;
         }
     }
+
+    public static function getNewForCart($cart)
+    {
+        $delivery_address = new Address((int) $cart->id_address_delivery);
+        $delivery_country = new Country((int) $delivery_address->id_country);
+
+        // We only proceed if we have a delivery address, otherwise it is quite pointless to request rates
+        if (!empty($delivery_address->city)) {
+            $weight = round($cart->getTotalWeight($cart->getProducts()), 3);
+            if ($weight <= 0) {
+                $weight = 0.1;
+            }
+
+            $dimension = LceDimension::getForWeight($weight);
+            $params = array(
+                'shipper' => array(
+                    'city' => Configuration::get('MOD_LCE_DEFAULT_CITY'),
+                    'postal_code' => Configuration::get('MOD_LCE_DEFAULT_POSTAL_CODE'),
+                    'country' => Configuration::get('MOD_LCE_DEFAULT_COUNTRY'),
+                ),
+                'recipient' => array(
+                    'city' => $delivery_address->city,
+                    'postal_code' => $delivery_address->postcode,
+                    'country' => $delivery_country->iso_code,
+                    'is_a_company' => false,
+                ),
+                'parcels' => array(
+                    array('length' => $dimension->length,
+                          'height' => $dimension->height,
+                          'width' => $dimension->width,
+                          'weight' => $weight,
+                    ),
+                ),
+            );
+
+            if (Configuration::get('MOD_LCE_DEFAULT_INSURE')) {
+                $params['parcels'][0]['insured_value'] = $cart->getOrderTotal(false, Cart::ONLY_PRODUCTS);
+                $currency = new Currency($cart->id_currency);
+                // Getting total order value
+                $params['parcels'][0]['insured_currency'] = $currency->iso_code;
+
+            }
+
+            $api_quote = Lce\Resource\Quote::request($params);
+
+            $quote = new LceQuote();
+            $quote->id_cart = $cart->id;
+            $quote->api_quote_uuid = $api_quote->id;
+            if ($quote->add()) {
+                // Now we create the offers
+                foreach ($api_quote->offers as $api_offer) {
+                    $lce_service = LceService::findByCode($api_offer->product->code);
+                    $offer = new LceOffer();
+                    $offer->id_quote = $quote->id;
+                    $offer->lce_service_id = $lce_service->id_service;
+                    $offer->api_offer_uuid = $api_offer->id;
+                    $offer->lce_product_code = $api_offer->product->code;
+                    $offer->base_price_in_cents = $api_offer->price->amount_in_cents;
+                    $offer->total_price_in_cents = $api_offer->total_price->amount_in_cents;
+                    if ($api_offer->insurance_price) {
+                        $offer->insurance_price_in_cents = $api_offer->insurance_price->amount_in_cents;
+                    }
+                    $offer->currency = $api_offer->total_price->currency;
+                    $offer->add();
+                }
+            }
+        }
+        return $quote;
+    }
 }
