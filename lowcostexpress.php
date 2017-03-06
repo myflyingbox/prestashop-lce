@@ -224,7 +224,7 @@ class LowCostExpress extends CarrierModule
         $this->registerHook('actionCarrierUpdate'); // For update of carrier IDs
         $this->registerHook('displayAdminOrder'); // Displaying LCE Shipments on order admin page
         $this->registerHook('displayAfterCarrier'); // Display relay delivery options during checkout
-        $this->registerHook('displayHeader'); // Load JS related to relay delivery selection
+        $this->registerHook('actionFrontControllerSetMedia'); // Load JS related to relay delivery selection
 
         return true;
     }
@@ -264,7 +264,7 @@ class LowCostExpress extends CarrierModule
         $this->unregisterHook('actionCarrierUpdate');
         $this->unregisterHook('displayAdminOrder');
         $this->unregisterHook('displayAfterCarrier');
-        $this->unregisterHook('displayHeader');
+        $this->unregisterHook('actionFrontControllerSetMedia');
 
 
         return parent::uninstall();
@@ -871,21 +871,33 @@ class LowCostExpress extends CarrierModule
         return $this->display(__FILE__, 'views/templates/front/order/tracking_details.tpl');
     }
 
-    public function hookDisplayHeader($params)
+    public function hookActionFrontControllerSetMedia($params)
     {
         // Only necessary on order checkout page
-        $file = Tools::getValue('controller');
-        if (!in_array($file, array('order-opc', 'order', 'orderopc'))) {
-            return;
+        $controller_name = $this->context->controller->php_self;
+
+        // Asset load for order page
+        if (in_array($controller_name, array('order-opc', 'order', 'orderopc'))) {
+
+            $module_uri = _MODULE_DIR_.$this->name;
+            $this->context->controller->addCSS($module_uri.'/views/css/style.css', 'all');
+
+            // $this->context->controller->registerJavascript(
+            //     'google-maps',
+            //     'https://maps.google.com/maps/api/js?key=AIzaSyBDTbHvOQcvZG4EmPI5GDAHge7ivXVvIKA',
+            //     [
+            //       'position' => 'head',
+            //       'inline' => true,
+            //       'priority' => 10,
+            //     ]
+            // );
+
+            $this->context
+                 ->controller
+                 ->addJS('https://maps.google.com/maps/api/js?key=AIzaSyBDTbHvOQcvZG4EmPI5GDAHge7ivXVvIKA');
+
+            $this->context->controller->addJS($module_uri.'/views/js/delivery_locations.js');
         }
-        $module_uri = _MODULE_DIR_.$this->name;
-        $this->context->controller->addCSS($module_uri.'/views/css/style.css', 'all');
-
-        $this->context
-             ->controller
-             ->addJS('https://maps.google.com/maps/api/js?key=AIzaSyBDTbHvOQcvZG4EmPI5GDAHge7ivXVvIKA');
-
-        $this->context->controller->addJS($module_uri.'/views/js/delivery_locations.js');
     }
 
     public function hookDisplayAfterCarrier($params)
