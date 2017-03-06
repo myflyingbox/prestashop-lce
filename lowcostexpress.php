@@ -221,10 +221,10 @@ class LowCostExpress extends CarrierModule
         // register hooks
         $this->registerHook('displayOrderDetail'); // Front-side parcel tracking
         $this->registerHook('displayBackOfficeHeader'); // Adding CSS
-        $this->registerHook('updateCarrier'); // For update of carrier IDs
+        $this->registerHook('actionCarrierUpdate'); // For update of carrier IDs
         $this->registerHook('displayAdminOrder'); // Displaying LCE Shipments on order admin page
-        $this->registerHook('displayCarrierList'); // Display relay delivery options during checkout
-        $this->registerHook('header'); // Load JS related to relay delivery selection
+        $this->registerHook('displayAfterCarrier'); // Display relay delivery options during checkout
+        $this->registerHook('displayHeader'); // Load JS related to relay delivery selection
 
         return true;
     }
@@ -261,10 +261,10 @@ class LowCostExpress extends CarrierModule
         // unregister hooks
         $this->unregisterHook('displayOrderDetail');
         $this->unregisterHook('displayBackOfficeHeader');
-        $this->unregisterHook('updateCarrier');
+        $this->unregisterHook('actionCarrierUpdate');
         $this->unregisterHook('displayAdminOrder');
-        $this->unregisterHook('displayCarrierList');
-        $this->unregisterHook('header');
+        $this->unregisterHook('displayAfterCarrier');
+        $this->unregisterHook('displayHeader');
 
 
         return parent::uninstall();
@@ -277,7 +277,7 @@ class LowCostExpress extends CarrierModule
      * With this hook, we make sure that we keep the reference to the carriers
      * up to date in the configuration.
      */
-    public function hookUpdateCarrier($params)
+    public function hookActionCarrierUpdate($params)
     {
         $sql = 'SELECT `lce_product_code`
                 FROM '._DB_PREFIX_.'carrier WHERE (`id_carrier` = "'.(int)$params['id_carrier'].'")';
@@ -871,7 +871,7 @@ class LowCostExpress extends CarrierModule
         return $this->display(__FILE__, 'views/templates/front/order/tracking_details.tpl');
     }
 
-    public function hookHeader($params)
+    public function hookDisplayHeader($params)
     {
         // Only necessary on order checkout page
         $file = Tools::getValue('controller');
@@ -888,7 +888,7 @@ class LowCostExpress extends CarrierModule
         $this->context->controller->addJS($module_uri.'/views/js/delivery_locations.js');
     }
 
-    public function hookDisplayCarrierList($params)
+    public function hookDisplayAfterCarrier($params)
     {
         $address = new Address($params['cart']->id_address_delivery);
         $delivery_country = new Country((int) $address->id_country);
@@ -908,7 +908,7 @@ class LowCostExpress extends CarrierModule
             )
         );
 
-        return $this->context->smarty->fetch(dirname(__FILE__).'/views/templates/hooks/relay_delivery.tpl');
+        return $this->context->smarty->fetch('module:lowcostexpress/views/templates/hooks/relay_delivery.tpl');
     }
 
     public function purify($string)
