@@ -96,7 +96,7 @@ class LowCostExpress extends CarrierModule
 
         $this->displayName = $this->l('MY FLYING BOX Express Shipping');
         $this->description = $this->l('Your shipments made easy with major express carriers (DHL, UPS, Chronopost...) at competitive negotiated rates.');
-        $this->ps_versions_compliancy = array('min' => '1.5', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.5', 'max' => '1.6');
         $this->module_key = '5100c5ae613ddfacd4bc468aee7ee59e';
 
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module?');
