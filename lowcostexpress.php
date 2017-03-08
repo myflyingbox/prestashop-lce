@@ -96,17 +96,15 @@ class LowCostExpress extends CarrierModule
 
         $this->displayName = $this->l('MY FLYING BOX Express Shipping');
         $this->description = $this->l('Your shipments made easy with major express carriers (DHL, UPS, Chronopost...) at competitive negotiated rates.');
-        $this->ps_versions_compliancy = array('min' => '1.5', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);
         $this->module_key = '5100c5ae613ddfacd4bc468aee7ee59e';
 
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module?');
 
         $this->context->smarty->assign('module_name', $this->name);
 
-        // If PS 1.6 or greater, we enable bootstrap
-        if (version_compare(_PS_VERSION_, '1.6.0') >= 0) {
-            $this->bootstrap = true;
-        }
+        $this->bootstrap = true;
+
 
         // Check is php-curl is available
         if (!extension_loaded('curl')) {
