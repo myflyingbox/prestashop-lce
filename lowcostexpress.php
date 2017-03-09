@@ -881,7 +881,7 @@ class LowCostExpress extends CarrierModule
             $this->context->controller->addCSS($module_uri.'/views/css/style.css', 'all');
             $this->context->controller->addjQueryPlugin(array('scrollTo' ));
             $this->context->controller->registerJavascript(
-                'module-dpdfrance-jquery',
+                'module-lowcostexpress-jquery',
                 '/js/jquery/jquery-1.11.0.min.js',
                 array('position' => 'head', 'priority' => 1)
             );
