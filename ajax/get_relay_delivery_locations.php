@@ -38,7 +38,7 @@ $cart = new Cart($cart_id);
 // We are not getting a tariff here, just relay locations.
 $quote = LceQuote::getLatestForCart($cart, false);
 if (!$quote) {
-  $quote = LceQuote::getNewForCart($cart);
+    $quote = LceQuote::getNewForCart($cart);
 }
 
 $offer = LceOffer::getForQuoteAndLceService($quote, $lce_service);
