@@ -71,7 +71,7 @@ class LceService extends ObjectModel
     public static function findByCode($service_code)
     {
         $sql = 'SELECT * FROM '._DB_PREFIX_.'lce_services as s
-                WHERE s.`code` = "'.$service_code.'"';
+                WHERE s.`code` = "'.pSQL($service_code).'"';
         $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
         if ($row) {
             $service = new self((int) $row['id_service']);
