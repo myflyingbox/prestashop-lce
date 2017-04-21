@@ -78,7 +78,7 @@
             <legend><img src="../img/admin/invoice.gif" alt="{l s='Delivery address' mod='lowcostexpress'}" />{l s='Delivery address' mod='lowcostexpress'}</legend>
               <p><b>{$shipment->recipient_name|escape:'htmlall':'UTF-8'}</b></p>
               <p>
-              {$shipment->recipient_street|nl2br|escape:'htmlall':'UTF-8'}
+              {$shipment->recipient_street|escape:'htmlall':'UTF-8'|nl2br}
               <br/>
               {$shipment->recipient_postal_code|escape:'htmlall':'UTF-8'} {$shipment->recipient_city|escape:'htmlall':'UTF-8'}
               <br/>
@@ -92,7 +92,7 @@
               <legend><img src="../img/admin/delivery.gif" alt="{l s='Pickup/shipper address' mod='lowcostexpress'}" />{l s='Pickup/shipper address' mod='lowcostexpress'}</legend>
               <p><b>{$shipment->shipper_name|escape:'htmlall':'UTF-8'}</b></p>
               <p>
-              {$shipment->shipper_street|nl2br|escape:'htmlall':'UTF-8'}
+              {$shipment->shipper_street|escape:'htmlall':'UTF-8'|nl2br}
               <br/>
               {$shipment->shipper_postal_code|escape:'htmlall':'UTF-8'} {$shipment->shipper_city|escape:'htmlall':'UTF-8'}
               <br/>
@@ -208,15 +208,15 @@
               </td>
 
               <td>
-                {$offer->collection_informations|nl2br|escape:'htmlall':'UTF-8'}
+                {$offer->collection_informations|escape:'htmlall':'UTF-8'|nl2br}
               </td>
 
               <td>
-                {$offer->delivery_informations|nl2br|escape:'htmlall':'UTF-8'}
+                {$offer->delivery_informations|escape:'htmlall':'UTF-8'|nl2br}
               </td>
 
               <td>
-                {$offer->product_details|nl2br|escape:'htmlall':'UTF-8'}
+                {$offer->product_details|escape:'htmlall':'UTF-8'|nl2br}
               </td>
             </tr>
             </tbody>
@@ -255,8 +255,8 @@
 
                     {if $insurance_cost neq false}
                        <div class='col-lg-2 col-md-6'>
-                          <label for="ad_valorem_insurance">{l s='Ad-valorem insurance:' mod='lowcostexpress'}</label>
                           <input id="ad_valorem_insurance" name="ad_valorem_insurance" type="checkbox" value="1"{if $shipment->ad_valorem_insurance eq true} CHECKED{/if} />
+                          <label for="ad_valorem_insurance">{l s='Ad-valorem insurance:' mod='lowcostexpress'}</label>
                           <p>
                             {l s='Insurable value:' mod='lowcostexpress'} <b>{$insurable_value|escape:'htmlall':'UTF-8'}</b>
                             <br/>
