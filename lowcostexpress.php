@@ -871,7 +871,6 @@ class LowCostExpress extends CarrierModule
 
         // Asset load for order page
         if (in_array($controller_name, array('order-opc', 'order', 'orderopc'))) {
-
             $module_uri = _MODULE_DIR_.$this->name;
             $this->context->controller->addCSS($module_uri.'/views/css/style.css', 'all');
             $this->context->controller->addjQueryPlugin(array('scrollTo' ));
@@ -884,19 +883,19 @@ class LowCostExpress extends CarrierModule
             $this->context->controller->registerJavascript(
                 'module-lowcostexpress-gmaps',
                 'https://maps.google.com/maps/api/js?key=AIzaSyBDTbHvOQcvZG4EmPI5GDAHge7ivXVvIKA',
-                [
+                array(
                   'server' => 'remote',
                   'priority' => 100,
-                ]
+                )
             );
 
             $this->context->controller->registerJavascript(
                 'module-lowcostexpress-delivery-locations',
                 '/modules/lowcostexpress/views/js/delivery_locations.js',
-                [
+                array(
                   'position' => 'head',
                   'priority' => 10,
-                ]
+                )
             );
         }
     }
