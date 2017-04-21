@@ -30,6 +30,7 @@
       <th></th>
       <th style='width: 25%;'>{l s='Product name' mod='lowcostexpress'}</th>
       <th>{l s='Details' mod='lowcostexpress'}</th>
+      <th>
     </tr>
   </thead>
   <tbody>
@@ -40,21 +41,24 @@
     <td>{$offer->product_name|escape:'htmlall':'UTF-8'}
         <br/>{l s='Total price:' mod='lowcostexpress'} <b>{$offer->total_price|escape:'htmlall':'UTF-8'}</b>
         {if $offer->insurance_price}
-        <br/>{l s='Insurance price:' mod='lowcostexpress'} <b>{$offer->insurance_price|escape:'htmlall':'UTF-8'}</b>
+        <br/><i>{l s='Optional insurance available' mod='lowcostexpress'}</i>
         {/if}
     </td>
 
     <td>
       <ul>
-        <li>{$offer->collection_informations|nl2br|escape:'htmlall':'UTF-8'}</li>
-        <li>{$offer->delivery_informations|nl2br|escape:'htmlall':'UTF-8'}</li>
-        <li>{$offer->product_details|nl2br|escape:'htmlall':'UTF-8'}</li>
+        <li>{$offer->collection_informations|escape:'htmlall':'UTF-8'|nl2br}</li>
+        <li>{$offer->delivery_informations|escape:'htmlall':'UTF-8'|nl2br}</li>
       </ul>
+    </td>
+
+    <td>
+      {$offer->product_details|escape:'htmlall':'UTF-8'|nl2br}
     </td>
 
   </tr>
 {/foreach}
   </tbody>
 </table>
-<input type='submit' value='{l s='Select offer' mod='lowcostexpress'}' name='select_lce_offer'/>
+<input type='submit' value="{l s='Select offer' mod='lowcostexpress'}" name='select_lce_offer'/>
 </form>
