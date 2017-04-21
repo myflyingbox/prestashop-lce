@@ -38,5 +38,8 @@ function upgrade_module_1_0_2($module)
         ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;'
     );
 
+    # Added a new option. Set to true by default.
+    Configuration::updateValue('MOD_LCE_UPDATE_ORDER_STATUS', '1');
+
     return true;
 }
