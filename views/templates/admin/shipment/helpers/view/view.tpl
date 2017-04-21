@@ -18,8 +18,8 @@
 *
 *  @author MyFlyingBox <contact@myflyingbox.com>
 *  @copyright	2016 MyFlyingBox
+ * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  @version		1.0
-*  @license		http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 
 {block name="override_tpl"}

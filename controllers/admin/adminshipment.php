@@ -19,10 +19,9 @@
 *
 *  @author    MyFlyingBox <contact@myflyingbox.com>
 *  @copyright 2016 MyFlyingBox
-*
+ * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  @version   1.0
 *
-*  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 */
 
 if (!defined('_PS_VERSION_')) {
@@ -89,7 +88,6 @@ class AdminShipmentController extends ModuleAdminController
         $lce_service = false;
 
         if ($shipment->api_offer_uuid) {
-
             $api_offer = Lce\Resource\Offer::find($shipment->api_offer_uuid);
 
             // We need to keep some sort of backward compatibility for past shipments
