@@ -18,8 +18,8 @@
 *
 *  @author MyFlyingBox <contact@myflyingbox.com>
 *  @copyright	2016 MyFlyingBox
+ * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  @version		1.0
-*  @license		http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 
 <div class="myflyingbox-settings">
@@ -215,7 +215,7 @@
     <label for="MOD_LCE_UPDATE_ORDER_STATUS">{l s='Automatically update order status:' mod='lowcostexpress'}</label>
     <div class="margin-form">
         <input id="MOD_LCE_UPDATE_ORDER_STATUS" name="MOD_LCE_UPDATE_ORDER_STATUS" type="checkbox" value="1"{if $MOD_LCE_UPDATE_ORDER_STATUS eq true} CHECKED{/if} />
-        <p class="preference_description">{l s="If checked, the status of the order will be automatically set to 'shipped' when you confirm your MyFlyingBox shipment to generate the label." mod='lowcostexpress'}</p>
+        <p class="preference_description">{l s='If checked, the status of the order will be automatically set to \'shipped\' when you confirm your MyFlyingBox shipment to generate the label.' mod='lowcostexpress'}</p>
     </div>
 
     <p>

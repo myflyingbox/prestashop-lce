@@ -17,10 +17,9 @@
  *
  * @author    MyFlyingBox <contact@myflyingbox.com>
  * @copyright 2016 MyFlyingBox
- *
+ * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  * @version   1.0
  *
- * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
 if (!defined('_PS_VERSION_')) {
@@ -146,7 +145,8 @@ class AdminParcelController extends ModuleAdminController
                                 'name' => 'value_to_insure',
                                 'size' => 5,
                                 'class' => 'fixed-width-sm',
-                                'desc' => $this->l('You can leave blank if you do not intend to purchase insurance. Maximum 2000€ total per shipment.'), ),
+                                'desc' => $this->l('You can leave blank if you do not intend to purchase insurance. Maximum 2000€ total per shipment.'),
+                              ),
                         array('type' => 'select',
                               'label' => $this->l('Currency:'),
                               'desc' => $this->l('Currency code for the value to insure.'),

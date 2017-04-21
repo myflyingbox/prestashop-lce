@@ -17,10 +17,9 @@
  *
  * @author    MyFlyingBox <contact@myflyingbox.com>
  * @copyright 2016 MyFlyingBox
- *
+ * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  * @version   1.0
  *
- * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
 if (!defined('_PS_VERSION_')) {
@@ -290,7 +289,6 @@ class LowCostExpress extends CarrierModule
         $lce_service = LceService::findByCarrierId($params['id_carrier']);
         $lce_service->id_carrier = $params['carrier']->id;
         $lce_service->save();
-
     }
 
     //===============
@@ -430,7 +428,6 @@ class LowCostExpress extends CarrierModule
             $products = Lce\Resource\Product::findAll();
 
             foreach ($products as $product) {
-
                 $lce_service = LceService::findByCode($product->code);
 
                 if (!$lce_service) {
@@ -563,14 +560,11 @@ class LowCostExpress extends CarrierModule
                         );
                     }
                 }
-
-
             }
         } catch (Exception $e) {
             error_log($e->getMessage());
             $message = $this->displayError($this->purify($e->getMessage()));
         }
-
         return $message;
     }
 
@@ -722,7 +716,6 @@ class LowCostExpress extends CarrierModule
                     $currency = new Currency($cart->id_currency);
                     // Getting total order value
                     $params['parcels'][0]['insured_currency'] = $currency->iso_code;
-
                 }
 
                 $api_quote = Lce\Resource\Quote::request($params);

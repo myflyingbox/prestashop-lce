@@ -17,10 +17,9 @@
  *
  * @author    MyFlyingBox <contact@myflyingbox.com>
  * @copyright 2016 MyFlyingBox
- *
+ * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  * @version   1.0
  *
- * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
 class LceQuote extends ObjectModel
@@ -108,7 +107,6 @@ class LceQuote extends ObjectModel
                 $currency = new Currency($cart->id_currency);
                 // Getting total order value
                 $params['parcels'][0]['insured_currency'] = $currency->iso_code;
-
             }
 
             $api_quote = Lce\Resource\Quote::request($params);

@@ -17,10 +17,9 @@
  *
  * @author    MyFlyingBox <contact@myflyingbox.com>
  * @copyright 2016 MyFlyingBox
- *
+ * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  * @version   1.0
  *
- * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
 class LceShipment extends ObjectModel
@@ -332,16 +331,13 @@ class LceShipment extends ObjectModel
             $lce_service = LceService::findByCarrierId($order->id_carrier);
 
             if ($lce_service) {
-
                 // $quote = new LceQuote();
                 // $quote->id_shipment = $shipment->id;
                 // $quote->add();
 
                 // Now we parse the offers and select
                 foreach ($api_quote->offers as $api_offer) {
-
                     if ($api_offer->product->code == $lce_service->code) {
-
                         // $offer = new LceOffer();
                         // $offer->id_quote = $quote->id;
                         // $offer->lce_service_id = $lce_service->id_service;
