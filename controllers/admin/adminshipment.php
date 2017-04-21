@@ -546,6 +546,8 @@ class AdminShipmentController extends ModuleAdminController
             $data->total_price = $offer->total_price->formatted;
             if ($offer->insurance_price) {
                 $data->insurance_price =  $offer->insurance_price->formatted;
+            } else {
+                $data->insurance_price =  false;
             }
 
             if (property_exists($offer->product->collection_informations, $this->context->language->iso_code)) {
