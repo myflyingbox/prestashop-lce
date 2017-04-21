@@ -114,6 +114,9 @@ $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_5f2943866d4edda4e1762cb
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_154ca94954adfe2b763dab71df2e5fbb'] = 'Pays d\'origine de la marchandise expédiée.';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_c4741e3b1215982da19c93904d1b6cd7'] = 'Type de contenu :';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_53dea0cf57f65e5f62017a87b204a4b9'] = 'Décrivez le type de marchandise que vous expédiez. Notez que certains transporteurs refuseront des descriptions trop génériques ; vous devrez dans ce cas spécifier une description précise au cas par cas, avant la confirmation de l\'expédition.';
+$_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_e1a3d5a1596f71a09d4da5987dc4de53'] = 'Autres options';
+$_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_4262f6cf612362ee143df138e12de9a3'] = 'Mettre à jour le statut de commande :';
+$_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_d1ea40c62453f60b46a77692d3794cdb'] = 'Si cochée, le statut de la commande sera automatiquement basculé à \"En cours de livraison\" lorsque vous confirmerez votre expédition MyFlyingBox pour générer le bordereau d\'expédition.';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_1a78af351d12ac64409de6ce37a7714b'] = 'Dimensions par défaut';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_c8e5117676f2fe33fcec7dee8fde5840'] = 'Lorsque le module tente d\'obtenir des tarifs de transport pour le panier du client, il doit transmettre à la fois un poids et des dimensions d\'emballage. Le module ne pouvant déterminer lui-même vos dimensions standards d\'emballage pour un panier donné, le tableau ci-dessous vous permet de définir une correspondance entre un poids et des dimensions d\'emballage. Le module se basera systématiquement sur le poids total du panier (arrondi au kg supérieur) pour obtenir une correspondance de dimensions sur la base de ce tableau. Notez que lors de la commande réelle de l\'expédition en back-office vous spécifierez les dimensions réelles de vos colis.';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_52f5e0bc3859bc5f5e25130b6c7e8881'] = 'Position';
@@ -181,6 +184,9 @@ $_MODULE['<{lowcostexpress}prestashop>settings_28e643618826288005a54b1a36741ef1'
 $_MODULE['<{lowcostexpress}prestashop>settings_a2b544e8022bd4f36d8c6c144b7278dd'] = 'TTC';
 $_MODULE['<{lowcostexpress}prestashop>settings_78d3c4042eed822716197082ba68431f'] = 'Assurer par défaut ?';
 $_MODULE['<{lowcostexpress}prestashop>settings_0ae2ea5baea0c32471525909b2fed37f'] = 'Si cochée, le prix affiché au client inclura le coût de l\'assurance, basé sur la valeur du panier (maximum 2000€).';
+$_MODULE['<{lowcostexpress}prestashop>settings_e1a3d5a1596f71a09d4da5987dc4de53'] = 'Autres options';
+$_MODULE['<{lowcostexpress}prestashop>settings_4262f6cf612362ee143df138e12de9a3'] = 'Mettre à jour le statut de commande :';
+$_MODULE['<{lowcostexpress}prestashop>settings_d1ea40c62453f60b46a77692d3794cdb'] = 'Si cochée, le statut de la commande sera automatiquement basculé à \"En cours de livraison\" lorsque vous confirmerez votre expédition MyFlyingBox pour générer le bordereau d\'expédition.';
 $_MODULE['<{lowcostexpress}prestashop>settings_0136bef1461c8d2dc048c59db57c87bc'] = 'Valeurs par défaut pour le colisage';
 $_MODULE['<{lowcostexpress}prestashop>settings_1186b28de46ba23ab642f5d5a5bc2aa6'] = 'Les paramètres suivants sont utilisés pour renseigner automatiquement certains champs lors de l\'initialisation du colisage à la création d\'une expédition MFB. Ces champs sont notamment utilisées pour les formalités douanières.';
 $_MODULE['<{lowcostexpress}prestashop>settings_5f2943866d4edda4e1762cbc8b0e2e21'] = 'Pays d\'origine :';
@@ -219,7 +225,6 @@ $_MODULE['<{lowcostexpress}prestashop>shipment_details_f03ab16cd58372c77ba45a3d9
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_df644ae155e79abf54175bd15d75f363'] = 'Nom du produit';
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_3ec365dd533ddb7ef3d1c111186ce872'] = 'Détails';
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_f7bf0110b8a7f32f448b77b63b29d5b0'] = 'Prix total :';
-$_MODULE['<{lowcostexpress}prestashop>lce_offers_282b9e24346f2529f642148d7f8ac464'] = 'Coût de l\'assurance (facultative) :';
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_b2ce3a14c098da5ee7ef29c6b41010ce'] = 'Assurance ad-valorem facultative';
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_75a3ea6c830bd8cc2b9a0148a92e01ae'] = 'Choisir l\'offre sélectionnée';
 $_MODULE['<{lowcostexpress}prestashop>view_863a7e66a5edd86cbb51100ce4ecd095'] = 'Expédition MY FLYING BOX pour la commande :';

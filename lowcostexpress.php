@@ -59,6 +59,7 @@ class LowCostExpress extends CarrierModule
         'MOD_LCE_DEFAULT_ORIGIN',
         'MOD_LCE_DEFAULT_CONTENT',
         'MOD_LCE_DEFAULT_INSURE',
+        'MOD_LCE_UPDATE_ORDER_STATUS',
         'MOD_LCE_FORCE_DIMENSIONS_TABLE',
         'MOD_LCE_PRICE_ROUND_INCREMENT',
         'MOD_LCE_PRICE_SURCHARGE_STATIC',
@@ -89,7 +90,7 @@ class LowCostExpress extends CarrierModule
     {
         $this->name = 'lowcostexpress';
         $this->tab = 'shipping_logistics';
-        $this->version = '1.0.1';
+        $this->version = '1.0.2';
         $this->author = 'MY FLYING BOX SAS';
 
         parent::__construct();
@@ -632,6 +633,7 @@ class LowCostExpress extends CarrierModule
             'MOD_LCE_DEFAULT_ORIGIN' => Configuration::get('MOD_LCE_DEFAULT_ORIGIN'),
             'MOD_LCE_DEFAULT_CONTENT' => Configuration::get('MOD_LCE_DEFAULT_CONTENT'),
             'MOD_LCE_DEFAULT_INSURE' => Configuration::get('MOD_LCE_DEFAULT_INSURE'),
+            'MOD_LCE_UPDATE_ORDER_STATUS' => Configuration::get('MOD_LCE_UPDATE_ORDER_STATUS'),
             'MOD_LCE_FORCE_DIMENSIONS_TABLE' => Configuration::get('MOD_LCE_FORCE_DIMENSIONS_TABLE'),
             'MOD_LCE_PRICE_ROUND_INCREMENT' => Configuration::get('MOD_LCE_PRICE_ROUND_INCREMENT'),
             'MOD_LCE_PRICE_SURCHARGE_STATIC' => Configuration::get('MOD_LCE_PRICE_SURCHARGE_STATIC'),

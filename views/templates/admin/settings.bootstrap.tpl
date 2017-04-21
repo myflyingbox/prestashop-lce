@@ -273,6 +273,24 @@
 <br/>
 
 <fieldset>
+    <legend>{l s='Other options' mod='lowcostexpress'}</legend>
+
+    <div class="form-group">
+        <label for="MOD_LCE_UPDATE_ORDER_STATUS" class="control-label col-lg-3">{l s='Automatically update order status:' mod='lowcostexpress'}</label>
+        <div class="col-lg-8">
+            <input id="MOD_LCE_UPDATE_ORDER_STATUS" name="MOD_LCE_UPDATE_ORDER_STATUS" type="checkbox" value="1"{if $MOD_LCE_UPDATE_ORDER_STATUS eq true} CHECKED{/if} />
+            <p class="help-block">{l s="If checked, the status of the order will be automatically set to 'shipped' when you confirm your MyFlyingBox shipment to generate the label." mod='lowcostexpress'}</p>
+        </div>
+    </div>
+
+    <div class="form-group" style="text-align:center">
+      <input id="submit_{$module_name|escape:'htmlall':'UTF-8'}" name="submit_{$module_name|escape:'htmlall':'UTF-8'}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="btn btn-default" />
+    </div>
+</fieldset>
+
+<br/>
+
+<fieldset>
   <legend>{l s='Default dimensions' mod='lowcostexpress'}</legend>
   <p>
     {l s='When trying to obtain transportation prices for the cart of the customer, the module must send dimensions and weight. As the module cannot guess your standard packaging strategies, the following table allows you to define a correspondance between a weight and packaging dimensions. The module will always use the calculated weight of the cart (rounded to the upper integer), and will then obtain the corresponding packaging dimensions from this table. Please note that you will be able to specify the exact dimensions and weights of your final packaging when booking a shipment through the order back-office page.' mod='lowcostexpress'}

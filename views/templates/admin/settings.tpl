@@ -208,6 +208,24 @@
 </fieldset>
 
 <br/>
+
+<fieldset>
+    <legend>{l s='Other options' mod='lowcostexpress'}</legend>
+
+    <label for="MOD_LCE_UPDATE_ORDER_STATUS">{l s='Automatically update order status:' mod='lowcostexpress'}</label>
+    <div class="margin-form">
+        <input id="MOD_LCE_UPDATE_ORDER_STATUS" name="MOD_LCE_UPDATE_ORDER_STATUS" type="checkbox" value="1"{if $MOD_LCE_UPDATE_ORDER_STATUS eq true} CHECKED{/if} />
+        <p class="preference_description">{l s="If checked, the status of the order will be automatically set to 'shipped' when you confirm your MyFlyingBox shipment to generate the label." mod='lowcostexpress'}</p>
+    </div>
+
+    <p>
+      <label>&nbsp;</label>
+      <input id="submit_{$module_name|escape:'htmlall':'UTF-8'}" name="submit_{$module_name|escape:'htmlall':'UTF-8'}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="button" />
+    </p>
+</fieldset>
+
+<br/>
+
 <fieldset>
   <legend>{l s='Default parcel values' mod='lowcostexpress'}</legend>
     <p>{l s='The following settings are used to automatically fill some values when initializing parcels for your shipment.' mod='lowcostexpress'}</p>

@@ -739,11 +739,13 @@ class AdminShipmentController extends ModuleAdminController
             $order_carrier->save();
         }
 
-        $history = new OrderHistory();
-        $history->id_order = (int)($shipment->order_id);
-        $history->id_order_state = _PS_OS_SHIPPING_;
-        $history->changeIdOrderState(_PS_OS_SHIPPING_, $shipment->order_id);
-        $history->save();
+        if (Configuration::get('MOD_LCE_UPDATE_ORDER_STATUS')) {
+            $history = new OrderHistory();
+            $history->id_order = (int)($shipment->order_id);
+            $history->id_order_state = _PS_OS_SHIPPING_;
+            $history->changeIdOrderState(_PS_OS_SHIPPING_, $shipment->order_id);
+            $history->save();
+        }
 
         if (!$shipment->save()) {
             header('HTTP/1.0 422 Unprocessable Entity');
