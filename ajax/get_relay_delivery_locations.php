@@ -35,7 +35,7 @@ $cart_id = (int)Tools::getValue('cart_id');
 $cart = new Cart($cart_id);
 // Getting latest quote for this cart, regardless of any time constraint.
 // We are not getting a tariff here, just relay locations.
-$quote = LceQuote::getLatestForCart($cart, false);
+$quote = LceQuote::getLatestForCart($cart);
 if (!$quote) {
     $quote = LceQuote::getNewForCart($cart);
 }
