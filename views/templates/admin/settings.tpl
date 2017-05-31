@@ -218,6 +218,12 @@
         <p class="preference_description">{l s='If checked, the status of the order will be automatically set to \'shipped\' when you confirm your MyFlyingBox shipment to generate the label.' mod='lowcostexpress'}</p>
     </div>
 
+    <label for="MOD_LCE_THERMAL_PRINTING">{l s='Labels for thermal printer:' mod='lowcostexpress'}</label>
+    <div class="margin-form">
+        <input id="MOD_LCE_THERMAL_PRINTING" name="MOD_LCE_THERMAL_PRINTING" type="checkbox" value="1"{if $MOD_LCE_THERMAL_PRINTING eq true} CHECKED{/if} />
+        <p class="preference_description">{l s='If checked, the module will try to obtain thermal-printer friendly labels, whenever possible.' mod='lowcostexpress'}</p>
+    </div>
+
     <p>
       <label>&nbsp;</label>
       <input id="submit_{$module_name|escape:'htmlall':'UTF-8'}" name="submit_{$module_name|escape:'htmlall':'UTF-8'}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="button" />

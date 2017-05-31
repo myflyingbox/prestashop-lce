@@ -283,6 +283,14 @@
         </div>
     </div>
 
+    <div class="form-group">
+        <label for="MOD_LCE_THERMAL_PRINTING" class="control-label col-lg-3">{l s='Labels for thermal printer:' mod='lowcostexpress'}</label>
+        <div class="col-lg-8">
+            <input id="MOD_LCE_THERMAL_PRINTING" name="MOD_LCE_THERMAL_PRINTING" type="checkbox" value="1"{if $MOD_LCE_THERMAL_PRINTING eq true} CHECKED{/if} />
+            <p class="help-block">{l s='If checked, the module will try to obtain thermal-printer friendly labels, whenever possible.' mod='lowcostexpress'}</p>
+        </div>
+    </div>
+
     <div class="form-group" style="text-align:center">
       <input id="submit_{$module_name|escape:'htmlall':'UTF-8'}" name="submit_{$module_name|escape:'htmlall':'UTF-8'}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="btn btn-default" />
     </div>
