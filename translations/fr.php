@@ -117,6 +117,8 @@ $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_53dea0cf57f65e5f62017a8
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_e1a3d5a1596f71a09d4da5987dc4de53'] = 'Autres options';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_4262f6cf612362ee143df138e12de9a3'] = 'Mettre à jour le statut de commande :';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_d1ea40c62453f60b46a77692d3794cdb'] = 'Si cochée, le statut de la commande sera automatiquement basculé à \"En cours de livraison\" lorsque vous confirmerez votre expédition MyFlyingBox pour générer le bordereau d\'expédition.';
+$_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_69d66a1f4e835e3138cbd5cf2e355968'] = 'Bordereaux pour imprimante thermique :';
+$_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_5c22d6de9ebb68a93ee32cadda950ffd'] = 'Si cochée, le module essaiera systématiquement de télécharger un bordereau dans un format adapté pour les imprimantes thermiques.';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_1a78af351d12ac64409de6ce37a7714b'] = 'Dimensions par défaut';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_c8e5117676f2fe33fcec7dee8fde5840'] = 'Lorsque le module tente d\'obtenir des tarifs de transport pour le panier du client, il doit transmettre à la fois un poids et des dimensions d\'emballage. Le module ne pouvant déterminer lui-même vos dimensions standards d\'emballage pour un panier donné, le tableau ci-dessous vous permet de définir une correspondance entre un poids et des dimensions d\'emballage. Le module se basera systématiquement sur le poids total du panier (arrondi au kg supérieur) pour obtenir une correspondance de dimensions sur la base de ce tableau. Notez que lors de la commande réelle de l\'expédition en back-office vous spécifierez les dimensions réelles de vos colis.';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_52f5e0bc3859bc5f5e25130b6c7e8881'] = 'Position';
@@ -187,6 +189,8 @@ $_MODULE['<{lowcostexpress}prestashop>settings_0ae2ea5baea0c32471525909b2fed37f'
 $_MODULE['<{lowcostexpress}prestashop>settings_e1a3d5a1596f71a09d4da5987dc4de53'] = 'Autres options';
 $_MODULE['<{lowcostexpress}prestashop>settings_4262f6cf612362ee143df138e12de9a3'] = 'Mettre à jour le statut de commande :';
 $_MODULE['<{lowcostexpress}prestashop>settings_d1ea40c62453f60b46a77692d3794cdb'] = 'Si cochée, le statut de la commande sera automatiquement basculé à \"En cours de livraison\" lorsque vous confirmerez votre expédition MyFlyingBox pour générer le bordereau d\'expédition.';
+$_MODULE['<{lowcostexpress}prestashop>settings_69d66a1f4e835e3138cbd5cf2e355968'] = 'Bordereaux pour imprimante thermique :';
+$_MODULE['<{lowcostexpress}prestashop>settings_5c22d6de9ebb68a93ee32cadda950ffd'] = 'Si cochée, le module essaiera systématiquement de télécharger un bordereau dans un format adapté pour les imprimantes thermiques.';
 $_MODULE['<{lowcostexpress}prestashop>settings_0136bef1461c8d2dc048c59db57c87bc'] = 'Valeurs par défaut pour le colisage';
 $_MODULE['<{lowcostexpress}prestashop>settings_1186b28de46ba23ab642f5d5a5bc2aa6'] = 'Les paramètres suivants sont utilisés pour renseigner automatiquement certains champs lors de l\'initialisation du colisage à la création d\'une expédition MFB. Ces champs sont notamment utilisées pour les formalités douanières.';
 $_MODULE['<{lowcostexpress}prestashop>settings_5f2943866d4edda4e1762cbc8b0e2e21'] = 'Pays d\'origine :';

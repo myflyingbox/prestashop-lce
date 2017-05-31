@@ -705,6 +705,10 @@ class AdminShipmentController extends ModuleAdminController
             $params['insure_shipment'] = true;
         }
 
+        if (Configuration::get('MOD_LCE_THERMAL_PRINTING')) {
+            $params['thermal_labels'] = true;
+        }
+
         // Placing the order on the API
         try {
             $order_api = Lce\Resource\Order::place($shipment->api_offer_uuid, $params);
