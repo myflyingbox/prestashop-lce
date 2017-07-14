@@ -477,7 +477,7 @@ class LowCostExpress extends CarrierModule
                     $carrier = new Carrier();
                     $carrier->name = $lce_service->carrierName().' '.$lce_service->name;
                     $carrier->id_tax_rules_group = 1;
-                    $carrier->url = '';
+                    $carrier->url = $lce_service->getTrackingUrl();
                     $carrier->active = false;
                     $carrier->deleted = 0;
                     $carrier->shipping_handling = false;
