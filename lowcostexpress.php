@@ -786,6 +786,9 @@ class LowCostExpress extends CarrierModule
             } else {
                 return false;
             }
+        } else {
+          // We don't have a quote? return false then, this service should not be proposed.
+          return false;
         }
     }
 
