@@ -129,6 +129,21 @@ class LceService extends ObjectModel
         return $collection;
     }
 
+    public function getTrackingUrl()
+    {
+        if ($this->carrier_code == 'chronopost') {
+            return 'http://www.chronopost.fr/fr/chrono_suivi_search?listeNumerosLT=@';
+        } elseif ($this->carrier_code == 'dhl') {
+            return 'http://www.dhl.fr/fr/dhl_express/suivi_expedition.html?AWB=@';
+        } elseif ($this->carrier_code == 'ups') {
+            return 'https://wwwapps.ups.com/WebTracking/track?loc=fr_FR&track.x=Track&trackNums=@';
+        } elseif ($this->carrier_code == 'colissimo') {
+            return 'http://www.colissimo.fr/portail_colissimo/suivre.do?colispart=@';
+        } else {
+            return '';
+        }
+    }
+
     public static function totalCount()
     {
         $sql = 'SELECT COUNT(*) as total FROM '._DB_PREFIX_.'lce_services';
