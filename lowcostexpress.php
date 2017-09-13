@@ -90,7 +90,7 @@ class LowCostExpress extends CarrierModule
     {
         $this->name = 'lowcostexpress';
         $this->tab = 'shipping_logistics';
-        $this->version = '1.0.4';
+        $this->version = '1.0.5';
         $this->author = 'MY FLYING BOX SAS';
 
         parent::__construct();
@@ -686,12 +686,6 @@ class LowCostExpress extends CarrierModule
 
             // We only proceed if we have a delivery address, otherwise it is quite pointless to request rates
             if (!empty($delivery_address->city)) {
-                $weight = round($cart->getTotalWeight($cart->getProducts()), 3);
-                if ($weight <= 0) {
-                    $weight = 0.1;
-                }
-
-                $dimension = LceDimension::getForWeight($weight);
                 $params = array(
                     'shipper' => array(
                         'city' => Configuration::get('MOD_LCE_DEFAULT_CITY'),
@@ -704,13 +698,7 @@ class LowCostExpress extends CarrierModule
                         'country' => $delivery_country->iso_code,
                         'is_a_company' => false,
                     ),
-                    'parcels' => array(
-                        array('length' => $dimension->length,
-                              'height' => $dimension->height,
-                              'width' => $dimension->width,
-                              'weight' => $weight,
-                        ),
-                    ),
+                    'parcels' => LceQuote::parcelDataFromCart($cart)
                 );
 
                 if (Configuration::get('MOD_LCE_DEFAULT_INSURE')) {
@@ -787,8 +775,8 @@ class LowCostExpress extends CarrierModule
                 return false;
             }
         } else {
-          // We don't have a quote? return false then, this service should not be proposed.
-          return false;
+            // We don't have a quote? return false then, this service should not be proposed.
+            return false;
         }
     }
 

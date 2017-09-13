@@ -215,6 +215,90 @@ class LceShipment extends ObjectModel
         return $res;
     }
 
+    // Returns an array of parcel data to make a quote request, based on the
+    // the characteristics of the cart passed as argument
+    public function createParcelsFromOrder()
+    {
+        $order = new Order((int)$this->order_id);
+        $parcels = array();
+        $missing_dimension = false;
+        // First, we load basic parcel data to check whether we have dimensions for all articles. If not,
+        // We fall back to the weight/dimensions table.
+        foreach ($order->getOrderDetailList() as $order_detail) {
+            $product = new Product((int)$order_detail['product_id']);
+            $weight = $product->weight;
+            $length = $product->depth;
+            $width = $product->width;
+            $height = $product->height;
+            // We can't really have a 0 weight...
+            if ($weight <= 0) {
+                $weight = 0.1;
+            }
+
+            if ($length == 0 || $width == 0 || $height == 0) {
+                $missing_dimension = true;
+                break;
+            } else {
+                // The same product can be added multiple times. We simulate one parcel per article.
+                for ($i=0; $i<$order_detail['product_quantity']; $i++) {
+                    $parcels[] = array(
+                      'length' => $length,
+                      'height' => $height,
+                      'width' => $width,
+                      'weight' => $weight,
+                      'value' => $order_detail['total_price_tax_excl'],
+                    );
+                }
+            }
+        }
+
+        // Some dimension was missing, we use the old method and override the
+        // $parcels array
+        if ($missing_dimension) {
+            $weight = round($order->getTotalWeight(), 3);
+            if ($weight <= 0) {
+                $weight = 0.1;
+            }
+            $dimension = LceDimension::getForWeight($weight);
+            $parcels =  array(
+                array('length' => $dimension->length,
+                      'height' => $dimension->height,
+                      'width' => $dimension->width,
+                      'weight' => $weight,
+                      'value' => $order->getTotalProductsWithoutTaxes(),
+                ),
+            );
+        }
+
+        // Now we have an array of basic parcels data. We create the parcels.
+        $parcel_added = false;
+        $currency = new Currency($order->id_currency);
+        foreach ($parcels as $parcel_data) {
+            $parcel = new LceParcel();
+            $parcel->id_shipment = $this->id;
+            // Dimensions
+            $parcel->length = $parcel_data['length'];
+            $parcel->width = $parcel_data['width'];
+            $parcel->height = $parcel_data['height'];
+            $parcel->weight = $parcel_data['weight'];
+
+            // Customs
+            $parcel->value = $parcel_data['value'];
+            $parcel->currency = $currency->iso_code;
+            $parcel->description = Configuration::get('MOD_LCE_DEFAULT_CONTENT');
+            $parcel->country_of_origin = Configuration::get('MOD_LCE_DEFAULT_ORIGIN');
+
+            // Insurance
+            $parcel->value_to_insure = $parcel_data['value'];
+            $parcel->insured_value_currency = $currency->iso_code;
+            if ($parcel->add()) {
+                $parcel_added = true;
+            }
+        }
+        // We return true if at least one parcel was added.
+        return $parcel_added;
+    }
+
     public static function createFromOrder($order)
     {
         $shipment = new self();
@@ -265,38 +349,13 @@ class LceShipment extends ObjectModel
         $shipment->recipient_email = $customer->email;
 
         if ($shipment->validateFields(false) && $shipment->add()) {
-            // Trying to initialize parcels
-            $weight = round($order->getTotalWeight(), 3);
-            if ($weight <= 0) {
-                $weight = 0.1;
-            }
-
-            $dimension = LceDimension::getForWeight($weight);
-            $currency = new Currency($order->id_currency);
-
-            $parcel = new LceParcel();
-            $parcel->id_shipment = $shipment->id;
-            // Dimensions
-            $parcel->length = $dimension->length;
-            $parcel->width = $dimension->width;
-            $parcel->height = $dimension->height;
-            $parcel->weight = $weight;
-
-            // Customs
-            $parcel->value = $order->getTotalProductsWithoutTaxes();
-            $parcel->currency = $currency->iso_code;
-            $parcel->description = Configuration::get('MOD_LCE_DEFAULT_CONTENT');
-            $parcel->country_of_origin = Configuration::get('MOD_LCE_DEFAULT_ORIGIN');
-
-            // Insurance
-            $parcel->value_to_insure = $order->getTotalProductsWithoutTaxes();
-            $parcel->insured_value_currency = $currency->iso_code;
+            // Trying to create parcels
+            $res_parcels = $shipment->createParcelsFromOrder();
 
             // If parcel creation is successful, we automatically select an offer.
-            if ($parcel->add()) {
+            if ($res_parcels) {
                 $shipment->autoselectOffer($order);
             }
-
             return $shipment;
         } else {
             return false;
