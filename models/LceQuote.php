@@ -68,6 +68,59 @@ class LceQuote extends ObjectModel
         }
     }
 
+    // Returns an array of parcel data to make a quote request, based on the
+    // the characteristics of the cart passed as argument
+    public static function parcelDataFromCart($cart)
+    {
+        $parcels = array();
+        $missing_dimension = false;
+        // First, we test whether we have dimensions for all articles. If not,
+        // We fall back to the weight/dimensions table.
+        foreach ($cart->getProducts() as $product) {
+            $weight = $product['weight_attribute'];
+            $length = $product['depth'];
+            $width = $product['width'];
+            $height = $product['height'];
+            // We can't really have a 0 weight...
+            if ($weight <= 0) {
+                $weight = 0.1;
+            }
+
+            if ($length == 0 || $width == 0 || $height == 0) {
+                $missing_dimension = true;
+                break;
+            } else {
+                // The same product can be added multiple times. We simulate one parcel per article.
+                for ($i=0; $i<$product['cart_quantity']; $i++) {
+                    $parcels[] = array(
+                      'length' => $length,
+                      'height' => $height,
+                      'width' => $width,
+                      'weight' => $weight,
+                    );
+                }
+            }
+        }
+
+        // Some dimension was missing, we use the old method and override the
+        // $parcels array
+        if ($missing_dimension) {
+            $weight = round($cart->getTotalWeight($cart->getProducts()), 3);
+            if ($weight <= 0) {
+                $weight = 0.1;
+            }
+            $dimension = LceDimension::getForWeight($weight);
+            $parcels =  array(
+                array('length' => $dimension->length,
+                      'height' => $dimension->height,
+                      'width' => $dimension->width,
+                      'weight' => $weight,
+                ),
+            );
+        }
+        return $parcels;
+    }
+
     public static function getNewForCart($cart)
     {
         $delivery_address = new Address((int) $cart->id_address_delivery);
@@ -93,13 +146,7 @@ class LceQuote extends ObjectModel
                     'country' => $delivery_country->iso_code,
                     'is_a_company' => false,
                 ),
-                'parcels' => array(
-                    array('length' => $dimension->length,
-                          'height' => $dimension->height,
-                          'width' => $dimension->width,
-                          'weight' => $weight,
-                    ),
-                ),
+                'parcels' => self::parcelDataFromCart($cart)
             );
 
             if (Configuration::get('MOD_LCE_DEFAULT_INSURE')) {
