@@ -90,7 +90,7 @@ class LowCostExpress extends CarrierModule
     {
         $this->name = 'lowcostexpress';
         $this->tab = 'shipping_logistics';
-        $this->version = '1.0.5';
+        $this->version = '1.0.6';
         $this->author = 'MY FLYING BOX SAS';
 
         parent::__construct();
@@ -706,28 +706,34 @@ class LowCostExpress extends CarrierModule
                     $params['parcels'][0]['insured_currency'] = $currency->iso_code;
                 }
 
-                $api_quote = Lce\Resource\Quote::request($params);
+                // Exceptions must never be raised directly without being caught.
+                // We are in the frontend when executed the current code.
+                try {
+                    $api_quote = Lce\Resource\Quote::request($params);
 
-                $quote = new LceQuote();
-                $quote->id_cart = $cart->id;
-                $quote->api_quote_uuid = $api_quote->id;
-                if ($quote->add()) {
-                    // Now we create the offers
-                    foreach ($api_quote->offers as $api_offer) {
-                        $lce_service = LceService::findByCode($api_offer->product->code);
-                        $offer = new LceOffer();
-                        $offer->id_quote = $quote->id;
-                        $offer->lce_service_id = $lce_service->id_service;
-                        $offer->api_offer_uuid = $api_offer->id;
-                        $offer->lce_product_code = $api_offer->product->code;
-                        $offer->base_price_in_cents = $api_offer->price->amount_in_cents;
-                        $offer->total_price_in_cents = $api_offer->total_price->amount_in_cents;
-                        if ($api_offer->insurance_price) {
-                            $offer->insurance_price_in_cents = $api_offer->insurance_price->amount_in_cents;
+                    $quote = new LceQuote();
+                    $quote->id_cart = $cart->id;
+                    $quote->api_quote_uuid = $api_quote->id;
+                    if ($quote->add()) {
+                        // Now we create the offers
+                        foreach ($api_quote->offers as $api_offer) {
+                            $lce_service = LceService::findByCode($api_offer->product->code);
+                            $offer = new LceOffer();
+                            $offer->id_quote = $quote->id;
+                            $offer->lce_service_id = $lce_service->id_service;
+                            $offer->api_offer_uuid = $api_offer->id;
+                            $offer->lce_product_code = $api_offer->product->code;
+                            $offer->base_price_in_cents = $api_offer->price->amount_in_cents;
+                            $offer->total_price_in_cents = $api_offer->total_price->amount_in_cents;
+                            if ($api_offer->insurance_price) {
+                                $offer->insurance_price_in_cents = $api_offer->insurance_price->amount_in_cents;
+                            }
+                            $offer->currency = $api_offer->total_price->currency;
+                            $offer->add();
                         }
-                        $offer->currency = $api_offer->total_price->currency;
-                        $offer->add();
                     }
+                } catch (Exception $e) {
+                    Tools::error_log('MFB quote request exception: '.$e->getMessage());
                 }
             }
         }
