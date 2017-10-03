@@ -74,19 +74,25 @@ class LceQuote extends ObjectModel
     {
         $parcels = array();
         $missing_dimension = false;
+        $ignored_articles = 0;
+        $total_articles = 0;
         // First, we test whether we have dimensions for all articles. If not,
         // We fall back to the weight/dimensions table.
+        // If some articles have dimensions and other have no dimensions at all (no weight either), then we totally ignore them
         foreach ($cart->getProducts() as $product) {
+            $total_articles++;
             $weight = $product['weight_attribute'];
             $length = $product['depth'];
             $width = $product['width'];
             $height = $product['height'];
-            // We can't really have a 0 weight...
-            if ($weight <= 0) {
-                $weight = 0.1;
-            }
 
-            if ($length == 0 || $width == 0 || $height == 0) {
+            // This product has no dimension at all. If other products have dimensions, then this
+            // one will be ignored.
+            // Otherwise, we will fall back to the correspondance table.
+            if ($length <= 0 && $width <= 0 && $height <= 0 && $weight <= 0) {
+                $ignored_articles++;
+                continue;
+            } else if ($length <= 0 || $width <= 0 || $height <= 0 || $weight <= 0) {
                 $missing_dimension = true;
                 break;
             } else {
@@ -103,8 +109,9 @@ class LceQuote extends ObjectModel
         }
 
         // Some dimension was missing, we use the old method and override the
-        // $parcels array
-        if ($missing_dimension) {
+        // $parcels array. Same if we have ignored all articles because they
+        // have no dimension set at all...
+        if ($missing_dimension || ($ignored_articles == $total_articles)) {
             $weight = round($cart->getTotalWeight($cart->getProducts()), 3);
             if ($weight <= 0) {
                 $weight = 0.1;
