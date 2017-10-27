@@ -74,6 +74,7 @@ class LceQuote extends ObjectModel
     {
         $parcels = array();
         $missing_dimension = false;
+        $missing_dimensions_details = '';
         $ignored_articles = 0;
         $total_articles = 0;
         // First, we test whether we have dimensions for all articles. If not,
@@ -81,7 +82,12 @@ class LceQuote extends ObjectModel
         // If some articles have dimensions and other have no dimensions at all (no weight either), then we totally ignore them
         foreach ($cart->getProducts() as $product) {
             $total_articles++;
-            $weight = $product['weight_attribute'];
+            // Using the same strategy as Cart::getTotalWeight() for weight extraction
+            if (!isset($product['weight_attribute']) || is_null($product['weight_attribute'])) {
+                $weight = $product['weight'];
+            } else {
+                $weight = $product['weight_attribute'];
+            }
             $length = $product['depth'];
             $width = $product['width'];
             $height = $product['height'];
@@ -94,6 +100,7 @@ class LceQuote extends ObjectModel
                 continue;
             } else if ($length <= 0 || $width <= 0 || $height <= 0 || $weight <= 0) {
                 $missing_dimension = true;
+                $missing_dimensions_details .= "$length x $width x $height - $weight kg ";
                 break;
             } else {
                 // The same product can be added multiple times. We simulate one parcel per article.
@@ -112,6 +119,11 @@ class LceQuote extends ObjectModel
         // $parcels array. Same if we have ignored all articles because they
         // have no dimension set at all...
         if ($missing_dimension || ($ignored_articles == $total_articles)) {
+            if ($missing_dimension) {
+          	   PrestaShopLogger::addLog("MFB LceQuote: falling back to weight/dimensions table do to missing dimensions ($missing_dimensions_details).", 1, null, 'Cart', (int)$cart->id, true);
+            } else {
+          	   PrestaShopLogger::addLog("MFB LceQuote: falling back to weight/dimensions as no article had dimensions set.", 1, null, 'Cart', (int)$cart->id, true);
+            }
             $weight = round($cart->getTotalWeight($cart->getProducts()), 3);
             if ($weight <= 0) {
                 $weight = 0.1;
