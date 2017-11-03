@@ -88,9 +88,18 @@ class LceQuote extends ObjectModel
             } else {
                 $weight = $product['weight_attribute'];
             }
-            $length = $product['depth'];
-            $width = $product['width'];
-            $height = $product['height'];
+
+            // Some carriers check that length is long enough, but don't care much about other dimensions...
+            $dims = array(
+              $product['depth'],
+              $product['width'],
+              $product['height']
+            );
+            sort($dims);
+
+            $length = $dims[2];
+            $width = $dims[1];
+            $height = $dims[0];
 
             // This product has no dimension at all. If other products have dimensions, then this
             // one will be ignored.
@@ -103,6 +112,16 @@ class LceQuote extends ObjectModel
                 $missing_dimensions_details .= "$length x $width x $height - $weight kg ";
                 break;
             } else {
+                // Some carriers do not accept any parcel below 1cm on any side (DHL). Forcing 1cm mini dimension.
+                if ($length < 1) {
+                    $length = 1;
+                }
+                if ($width < 1) {
+                    $width = 1;
+                }
+                if ($height < 1) {
+                    $height = 1;
+                }
                 // The same product can be added multiple times. We simulate one parcel per article.
                 for ($i=0; $i<$product['cart_quantity']; $i++) {
                     $parcels[] = array(
@@ -119,11 +138,11 @@ class LceQuote extends ObjectModel
         // $parcels array. Same if we have ignored all articles because they
         // have no dimension set at all...
         if ($missing_dimension || ($ignored_articles == $total_articles)) {
-            if ($missing_dimension) {
-          	   PrestaShopLogger::addLog("MFB LceQuote: falling back to weight/dimensions table do to missing dimensions ($missing_dimensions_details).", 1, null, 'Cart', (int)$cart->id, true);
-            } else {
-          	   PrestaShopLogger::addLog("MFB LceQuote: falling back to weight/dimensions as no article had dimensions set.", 1, null, 'Cart', (int)$cart->id, true);
-            }
+            // if ($missing_dimension) {
+          	//    PrestaShopLogger::addLog("MFB LceQuote: falling back to weight/dimensions table do to missing dimensions ($missing_dimensions_details).", 1, null, 'Cart', (int)$cart->id, true);
+            // } else {
+          	//    PrestaShopLogger::addLog("MFB LceQuote: falling back to weight/dimensions as no article had dimensions set.", 1, null, 'Cart', (int)$cart->id, true);
+            // }
             $weight = round($cart->getTotalWeight($cart->getProducts()), 3);
             if ($weight <= 0) {
                 $weight = 0.1;
