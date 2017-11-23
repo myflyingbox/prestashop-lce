@@ -537,6 +537,9 @@ class AdminShipmentController extends ModuleAdminController
         $offers = array();
         foreach ($quote->offers as $offer) {
             $lce_service = LceService::findByCode($offer->product->code);
+            // We cannot proceed with offers that have no corresponding service initialized
+            // locally.
+            if (!$lce_service) continue;
 
             $data = new stdClass();
             $data->id = $offer->id;
