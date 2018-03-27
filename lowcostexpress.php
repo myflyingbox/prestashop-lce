@@ -90,7 +90,7 @@ class LowCostExpress extends CarrierModule
     {
         $this->name = 'lowcostexpress';
         $this->tab = 'shipping_logistics';
-        $this->version = '1.0.9';
+        $this->version = '1.0.10';
         $this->author = 'MY FLYING BOX SAS';
 
         parent::__construct();
