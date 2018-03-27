@@ -561,7 +561,6 @@ class LowCostExpress extends CarrierModule
                 }
             }
         } catch (Exception $e) {
-            error_log($e->getMessage());
             $message = $this->displayError($this->purify($e->getMessage()));
         }
         return $message;
