@@ -681,6 +681,16 @@ class LowCostExpress extends CarrierModule
 
         // No quote found. Generating a new one.
         if (!$quote) {
+
+            // We only try to get new quotes when we are in the order tunnel.
+            // Otherwise, Prestashop has a tendency to try to always get a shipping cost,
+            // Which can significantly slow down user experience.
+            $controller_name = Tools::getValue('controller');
+            if (!in_array($controller_name, array('order-opc', 'order', 'orderopc'))) {
+                return false;
+            }
+
+
             $delivery_address = new Address((int) $cart->id_address_delivery);
             $delivery_country = new Country((int) $delivery_address->id_country);
 
