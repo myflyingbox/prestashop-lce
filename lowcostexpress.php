@@ -64,7 +64,11 @@ class LowCostExpress extends CarrierModule
         'MOD_LCE_PRICE_ROUND_INCREMENT',
         'MOD_LCE_PRICE_SURCHARGE_STATIC',
         'MOD_LCE_PRICE_SURCHARGE_PERCENT',
-        'MOD_LCE_PRICE_TAX_RULES', );
+        'MOD_LCE_PRICE_TAX_RULES',
+        'MOD_LCE_MAX_REAL_WEIGHT',
+        'MOD_LCE_MAX_VOL_WEIGHT',
+        'MOD_LCE_FORCE_WEIGHT_DIMS_TABLE',
+      );
 
     public static $mandatory_settings = array('MOD_LCE_API_LOGIN',
         'MOD_LCE_API_PASSWORD',
@@ -90,7 +94,7 @@ class LowCostExpress extends CarrierModule
     {
         $this->name = 'lowcostexpress';
         $this->tab = 'shipping_logistics';
-        $this->version = '1.0.10';
+        $this->version = '1.0.11';
         $this->author = 'MY FLYING BOX SAS';
 
         parent::__construct();
@@ -636,6 +640,9 @@ class LowCostExpress extends CarrierModule
             'MOD_LCE_PRICE_SURCHARGE_STATIC' => Configuration::get('MOD_LCE_PRICE_SURCHARGE_STATIC'),
             'MOD_LCE_PRICE_SURCHARGE_PERCENT' => Configuration::get('MOD_LCE_PRICE_SURCHARGE_PERCENT'),
             'MOD_LCE_PRICE_TAX_RULES' => Configuration::get('MOD_LCE_PRICE_TAX_RULES'),
+            'MOD_LCE_MAX_REAL_WEIGHT' => Configuration::get('MOD_LCE_MAX_REAL_WEIGHT'),
+            'MOD_LCE_MAX_VOL_WEIGHT' => Configuration::get('MOD_LCE_MAX_VOL_WEIGHT'),
+            'MOD_LCE_FORCE_WEIGHT_DIMS_TABLE' => Configuration::get('MOD_LCE_FORCE_WEIGHT_DIMS_TABLE'),
         ));
     }
 

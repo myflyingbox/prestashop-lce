@@ -232,7 +232,27 @@
             <p class="help-block">{l s='If checked, the price displayed to the customer will include the cost of insurance, based on cart value (max 2000€).' mod='lowcostexpress'}</p>
         </div>
     </div>
-
+    <div class="form-group">
+        <label for="MOD_LCE_MAX_REAL_WEIGHT" class="control-label col-lg-3">{l s='Max real weight per parcel:' mod='lowcostexpress'}</label>
+        <div class="col-lg-8">
+            <input id="MOD_LCE_MAX_REAL_WEIGHT" name="MOD_LCE_MAX_REAL_WEIGHT" type="text" value="{$MOD_LCE_MAX_REAL_WEIGHT|escape:'htmlall':'UTF-8'}" />
+            <p class="help-block">{l s='In KG. Used to determine how to spread articles in a cart into several simulated parcels, based on real weight.' mod='lowcostexpress'}</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="MOD_LCE_MAX_VOL_WEIGHT" class="control-label col-lg-3">{l s='Max volumetric weight per parcel:' mod='lowcostexpress'}</label>
+        <div class="col-lg-8">
+            <input id="MOD_LCE_MAX_VOL_WEIGHT" name="MOD_LCE_MAX_VOL_WEIGHT" type="text" value="{$MOD_LCE_MAX_VOL_WEIGHT|escape:'htmlall':'UTF-8'}" />
+            <p class="help-block">{l s='In KG. Used to determine how to spread articles in a cart into several simulated parcels, based on volumetric weight.' mod='lowcostexpress'}</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="MOD_LCE_FORCE_WEIGHT_DIMS_TABLE" class="control-label col-lg-3">{l s='Force use of weight/dimensions table:' mod='lowcostexpress'}</label>
+        <div class="col-lg-8">
+            <input id="MOD_LCE_FORCE_WEIGHT_DIMS_TABLE" name="MOD_LCE_FORCE_WEIGHT_DIMS_TABLE" type="checkbox" value="1"{if $MOD_LCE_FORCE_WEIGHT_DIMS_TABLE eq true} CHECKED{/if} />
+            <p class="help-block">{l s='If checked, the module will ignore dimensions specificed in your product catalog and use only the weight and the table below to determine the dimensions of each parcel.' mod='lowcostexpress'}</p>
+        </div>
+    </div>
     <div class="form-group" style="text-align:center">
       <input id="submit_{$module_name|escape:'htmlall':'UTF-8'}" name="submit_{$module_name|escape:'htmlall':'UTF-8'}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="btn btn-default" />
     </div>
