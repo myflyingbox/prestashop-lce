@@ -221,43 +221,78 @@ class LceShipment extends ObjectModel
     {
         $order = new Order((int)$this->order_id);
         $parcels = array();
+        $articles = array();
+        $ignore_dimensions = false;
         $missing_dimension = false;
-        // First, we load basic parcel data to check whether we have dimensions for all articles. If not,
+        $missing_dimensions_details = '';
+        $ignored_articles = 0;
+        $total_articles = 0;
+
+        // First, we test whether we have dimensions for all articles. If not,
         // We fall back to the weight/dimensions table.
+        // If some articles have dimensions and other have no dimensions at all (no weight either), then we totally ignore them
+        // The following loop initializes an array of articles with dimensions, that we can use later to determine final pack-list.
         foreach ($order->getOrderDetailList() as $order_detail) {
             $product = new Product((int)$order_detail['product_id']);
-            $weight = $product->weight;
-            $length = $product->depth;
-            $width = $product->width;
-            $height = $product->height;
-            // We can't really have a 0 weight...
-            if ($weight <= 0) {
-                $weight = 0.1;
-            }
+            $total_articles++;
 
-            if ($length == 0 || $width == 0 || $height == 0) {
+            $weight = $product->weight;
+            // Some carriers check that length is long enough, but don't care much about other dimensions...
+            $dims = array(
+              (int)$product->depth,
+              (int)$product->width,
+              (int)$product->height
+            );
+            sort($dims);
+            $length = $dims[2];
+            $width = $dims[1];
+            $height = $dims[0];
+
+
+            if ($length <= 0 && $width <= 0 && $height <= 0 && $weight <= 0) {
+                // This product has no dimension at all, it will be ignored alltogether.
+                $ignored_articles++;
+                continue;
+            } else if (Configuration::get('MOD_LCE_FORCE_WEIGHT_DIMS_TABLE') ) {
+                // Forcing use of weight only
+                $ignore_dimensions = true;
+            } else if ($length <= 0 || $width <= 0 || $height <= 0 || $weight <= 0) {
+                // Some dimensions are missing, so whatever the situation for other products,
+                // we will not use real dimensions for parcel simulation, but fall back
+                // to standard weight/dimensions correspondance table.
+                $ignore_dimensions = true;
                 $missing_dimension = true;
-                break;
+                $missing_dimensions_details .= "$length x $width x $height - $weight kg "; // Used for debug output below.
             } else {
-                // The same product can be added multiple times. We simulate one parcel per article.
-                for ($i=0; $i<$order_detail['product_quantity']; $i++) {
-                    $parcels[] = array(
-                      'length' => $length,
-                      'height' => $height,
-                      'width' => $width,
-                      'weight' => $weight,
-                      'value' => $order_detail['total_price_tax_excl'],
-                    );
+                // We have all dimensions for this product.
+                // Some carriers do not accept any parcel below 1cm on any side (DHL). Forcing 1cm mini dimension.
+                if ($length < 1) {
+                    $length = 1;
                 }
+                if ($width < 1) {
+                    $width = 1;
+                }
+                if ($height < 1) {
+                    $height = 1;
+                }
+            }
+            // The same product can be added multiple times. We save articles unit by unit.
+            for ($i=0; $i<$order_detail['product_quantity']; $i++) {
+                $articles[] = array(
+                  'length' => $length,
+                  'height' => $height,
+                  'width' => $width,
+                  'weight' => $weight,
+                  'value' => $order_detail['unit_price_tax_incl'],
+                );
             }
         }
 
-        // Some dimension was missing, we use the old method and override the
-        // $parcels array
-        if ($missing_dimension) {
+        // If all articles were ignored, we just do our best with what we have, which means not much!
+        if ($ignored_articles == $total_articles) {
             $weight = round($order->getTotalWeight(), 3);
             if ($weight <= 0) {
-                $weight = 0.1;
+                $weight = 0.1; // As ignored artices do not have weight, this will probably be the weight used.
             }
             $dimension = LceDimension::getForWeight($weight);
             $parcels =  array(
@@ -265,9 +300,164 @@ class LceShipment extends ObjectModel
                       'height' => $dimension->height,
                       'width' => $dimension->width,
                       'weight' => $weight,
-                      'value' => $order->getTotalProductsWithoutTaxes(),
+                      'value' => $order->getTotalProductsWithTaxes(),
                 ),
             );
+        } else if ($ignore_dimensions) {
+            // if ($missing_dimension) {
+          	//    PrestaShopLogger::addLog("MFB LceQuote: falling back to weight/dimensions table do to missing dimensions ($missing_dimensions_details).", 1, null, 'Cart', (int)$cart->id, true);
+            // } else {
+          	//    PrestaShopLogger::addLog("MFB LceQuote: falling back to weight/dimensions as no article had dimensions set.", 1, null, 'Cart', (int)$cart->id, true);
+            // }
+
+            // In this case, two possibilities:
+            //  - if we have a maximum weight per package set in the config, we
+            //    have to spread articles in as many packages as needed.
+            //  - otherwise, just use the default strategy: total weight + corresponding dimension based on table
+            $max_real_weight = Configuration::get('MOD_LCE_MAX_REAL_WEIGHT');
+            if ($max_real_weight && $max_real_weight > 0) {
+              // We must now spread every article in virtual parcels, respecting
+              // the defined maximum real weight.
+              $parcels = array();
+              foreach($articles as $key => $article) {
+                  if (count($parcels) == 0 || bccomp($article['weight'], $max_real_weight, 3) > 0) {
+                      // If first article, initialize new parcel.
+                      // If article has a weight above the limit, it gets its own package.
+                      $parcels[] = array(
+                        'weight' => $article['weight'],
+                        'value' => $article['value']
+                      );
+                      continue;
+                  } else {
+                      foreach($parcels as &$parcel) {
+                          // Trying to fit the article in an existing parcel.
+                          $cumulated_weight = bcadd($parcel['weight'], $article['weight'], 3);
+                          $cumulated_value = bcadd($parcel['value'], $article['value'], 2);
+                          if ($cumulated_weight <= $max_real_weight) {
+                            $parcel['weight'] = $cumulated_weight;
+                            $parcel['value'] = $cumulated_value;
+                            unset($article); // Security, to avoid double treatment of the same article.
+                            break;
+                          }
+                      }
+                      unset($parcel); // Unsetting reference to last $parcel of the loop, to avoid any bad surprise later!
+
+                      // If we could not fit the article in any existing package,
+                      // we simply initialize a new one, and that's it.
+                      if (isset($article)) {
+                          $parcels[] = array(
+                            'weight' => $article['weight'],
+                            'value' => $article['value']
+                          );
+                          continue;
+                      }
+                  }
+              }
+              // Article weight has been spread to relevant parcels. Now we must
+              // define parcel dimensions, based on weight.
+              foreach($parcels as &$parcel) {
+                  // First, ensuring the weight is not zero!
+                  if ($parcel['weight'] <= 0) {
+                      $parcel['weight'] = 0.1;
+                  }
+                  $dimension = LceDimension::getForWeight($parcel['weight']);
+                  $parcel['length'] = $dimension->length;
+                  $parcel['height'] = $dimension->height;
+                  $parcel['width'] = $dimension->width;
+              }
+              unset($parcel); // Unsetting reference to last $parcel of the loop, to avoid any bad surprise later!
+
+              // Our parcels are now ready.
+
+            } else {
+                // Simple case: no dimensions, and no maximum real weight.
+                // We just take the total weight and find the corresponding dimensions.
+                $weight = round($order->getTotalWeight(), 3);
+                if ($weight <= 0) {
+                    $weight = 0.1;
+                }
+                $dimension = LceDimension::getForWeight($weight);
+                $parcels =  array(
+                    array('length' => $dimension->length,
+                          'height' => $dimension->height,
+                          'width' => $dimension->width,
+                          'weight' => $weight,
+                          'value' => $order->getTotalProductsWithTaxes(),
+                    ),
+                );
+            }
+        } else {
+            // We have dimensions for all articles, so this is a bit more complex.
+            // We proceed like above, but we also take into account the dimensions of the articles,
+            // in two ways: to determine the dimensions of the packages, and to check, on this basis, the max
+            // volumetric weight of the package.
+
+            $max_real_weight = Configuration::get('MOD_LCE_MAX_REAL_WEIGHT');
+            $max_volumetric_weight = Configuration::get('MOD_LCE_MAX_VOL_WEIGHT');
+
+            if ($max_real_weight && $max_real_weight > 0 || $max_volumetric_weight && $max_volumetric_weight > 0) {
+              // We must now spread every article in virtual parcels, respecting
+              // the defined maximum real weight and volumetric weight, based on dimensions.
+              $parcels = array();
+              foreach($articles as $key => $article) {
+                  $article_volumetric_weight = $article['length']*$article['width']*$article['height']/5000;
+                  if (count($parcels) == 0 ||
+                    $max_real_weight && $max_real_weight > 0 && bccomp($article['weight'], $max_real_weight, 3) >= 0 ||
+                     $max_volumetric_weight && $max_volumetric_weight > 0 && bccomp($article_volumetric_weight, $max_volumetric_weight, 3) >= 0) {
+                      // If first article, initialize new parcel.
+                      // If article has a weight above the limit, it gets its own package.
+                      $parcels[] = array(
+                          'length' => $article['length'],
+                          'width' => $article['width'],
+                          'height' => $article['height'],
+                          'weight' => $article['weight'],
+                          'value' => $article['value']
+                      );
+                      continue;
+                  } else {
+                      foreach($parcels as &$parcel) {
+                          // Trying to fit the article in an existing parcel.
+                          $cumulated_weight = bcadd($parcel['weight'], $article['weight'], 3);
+                          $cumulated_value = bcadd($parcel['value'], $article['value'], 2);
+                          $new_parcel_length = max($parcel['length'], $article['length']);
+                          $new_parcel_width = max($parcel['width'], $article['width']);
+                          $new_parcel_height = (int)$parcel['height'] + (int)$article['height'];
+                          $new_parcel_volumetric_weight = (int)$new_parcel_length*(int)$new_parcel_width*(int)$new_parcel_height/5000;
+
+                          if (
+                              (!$max_real_weight || $max_real_weight == 0 || bccomp($cumulated_weight, $max_real_weight, 3) <= 0) &&
+                              (!$max_volumetric_weight || $max_volumetric_weight == 0 || bccomp($new_parcel_volumetric_weight, $max_volumetric_weight, 3) <= 0)) {
+                            $parcel['weight'] = $cumulated_weight;
+                            $parcel['length'] = $new_parcel_length;
+                            $parcel['width'] = $new_parcel_width;
+                            $parcel['height'] = $new_parcel_height;
+                            $parcel['value'] = $cumulated_value;
+
+                            unset($article); // Security, to avoid double treatment of the same article.
+                            break;
+                          }
+                      }
+                      unset($parcel); // Unsetting reference to last $parcel of the loop, to avoid any bad surprise later!
+
+                      // If we could not fit the article in any existing package,
+                      // we simply initialize a new one, and that's it.
+                      if (isset($article)) {
+                          $parcels[] = array(
+                            'length' => $article['length'],
+                            'width' => $article['width'],
+                            'height' => $article['height'],
+                            'weight' => $article['weight'],
+                            'value' => $article['value'],
+                          );
+                          continue;
+                      }
+                  }
+              }
+            } else {
+              // If we are here, it means we do not want to spread articles in parcels of specific characteristics.
+              // So we just have one parcel per article.
+              $parcels = $articles;
+            }
         }
 
         // Now we have an array of basic parcels data. We create the parcels.
