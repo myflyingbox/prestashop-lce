@@ -697,7 +697,11 @@ class AdminShipmentController extends ModuleAdminController
             $params['parcels'][] = array('description' => $parcel->description,
                                           'value' => $parcel->value,
                                           'currency' => $parcel->currency,
-                                          'country_of_origin' => $parcel->country_of_origin);
+                                          'country_of_origin' => $parcel->country_of_origin,
+                                          'shipper_reference' => $parcel->shipper_reference,
+                                          'recipient_reference' => $parcel->recipient_reference,
+                                          'customer_reference' => $parcel->customer_reference
+                                        );
         }
 
         // Ad valorem insurance
