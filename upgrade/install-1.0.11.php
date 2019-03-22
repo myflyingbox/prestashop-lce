@@ -29,9 +29,14 @@ if (!defined('_PS_VERSION_')) {
 function upgrade_module_1_0_11($module)
 {
     # Added a new option. Set to NULL by default.
-    Configuration::updateValue('MOD_LCE_MAX_REAL_WEIGHT', null);
-    Configuration::updateValue('MOD_LCE_MAX_VOL_WEIGHT', null);
-    Configuration::updateValue('MOD_LCE_FORCE_WEIGHT_DIMS_TABLE', false);
-
+    if (!Configuration::get('MOD_LCE_MAX_REAL_WEIGHT')) {
+      Configuration::updateValue('MOD_LCE_MAX_REAL_WEIGHT', null);
+    }
+    if (!Configuration::get('MOD_LCE_MAX_VOL_WEIGHT')) {
+      Configuration::updateValue('MOD_LCE_MAX_VOL_WEIGHT', null);
+    }
+    if (!Configuration::get('MOD_LCE_FORCE_WEIGHT_DIMS_TABLE')) {
+      Configuration::updateValue('MOD_LCE_FORCE_WEIGHT_DIMS_TABLE', false);
+    }
     return true;
 }
