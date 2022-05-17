@@ -690,7 +690,7 @@ class LowCostExpress extends CarrierModule
             // Otherwise, Prestashop has a tendency to try to always get a shipping cost,
             // Which can significantly slow down user experience.
             $controller_name = $this->context->controller->php_self;
-            if (!in_array($controller_name, array('order-opc', 'order', 'orderopc'))) {
+            if (isset($controller_name) && !in_array($controller_name, array('order-opc', 'order', 'orderopc'))) {
               return false;
             }
 
