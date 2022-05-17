@@ -686,11 +686,12 @@ class LowCostExpress extends CarrierModule
         // No quote found. Generating a new one.
         if (!$quote) {
 
-            // We only try to get new quotes when we are in the order tunnel.
+            // We only try to get new quotes when we are in the order tunnel or trying to add an order from backoffice
             // Otherwise, Prestashop has a tendency to try to always get a shipping cost,
             // Which can significantly slow down user experience.
             $controller_name = $this->context->controller->php_self;
-            if (isset($controller_name) && !in_array($controller_name, array('order-opc', 'order', 'orderopc'))) {
+            $controller_class_name = get_class($this->context->controller);
+            if ($controller_class_name != 'AdminCartsController' && !in_array($controller_name, array('order-opc', 'order', 'orderopc'))) {
               return false;
             }
 
