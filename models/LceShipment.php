@@ -132,6 +132,7 @@ class LceShipment extends ObjectModel
         $data = array();
 
         if ($this->api_order_uuid) {
+          try {
             $order = Lce\Resource\Order::find($this->api_order_uuid);
             $parcel_tracking = $order->tracking();
             $lang_iso = Context::getContext()->language->iso_code;
@@ -152,6 +153,13 @@ class LceShipment extends ObjectModel
                 array_multisort($event_dates, $events); // Sorting $events following $event_dates
                 $data[$parcel->parcel_index] = $events;
             }
+          } catch (\Exception $e) {
+            // Not doing anything. But ideally it would be nice to properly handle
+            // errors related to API connection issues, instead of completely blocking
+            // the page with a 500 error!
+            // Now at least we prevent any blocking, but we do it silently, which is
+            // not ideal, although in the case of tracking data this is not a major issue.
+          }
         }
 
         return $data;

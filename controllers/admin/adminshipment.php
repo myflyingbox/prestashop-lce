@@ -88,47 +88,57 @@ class AdminShipmentController extends ModuleAdminController
         $lce_service = false;
 
         if ($shipment->api_offer_uuid) {
-            $api_offer = Lce\Resource\Offer::find($shipment->api_offer_uuid);
+            try {
+                $api_offer = Lce\Resource\Offer::find($shipment->api_offer_uuid);
 
-            // We need to keep some sort of backward compatibility for past shipments
-            // that do not have a service id
-            if ($shipment->lce_service_id) {
-                $lce_service = new LceService($shipment->lce_service_id);
-            } else {
-                $lce_service = LceService::findByCode($api_offer->product->code);
+                // We need to keep some sort of backward compatibility for past shipments
+                // that do not have a service id
+                if ($shipment->lce_service_id) {
+                    $lce_service = new LceService($shipment->lce_service_id);
+                } else {
+                    $lce_service = LceService::findByCode($api_offer->product->code);
+                }
+
+                $offer_data = new stdClass();
+                $offer_data->id = $api_offer->id;
+                $offer_data->product_name = $lce_service->carrierName().' '.$api_offer->product->name;
+                $offer_data->total_price = $api_offer->total_price->formatted;
+
+                if (property_exists($api_offer->product->collection_informations, $this->context->language->iso_code)) {
+                    $lang = $this->context->language->iso_code;
+                } else {
+                    $lang = 'en';
+                }
+                $offer_data->collection_informations = $api_offer->product->collection_informations->$lang;
+
+                if (property_exists($api_offer->product->delivery_informations, $this->context->language->iso_code)) {
+                    $lang = $this->context->language->iso_code;
+                } else {
+                    $lang = 'en';
+                }
+                $offer_data->delivery_informations = $api_offer->product->delivery_informations->$lang;
+
+                if (property_exists($api_offer->product->details, $this->context->language->iso_code)) {
+                    $lang = $this->context->language->iso_code;
+                } else {
+                    $lang = 'en';
+                }
+                $offer_data->product_details = $api_offer->product->details->$lang;
+            } catch (\Exception $e) {
+                //TODO: add explicit error management (and display on interface)
+                $offer_data = false;
             }
-
-            $offer_data = new stdClass();
-            $offer_data->id = $api_offer->id;
-            $offer_data->product_name = $lce_service->carrierName().' '.$api_offer->product->name;
-            $offer_data->total_price = $api_offer->total_price->formatted;
-
-            if (property_exists($api_offer->product->collection_informations, $this->context->language->iso_code)) {
-                $lang = $this->context->language->iso_code;
-            } else {
-                $lang = 'en';
-            }
-            $offer_data->collection_informations = $api_offer->product->collection_informations->$lang;
-
-            if (property_exists($api_offer->product->delivery_informations, $this->context->language->iso_code)) {
-                $lang = $this->context->language->iso_code;
-            } else {
-                $lang = 'en';
-            }
-            $offer_data->delivery_informations = $api_offer->product->delivery_informations->$lang;
-
-            if (property_exists($api_offer->product->details, $this->context->language->iso_code)) {
-                $lang = $this->context->language->iso_code;
-            } else {
-                $lang = 'en';
-            }
-            $offer_data->product_details = $api_offer->product->details->$lang;
         } else {
             $offer_data = false;
         }
 
         if ($shipment->api_order_uuid) {
-            $booking = Lce\Resource\Order::find($shipment->api_order_uuid);
+            try {
+                $booking = Lce\Resource\Order::find($shipment->api_order_uuid);
+            } catch (\Exception $e) {
+                //TODO: add explicit error management (and display on interface)
+                $booking = false;
+            }
         } else {
             $booking = false;
         }
@@ -755,7 +765,19 @@ class AdminShipmentController extends ModuleAdminController
             $history->id_order = (int)($shipment->order_id);
             $history->id_order_state = _PS_OS_SHIPPING_;
             $history->changeIdOrderState(_PS_OS_SHIPPING_, $shipment->order_id);
-            $history->save();
+
+            // Using standard Prestashop mechanisms to generate the tracking link
+            // See for instance AdminOrdersController in Prestashop 1.7 source code,
+            // inside the block dealing with state updates:
+            // } elseif (Tools::isSubmit('submitState') && isset($order)) {
+            $ps_order = $shipment->getOrder();
+            $carrier = new Carrier($lce_service->id_carrier, $ps_order->id_lang);
+            $templateVars = array();
+            if ($order_api->parcels[0]->reference) {
+                $templateVars = array('{followup}' => str_replace('@', $order_api->parcels[0]->reference, $carrier->url));
+            }
+            $history->addWithemail(true, $templateVars);
+            // $history->save();
         }
 
         if (!$shipment->save()) {
