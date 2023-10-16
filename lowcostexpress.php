@@ -94,7 +94,7 @@ class LowCostExpress extends CarrierModule
     {
         $this->name = 'lowcostexpress';
         $this->tab = 'shipping_logistics';
-        $this->version = '1.0.15';
+        $this->version = '1.0.16';
         $this->author = 'MY FLYING BOX SAS';
 
         parent::__construct();
@@ -675,11 +675,6 @@ class LowCostExpress extends CarrierModule
     // Calculation of shipping cost, based on API requests
     public function getOrderShippingCost($cart, $shipping_cost)
     {
-        // If a shipping cost was calculated based on PS carrier native settings, we use this price.
-        if ($this->carrierHasStaticPricelist()) {
-            return $shipping_cost;
-        }
-
         // We check if we already have a LceQuote for this cart. If not, we request one.
         $quote = LceQuote::getLatestForCart($cart);
 
@@ -791,8 +786,14 @@ class LowCostExpress extends CarrierModule
                     $price = (ceil($price * $increment) / $increment);
                 }
 
-                // Converting from cents to normal price
-                return $price / 100;
+                // If a shipping cost was calculated based on PS carrier native settings, we use this price.
+                if ($this->carrierHasStaticPricelist()) {
+                    return $shipping_cost;
+                } else {
+                    // Otherwise, we use the price calculated by the API
+                    // Converting from cents to normal price
+                    return $price / 100;
+                }
             } else {
                 return false;
             }
