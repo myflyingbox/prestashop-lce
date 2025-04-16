@@ -52,151 +52,164 @@ class AdminParcelController extends ModuleAdminController
             $countries[$c['iso_code']] = array('country_code' => $c['iso_code'], 'name' => $c['name']);
         }
         $currencies = array(
-          'EUR' => array('currency_code' => 'EUR', 'name' => 'EUR'),
-          'USD' => array('currency_code' => 'USD', 'name' => 'USD'),
+            'EUR' => array('currency_code' => 'EUR', 'name' => 'EUR'),
+            'USD' => array('currency_code' => 'USD', 'name' => 'USD'),
         );
 
         $this->multiple_fieldsets = true;
         $this->fields_form = array();
         $this->fields_form[] = array('form' => array(
-                'legend' => array(
-                        'title' => $this->l('Dimensions'),
-                        'image' => '../img/admin/cog.gif',
+            'legend' => array(
+                'title' => $this->l('Dimensions')
+            ),
+            'input' => array(
+                array(
+                    'type' => 'hidden',
+                    'name' => 'shipment_id'
                 ),
-                'input' => array(
-                        array('type' => 'hidden', 'name' => 'shipment_id'),
-                        array('type' => 'text',
-                               'label' => $this->l('Length (cm):'),
-                               'name' => 'length',
-                               'size' => 5,
-                               'class' => 'fixed-width-sm',
-                               'required' => true, ),
-                        array('type' => 'text',
-                                'label' => $this->l('Width (cm):'),
-                                'name' => 'width',
-                                'size' => 5,
-                                'class' => 'fixed-width-sm',
-                                'required' => true, ),
-                        array('type' => 'text',
-                                'label' => $this->l('Height (cm):'),
-                                'name' => 'height',
-                                'size' => 5,
-                                'class' => 'fixed-width-sm',
-                                'required' => true, ),
-                        array('type' => 'text',
-                                'label' => $this->l('Weight (kg):'),
-                                'name' => 'weight',
-                                'size' => 5,
-                                'class' => 'fixed-width-sm',
-                                'required' => true, ),
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Length (cm):'),
+                    'name' => 'length',
+                    'size' => 5,
+                    'class' => 'fixed-width-sm',
+                    'required' => true
                 ),
-              ));
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Width (cm):'),
+                    'name' => 'width',
+                    'size' => 5,
+                    'class' => 'fixed-width-sm',
+                    'required' => true
+                ),
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Height (cm):'),
+                    'name' => 'height',
+                    'size' => 5,
+                    'class' => 'fixed-width-sm',
+                    'required' => true 
+                ),
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Weight (kg):'),
+                    'name' => 'weight',
+                    'size' => 5,
+                    'class' => 'fixed-width-sm',
+                    'required' => true
+                ),
+            ),
+        ));
 
         $this->fields_form[] = array('form' => array(
-                'legend' => array(
-                        'title' => $this->l('Customs'),
-                        'image' => '../img/admin/cog.gif',
+            'legend' => array(
+                'title' => $this->l('Customs'),
+            ),
+            'input' => array(
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Value:'),
+                    'name' => 'value',
+                    'size' => 5,
+                    'class' => 'fixed-width-sm',
+                    'desc' => $this->l('Declared value of the content.')
                 ),
-                'input' => array(
-                        array('type' => 'text',
-                                'label' => $this->l('Value:'),
-                                'name' => 'value',
-                                'size' => 5,
-                                'class' => 'fixed-width-sm',
-                                'desc' => $this->l('Declared value of the content.'), ),
-                        array('type' => 'select',
-                              'label' => $this->l('Currency:'),
-                              'desc' => $this->l('Currency code for the value.'),
-                              'name' => 'currency',
-                              'options' => array(
-                                'query' => $currencies,
-                                'id' => 'currency_code',
-                                'name' => 'name',
-                              ),
-                            ),
-                        array('type' => 'text',
-                                'label' => $this->l('Description:'),
-                                'name' => 'description',
-                                'size' => 40,
-                                'class' => 'fixed-width-xl',
-                                'desc' => $this->l('Description of the goods.'), ),
-                        array('type' => 'select',
-                                'label' => $this->l('Country of origin:'),
-                                'desc' => $this->l('Country code of the origin of the products in the package.'),
-                                'name' => 'country_of_origin',
-                                'options' => array(
-                                  'query' => $countries,
-                                  'id' => 'country_code',
-                                  'name' => 'name',
-                                ),
-                              ),
-
+                array(
+                    'type' => 'select',
+                    'label' => $this->l('Currency:'),
+                    'desc' => $this->l('Currency code for the value.'),
+                    'name' => 'currency',
+                    'options' => array(
+                        'query' => $currencies,
+                        'id' => 'currency_code',
+                        'name' => 'name',
+                    ),
                 ),
-              ));
-
-        $this->fields_form[] = array('form' => array(
-                'legend' => array(
-                        'title' => $this->l('Ad Valorem Insurance'),
-                        'image' => '../img/admin/cog.gif',
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Description:'),
+                    'name' => 'description',
+                    'size' => 40,
+                    'class' => 'fixed-width-xl',
+                    'desc' => $this->l('Description of the goods.')
                 ),
-                'input' => array(
-                        array('type' => 'text',
-                                'label' => $this->l('Value to insure:'),
-                                'name' => 'value_to_insure',
-                                'size' => 5,
-                                'class' => 'fixed-width-sm',
-                                'desc' => $this->l('You can leave blank if you do not intend to purchase insurance. Maximum 2000€ total per shipment.'),
-                              ),
-                        array('type' => 'select',
-                              'label' => $this->l('Currency:'),
-                              'desc' => $this->l('Currency code for the value to insure.'),
-                              'name' => 'insured_value_currency',
-                              'options' => array(
-                                'query' => $currencies,
-                                'id' => 'currency_code',
-                                'name' => 'name',
-                              ),
-                            ),
+                array(
+                    'type' => 'select',
+                    'label' => $this->l('Country of origin:'),
+                    'desc' => $this->l('Country code of the origin of the products in the package.'),
+                    'name' => 'country_of_origin',
+                    'options' => array(
+                        'query' => $countries,
+                        'id' => 'country_code',
+                        'name' => 'name',
+                    ),
                 ),
-              ));
-
+            ),
+        ));
 
         $this->fields_form[] = array('form' => array(
-                'legend' => array(
-                        'title' => $this->l('References'),
-                        'image' => '../img/admin/cog.gif',
+            'legend' => array(
+                'title' => $this->l('Ad Valorem Insurance')
+            ),
+            'input' => array(
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Value to insure:'),
+                    'name' => 'value_to_insure',
+                    'size' => 5,
+                    'class' => 'fixed-width-sm',
+                    'desc' => $this->l('You can leave blank if you do not intend to purchase insurance. Maximum 2000€ total per shipment.'),
                 ),
-                'input' => array(
-                        array('type' => 'text',
-                                'label' => $this->l('Shipper reference:'),
-                                'name' => 'shipper_reference',
-                                'size' => 5,
-                                'class' => 'fixed-width-lg',
-                                'desc' => $this->l('Your reference. May be printed on the label,
-                                                    depending on the carrier.'),
-                              ),
-                        array('type' => 'text',
-                                'label' => $this->l('Recipient reference:'),
-                                'name' => 'recipient_reference',
-                                'size' => 5,
-                                'class' => 'fixed-width-lg',
-                                'desc' => $this->l('Recipient\'s reference may be printed on the label,
-                                                    depending on the carrier.'),
-                              ),
-                        array('type' => 'text',
-                                'label' => $this->l('Customer reference:'),
-                                'name' => 'customer_reference',
-                                'size' => 5,
-                                'class' => 'fixed-width-lg',
-                                'desc' => $this->l('If your customer is not the recipient,
-                                                    specific reference for the customer.'),
-                              ),
+                array(
+                    'type' => 'select',
+                    'label' => $this->l('Currency:'),
+                    'desc' => $this->l('Currency code for the value to insure.'),
+                    'name' => 'insured_value_currency',
+                    'options' => array(
+                        'query' => $currencies,
+                        'id' => 'currency_code',
+                        'name' => 'name',
+                    ),
                 ),
-                'submit' => array(
-                        'title' => $this->l('Save'),
-                        'class' => 'button',
+            ),
+        ));
+
+        $this->fields_form[] = array('form' => array(
+            'legend' => array(
+                'title' => $this->l('References')
+            ),
+            'input' => array(
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Shipper reference:'),
+                    'name' => 'shipper_reference',
+                    'size' => 5,
+                    'class' => 'fixed-width-lg',
+                    'desc' => $this->l('Your reference. May be printed on the label, depending on the carrier.'),
                 ),
-              ));
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Recipient reference:'),
+                    'name' => 'recipient_reference',
+                    'size' => 5,
+                    'class' => 'fixed-width-lg',
+                    'desc' => $this->l('Recipient\'s reference may be printed on the label, depending on the carrier.'),
+                ),
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Customer reference:'),
+                    'name' => 'customer_reference',
+                    'size' => 5,
+                    'class' => 'fixed-width-lg',
+                    'desc' => $this->l('If your customer is not the recipient, specific reference for the customer.'),
+                ),
+            ),
+            'submit' => array(
+                'title' => $this->l('Save'),
+                'class' => 'button btn btn-primary pull-right',
+            ),
+        ));
 
         // Loading object, if possible; returning empty object otherwise
         if (!($obj = $this->loadObject(true))) {

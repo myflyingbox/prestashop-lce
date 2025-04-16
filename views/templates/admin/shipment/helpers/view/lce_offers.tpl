@@ -23,42 +23,42 @@
 *}
 
 <form id="select-offer">
-<input type='hidden' name='quote_uuid' value='{$quote->id|escape:'htmlall':'UTF-8'}'>
-<table>
-  <thead>
-    <tr>
-      <th></th>
-      <th style='width: 25%;'>{l s='Product name' mod='lowcostexpress'}</th>
-      <th>{l s='Details' mod='lowcostexpress'}</th>
-      <th>
-    </tr>
-  </thead>
-  <tbody>
-{foreach from=$offers item=offer}
-  <tr>
-    <td><input type='radio' name='offer_uuid' value='{$offer->id|escape:'htmlall':'UTF-8'}'></td>
+  <input type="hidden" name="quote_uuid" value="{$quote->id|escape:'htmlall':'UTF-8'}">
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th style="width: 25%;">{l s='Product name' mod='lowcostexpress'}</th>
+        <th>{l s='Details' mod='lowcostexpress'}</th>
+        <th>
+      </tr>
+    </thead>
+    <tbody>
+    {foreach from=$offers item=offer}
+      <tr>
+        <td><input type="radio" name="offer_uuid" value="{$offer->id|escape:'htmlall':'UTF-8'}"></td>
 
-    <td>{$offer->product_name|escape:'htmlall':'UTF-8'}
-        <br/>{l s='Total price:' mod='lowcostexpress'} <b>{$offer->total_price|escape:'htmlall':'UTF-8'}</b>
-        {if $offer->insurance_price}
-        <br/><i>{l s='Optional insurance available' mod='lowcostexpress'}</i>
-        {/if}
-    </td>
+        <td>{$offer->product_name|escape:'htmlall':'UTF-8'}
+            <br>{l s='Total price:' mod='lowcostexpress'} <b>{$offer->total_price|escape:'htmlall':'UTF-8'}</b>
+            {if $offer->insurance_price}
+              <br><i>{l s='Optional insurance available' mod='lowcostexpress'}</i>
+            {/if}
+        </td>
 
-    <td>
-      <ul>
-        <li>{$offer->collection_informations|escape:'htmlall':'UTF-8'|nl2br}</li>
-        <li>{$offer->delivery_informations|escape:'htmlall':'UTF-8'|nl2br}</li>
-      </ul>
-    </td>
+        <td>
+          <ul>
+            <li>{$offer->collection_informations|escape:'htmlall':'UTF-8'|nl2br}</li>
+            <li>{$offer->delivery_informations|escape:'htmlall':'UTF-8'|nl2br}</li>
+          </ul>
+        </td>
 
-    <td>
-      {$offer->product_details|escape:'htmlall':'UTF-8'|nl2br}
-    </td>
+        <td>
+          {$offer->product_details|escape:'htmlall':'UTF-8'|nl2br}
+        </td>
 
-  </tr>
-{/foreach}
-  </tbody>
-</table>
-<input type='submit' value="{l s='Select offer' mod='lowcostexpress'}" name='select_lce_offer'/>
+      </tr>
+    {/foreach}
+    </tbody>
+  </table>
+  <input type="submit" value="{l s='Select offer' mod='lowcostexpress'}" name="select_lce_offer" class="btn btn-primary">
 </form>
