@@ -551,18 +551,20 @@ class LowCostExpress extends CarrierModule
                             $carrier->addZone($zone['id_zone']);
                         }
 
-                        //copy logo
-                        $logo_file_name = $lce_service->logoFileName();
-                        if (!file_exists(dirname(__FILE__).'/views/img/carriers/'.$logo_file_name)) {
-                            $logo_file_name = 'myflyingbox.png';
-                        }
-                        // Note: PS stores the logos as JPG files even if they are really PNG...
-                        copy(
-                            dirname(__FILE__).'/views/img/carriers/'.$logo_file_name,
-                            _PS_SHIP_IMG_DIR_.'/'.$carrier->id.'.jpg'
-                        );
                     }
                 }
+
+                // Copy logo
+                $logo_file_name = $lce_service->logoFileName();
+                if (!file_exists(dirname(__FILE__).'/views/img/carriers/'.$logo_file_name)) {
+                    $logo_file_name = 'myflyingbox.png';
+                }
+                // Note: PS stores the logos as JPG files even if they are really PNG...
+                copy(
+                    dirname(__FILE__).'/views/img/carriers/'.$logo_file_name,
+                    _PS_SHIP_IMG_DIR_.'/'.$lce_service->id_carrier.'.jpg'
+                );
+
             }
         } catch (Exception $e) {
             $message = $this->displayError($this->purify($e->getMessage()));
