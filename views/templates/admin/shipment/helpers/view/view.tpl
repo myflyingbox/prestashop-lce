@@ -88,7 +88,7 @@
       {/if}
 
       <!-- Addresses -->
-      <div class="row">
+      <div class="row same-height">
         <div class="col-md-6">
 
           <!-- Invoice address -->
@@ -97,6 +97,9 @@
               <i class="material-icons">place</i> {l s='Delivery address' mod='lowcostexpress'}
             </div>
             <div class="panel-body">
+              {if $shipment->recipient_company_name!=''}
+                <p><b>{$shipment->recipient_company_name|escape:'htmlall':'UTF-8'}</b></p>
+              {/if}
               <p><b>{$shipment->recipient_name|escape:'htmlall':'UTF-8'}</b></p>
               <p>
               {$shipment->recipient_street|escape:'htmlall':'UTF-8'|nl2br}
@@ -117,6 +120,9 @@
               <i class="material-icons">place</i> {l s='Pickup/shipper address' mod='lowcostexpress'}
             </div>
             <div class="panel-body">
+              {if $shipment->shipper_company_name!=''}
+                <p><b>{$shipment->shipper_company_name}</b></p>
+              {/if}
               <p><b>{$shipment->shipper_name|escape:'htmlall':'UTF-8'}</b></p>
               <p>
               {$shipment->shipper_street|escape:'htmlall':'UTF-8'|nl2br}
@@ -131,6 +137,7 @@
         </div>
         <div class="clear" style="margin-bottom: 10px;"></div>
       </div>
+      <div class="clearfix"></div>
     </div>
 
 

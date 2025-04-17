@@ -143,3 +143,11 @@ div.myflyingbox-settings p.error {
 .adminshipment .ui-dialog{
   z-index:1001;
 }
+
+.adminshipment .same-height {
+  display: flex;
+}
+
+.adminshipment .same-height .panel{
+  height: calc(100% - 20px);
+}
