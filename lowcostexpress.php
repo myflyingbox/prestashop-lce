@@ -551,18 +551,20 @@ class LowCostExpress extends CarrierModule
                             $carrier->addZone($zone['id_zone']);
                         }
 
-                        //copy logo
-                        $logo_file_name = $lce_service->logoFileName();
-                        if (!file_exists(dirname(__FILE__).'/views/img/carriers/'.$logo_file_name)) {
-                            $logo_file_name = 'myflyingbox.png';
-                        }
-                        // Note: PS stores the logos as JPG files even if they are really PNG...
-                        copy(
-                            dirname(__FILE__).'/views/img/carriers/'.$logo_file_name,
-                            _PS_SHIP_IMG_DIR_.'/'.$carrier->id.'.jpg'
-                        );
                     }
                 }
+
+                // Copy logo
+                $logo_file_name = $lce_service->logoFileName();
+                if (!file_exists(dirname(__FILE__).'/views/img/carriers/'.$logo_file_name)) {
+                    $logo_file_name = 'myflyingbox.png';
+                }
+                // Note: PS stores the logos as JPG files even if they are really PNG...
+                copy(
+                    dirname(__FILE__).'/views/img/carriers/'.$logo_file_name,
+                    _PS_SHIP_IMG_DIR_.'/'.$lce_service->id_carrier.'.jpg'
+                );
+
             }
         } catch (Exception $e) {
             $message = $this->displayError($this->purify($e->getMessage()));
@@ -834,26 +836,28 @@ class LowCostExpress extends CarrierModule
             );
         } else {
             try {
-              // We get the list of shipments for this order
-              $shipments = LceShipment::findAllForOrder((int) $params['id_order']);
+                // We get the list of shipments for this order
+                $shipments = LceShipment::findAllForOrder((int) $params['id_order']);
 
-              // Generating URLs to open the 'show' view of each shipment
-              $shipment_urls = array();
-              foreach ($shipments as $s) {
-                  $shipment_urls[$s->id_shipment] = $this->context->link->getAdminLink('AdminShipment').
+                // Generating URLs to open the 'show' view of each shipment
+                $shipment_urls = array();
+                foreach ($shipments as $s) {
+                    $shipment_urls[$s->id_shipment] = $this->context->link->getAdminLink('AdminShipment').
                                                                     '&viewlce_shipments&id_shipment='.$s->id_shipment;
-              }
+                }
 
-              $var = array(
-                  'shipments' => $shipments,
-                  'shipment_urls' => $shipment_urls,
-                  'id_order' => (int) ($params['id_order']),
-                  'new_shipment_path' => $this->context->link->getAdminLink('AdminShipment').
-                                                            '&addlce_shipments&order_id='.(int) $params['id_order'],
-              );
-              } catch (Exception $e) {
-                  Tools::error_log('MFB quote request exception: '.$e->getMessage());
-              }
+                $var = array(
+                    'shipments' => $shipments,
+                    'shipment_urls' => $shipment_urls,
+                    'id_order' => (int) ($params['id_order']),
+                    'new_shipment_path' => $this->context->link->getAdminLink('AdminShipment').
+                            '&addlce_shipments&order_id='.(int) $params['id_order'],
+                    'new_return_path' => $this->context->link->getAdminLink('AdminShipment').
+                            '&addlce_shipments&order_id='.(int) $params['id_order'].'&is_return=1',
+                );
+            } catch (Exception $e) {
+                Tools::error_log('MFB quote request exception: '.$e->getMessage());
+            }
         }
 
         // Making the variable available in the view
