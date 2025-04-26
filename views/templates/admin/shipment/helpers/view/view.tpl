@@ -27,14 +27,23 @@
 <div class="panel">
 
   <div class="panel-heading">
-    {l s='LCE shipment for order:' mod='lowcostexpress'} {$order->reference|escape:'htmlall':'UTF-8'}
+    {if $shipment->is_return == 1}
+      {l s='LCE return for order:' mod='lowcostexpress'} {$order->reference|escape:'htmlall':'UTF-8'}
+    {else}
+      {l s='LCE shipment for order:' mod='lowcostexpress'} {$order->reference|escape:'htmlall':'UTF-8'}
+    {/if}
   </div>
 
   <div class="panel-body">
 
     {if $shipment->api_order_uuid eq false}
       <a href="{$link_edit_shipment|escape:'htmlall':'UTF-8'}" class="btn btn-primary">
-        <i class="material-icons">edit</i> {l s='Edit shipment' mod='lowcostexpress'}
+        <i class="material-icons">edit</i> 
+        {if $shipment->is_return == 1}
+          {l s='Edit return' mod='lowcostexpress'}
+        {else}
+          {l s='Edit shipment' mod='lowcostexpress'}
+        {/if}
       </a>
       <br>
       <br>

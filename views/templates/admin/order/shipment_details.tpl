@@ -31,6 +31,11 @@
       <a href="{$var.new_shipment_path|escape:'htmlall':'UTF-8'}" class="btn btn-primary">
         <i class="material-icons">add</i> {l s='Add shipment' mod='lowcostexpress'}
       </a>
+      {if isset($var.shipments) && $var.shipments|@count > 0}
+        <a href="{$var.new_return_path|escape:'htmlall':'UTF-8'}" class="btn btn-primary">
+          <i class="material-icons">add</i> {l s='Add return' mod='lowcostexpress'}
+        </a>
+      {/if}
     </p>
 
     <table class="table" width="100%">
@@ -39,6 +44,7 @@
           <th>{l s='Date' mod='lowcostexpress'}</th>
           <th>{l s='Status' mod='lowcostexpress'}</th>
           <th>{l s='Number of packages' mod='lowcostexpress'}</th>
+          <th>{l s='Type' mod='lowcostexpress'}</th>
           <th>{l s='Tracking status (per package #) | Location' mod='lowcostexpress'}</th>
         </tr>
       </thead>
@@ -54,6 +60,13 @@
               {/if}
             </td>
             <td>{$s->parcels|@count|escape:'htmlall':'UTF-8'}</td>
+            <td>
+              {if $s->is_return ==1}
+                {l s='Return' mod='lowcostexpress'}
+              {else}
+                {l s='Shipment' mod='lowcostexpress'}
+              {/if}
+            </td>
             <td>
               {foreach $s->currentTrackingStatus() item=event key=parcel}
                 #{$parcel+1|escape:'htmlall':'UTF-8'}: {$event['label']|escape:'htmlall':'UTF-8'}

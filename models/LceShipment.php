@@ -54,6 +54,7 @@ class LceShipment extends ObjectModel
     public $date_add;
     public $date_upd;
     public $date_booking;
+    public $is_return;
     public $parcels; // List of parcels, loaded at init
 
     public function __construct($id = null, $id_lang = null, $id_shop = null)
@@ -98,6 +99,7 @@ class LceShipment extends ObjectModel
             'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat'),
             'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat'),
             'date_booking' => array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat'),
+            'is_return' => array('type' => self::TYPE_BOOL),
         ),
         'associations' => array(
             'order' => array('type' => self::HAS_ONE, 'field' => 'order_id', 'object' => 'Order'),
@@ -501,6 +503,7 @@ class LceShipment extends ObjectModel
     {
         $shipment = new self();
         $shipment->order_id = $order->id;
+        $shipment->is_return = 0;
 
         $customer = new Customer((int) $order->id_customer);
         $delivery_address = new Address((int) $order->id_address_delivery);
@@ -546,6 +549,69 @@ class LceShipment extends ObjectModel
 
         $shipment->recipient_email = $customer->email;
 
+        if ($shipment->validateFields(false) && $shipment->add()) {
+            // Trying to create parcels
+            $res_parcels = $shipment->createParcelsFromOrder();
+
+            // If parcel creation is successful, we automatically select an offer.
+            if ($res_parcels) {
+                $shipment->autoselectOffer($order);
+            }
+            return $shipment;
+        } else {
+            return false;
+        }
+    }
+
+    public static function createReturnFromOrder($order)
+    {
+        $shipment = new self();
+        $shipment->order_id = $order->id;
+        $shipment->is_return = 1;
+
+        $customer = new Customer((int) $order->id_customer);
+        $delivery_address = new Address((int) $order->id_address_delivery);
+
+        $shipment->ad_valorem_insurance = Configuration::get('MOD_LCE_DEFAULT_INSURE');
+
+
+        $shipment->shipper_name = $delivery_address->firstname.' '.$delivery_address->lastname;
+        $shipment->shipper_company_name = $delivery_address->company;
+
+        $address_street = $delivery_address->address1;
+        if ($delivery_address->address2) {
+            $address_street = $address_street."\n".$delivery_address->address2;
+        }
+        $shipment->shipper_street = $address_street;
+
+        $shipment->shipper_city = $delivery_address->city;
+        $shipment->shipper_postal_code = $delivery_address->postcode;
+
+        if ($delivery_address->id_state) {
+            $state = new State((int) $delivery_address->id_state);
+            $shipment->shipper_state = $state->name;
+        }
+
+        $country = new Country((int) $delivery_address->id_country);
+        $shipment->shipper_country = $country->iso_code;
+
+        $shipper_phone = (!empty($delivery_address->phone_mobile) ?
+            $delivery_address->phone_mobile : $delivery_address->phone);
+
+        $shipment->shipper_phone = $shipper_phone;
+        $shipment->shipper_email = $customer->email;
+        
+        $shipment->recipient_is_a_company = 1;
+        $shipment->recipient_name = Configuration::get('MOD_LCE_DEFAULT_SHIPPER_NAME');
+        $shipment->recipient_company_name = Configuration::get('MOD_LCE_DEFAULT_SHIPPER_COMPANY');
+        $shipment->recipient_street = Configuration::get('MOD_LCE_DEFAULT_STREET');
+        $shipment->recipient_city = Configuration::get('MOD_LCE_DEFAULT_CITY');
+        $shipment->recipient_postal_code = Configuration::get('MOD_LCE_DEFAULT_POSTAL_CODE');
+        $shipment->recipient_state = Configuration::get('MOD_LCE_DEFAULT_STATE');
+        $shipment->recipient_country = Configuration::get('MOD_LCE_DEFAULT_COUNTRY');
+        $shipment->recipient_phone = Configuration::get('MOD_LCE_DEFAULT_PHONE');
+        $shipment->recipient_email = Configuration::get('MOD_LCE_DEFAULT_EMAIL');
+        
         if ($shipment->validateFields(false) && $shipment->add()) {
             // Trying to create parcels
             $res_parcels = $shipment->createParcelsFromOrder();

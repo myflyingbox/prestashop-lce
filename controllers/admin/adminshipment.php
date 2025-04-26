@@ -236,43 +236,43 @@ class AdminShipmentController extends ModuleAdminController
 
         // Smarty assign
         $this->tpl_view_vars = array(
-          'order' => $order,
-          'offer' => $offer_data,
-          'service' => $lce_service,
-          'parcels' => $parcels,
-          'collection_dates' => $collection_dates,
-          'relay_delivery_locations' => $relay_delivery_locations,
-          'selected_relay_location' => $selected_relay_location,
-          'link_order' => $this->context->link->getAdminLink('AdminOrders').'&vieworder&id_order='.$order->id,
-          'link_edit_shipment' => $this->context->link->getAdminLink('AdminShipment').
-                                      '&updatelce_shipments&id_shipment='.$shipment->id,
-          'link_load_lce_offers' => $this->context->link->getAdminLink('AdminShipment').
-                                      '&ajax&action=getOffers&id_shipment='.$shipment->id,
-          'link_delete_package' => $this->context->link->getAdminLink('AdminParcel').
-                                      '&ajax&dellce_parcels&action=delete_parcel&id_parcel=',
-          'link_load_package_form' => $this->context->link->getAdminLink('AdminParcel').
-                                      '&ajax&addlce_parcels&action=load_form&id_shipment='.$shipment->id,
-          'link_load_update_package_form' => $this->context->link->getAdminLink('AdminParcel').
-                                      '&ajax&updatelce_parcels&action=load_form&id_parcel=',
-          'link_save_package_form' => $this->context->link->getAdminLink('AdminParcel').
-                                      '&ajax&addlce_parcels&action=save_form&id_shipment='.$shipment->id,
-          'link_save_offer_form' => $this->context->link->getAdminLink('AdminShipment').
-                                      '&ajax&updatelce_shipments&action=save_offer&id_shipment='.$shipment->id,
-          'link_book_offer_form' => $this->context->link->getAdminLink('AdminShipment').
-                                      '&ajax&updatelce_shipments&action=book_offer&id_shipment='.$shipment->id,
-          'link_download_labels' => $this->context->link->getAdminLink('AdminShipment').
-                                      '&viewlce_shipments&download_labels&id_shipment='.$shipment->id_shipment,
-          'shipment' => $shipment,
-          'shipper_country' => Country::getNameById(
-              (int) Context::getContext()->language->id,
-              Country::getByIso($shipment->shipper_country)
-          ),
-          'recipient_country' => Country::getNameById(
+            'order' => $order,
+            'offer' => $offer_data,
+            'service' => $lce_service,
+            'parcels' => $parcels,
+            'collection_dates' => $collection_dates,
+            'relay_delivery_locations' => $relay_delivery_locations,
+            'selected_relay_location' => $selected_relay_location,
+            'link_order' => $this->context->link->getAdminLink('AdminOrders', true, ['id_order' => $order->id, 'vieworder' => 1]),
+            'link_edit_shipment' => $this->context->link->getAdminLink('AdminShipment').
+                '&updatelce_shipments&id_shipment='.$shipment->id,
+            'link_load_lce_offers' => $this->context->link->getAdminLink('AdminShipment').
+                '&ajax&action=getOffers&id_shipment='.$shipment->id,
+            'link_delete_package' => $this->context->link->getAdminLink('AdminParcel').
+                '&ajax&dellce_parcels&action=delete_parcel&id_parcel=',
+            'link_load_package_form' => $this->context->link->getAdminLink('AdminParcel').
+                '&ajax&addlce_parcels&action=load_form&id_shipment='.$shipment->id,
+            'link_load_update_package_form' => $this->context->link->getAdminLink('AdminParcel').
+                '&ajax&updatelce_parcels&action=load_form&id_parcel=',
+            'link_save_package_form' => $this->context->link->getAdminLink('AdminParcel').
+                '&ajax&addlce_parcels&action=save_form&id_shipment='.$shipment->id,
+            'link_save_offer_form' => $this->context->link->getAdminLink('AdminShipment').
+                '&ajax&updatelce_shipments&action=save_offer&id_shipment='.$shipment->id,
+            'link_book_offer_form' => $this->context->link->getAdminLink('AdminShipment').
+                '&ajax&updatelce_shipments&action=book_offer&id_shipment='.$shipment->id,
+            'link_download_labels' => $this->context->link->getAdminLink('AdminShipment').
+                '&viewlce_shipments&download_labels&id_shipment='.$shipment->id_shipment,
+            'shipment' => $shipment,
+            'shipper_country' => Country::getNameById(
+                (int) Context::getContext()->language->id,
+                Country::getByIso($shipment->shipper_country)
+            ),
+            'recipient_country' => Country::getNameById(
               (int) Context::getContext()->language->id,
               Country::getByIso($shipment->recipient_country)
-          ),
-          'insurable_value' => $insurable_value,
-          'insurance_cost' => $insurance_cost,
+            ),
+            'insurable_value' => $insurable_value,
+            'insurance_cost' => $insurance_cost,
         );
 
         return parent::renderView();
@@ -301,8 +301,13 @@ class AdminShipmentController extends ModuleAdminController
 
         // We try to create a shipment. If we fail, we will show the form (see below)
         if (Tools::isSubmit('addlce_shipments')) {
+            $is_return = (int) Tools::getValue('is_return');
             $order = new Order((int) Tools::getValue('order_id'));
-            $new_shipment = LceShipment::createFromOrder($order);
+            if($is_return == 1) {
+                $new_shipment = LceShipment::createReturnFromOrder($order);
+            } else {
+                $new_shipment = LceShipment::createFromOrder($order);
+            }
             if ($new_shipment) {
                 Tools::redirectAdmin(
                     $this->context->link->getAdminLink('AdminShipment').
