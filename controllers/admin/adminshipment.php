@@ -117,7 +117,19 @@ class AdminShipmentController extends ModuleAdminController
                 $offer_data = new stdClass();
                 $offer_data->id = $api_offer->id;
                 $offer_data->product_name = $lce_service->carrierName().' '.$api_offer->product->name;
-                $offer_data->total_price = $api_offer->total_price->formatted;
+
+                if (Configuration::get('MOD_LCE_DEFAULT_EXTENDED_WARRANTY') && 
+                    $api_offer->extended_cover_available && 
+                    $api_offer->price_with_extended_cover->amount > 0 && 
+                    $api_offer->total_price_with_extended_cover->amount > 0) {
+
+                    // Price with extended warranty
+                    $offer_data->total_price = $api_offer->total_price_with_extended_cover->formatted;
+                }
+                else {
+                    // Price without extended warranty
+                    $offer_data->total_price = $api_offer->total_price->formatted;
+                }
 
                 if (property_exists($api_offer->product->collection_informations, $this->context->language->iso_code)) {
                     $lang = $this->context->language->iso_code;
@@ -799,6 +811,9 @@ class AdminShipmentController extends ModuleAdminController
         if (Configuration::get('MOD_LCE_THERMAL_PRINTING')) {
             $params['thermal_labels'] = true;
         }
+
+        // Extended warranty
+        $params['with_extended_cover'] = (bool)Configuration::get('MOD_LCE_DEFAULT_EXTENDED_WARRANTY');
 
         // Placing the order on the API
         try {

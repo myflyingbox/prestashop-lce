@@ -268,6 +268,15 @@
             </div>
         </div>
         <div class="form-group">
+            <label for="MOD_LCE_DEFAULT_EXTENDED_WARRANTY" class="control-label col-lg-4">
+                {l s='Extended warranty by default:' mod='lowcostexpress'}
+            </label>
+            <div class="col-lg-6">
+                <input id="MOD_LCE_DEFAULT_EXTENDED_WARRANTY" name="MOD_LCE_DEFAULT_EXTENDED_WARRANTY" type="checkbox" value="1"{if $MOD_LCE_DEFAULT_EXTENDED_WARRANTY eq true} CHECKED{/if} />
+                <p class="help-block">{l s='If checked, the price displayed to the customer will include the cost of extended warranty.' mod='lowcostexpress'}</p>
+            </div>
+        </div>
+        <div class="form-group">
             <label for="MOD_LCE_MAX_REAL_WEIGHT" class="control-label col-lg-4">
                 {l s='Max real weight per parcel:' mod='lowcostexpress'}
             </label>
