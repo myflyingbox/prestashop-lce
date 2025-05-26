@@ -514,6 +514,10 @@ class LowCostExpress extends CarrierModule
                     }
 
                     if ($carrier->add()) {
+
+                        // Set tax rules group to 1 for all shops for PS 1.7.0+
+                        $carrier->setTaxRulesGroup(1, true);
+
                         // DEPRECATED: Strictly speaking this is not necessary anymore, as this method is now obsolete.
                         // This will be removed in the future, when the mechanisms based on LceService are fully
                         // used by all customers and there is no remaining bug.
