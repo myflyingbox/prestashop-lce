@@ -578,7 +578,21 @@ class LowCostExpress extends CarrierModule
         } catch (Exception $e) {
             $message = $this->displayError($this->purify($e->getMessage()));
         }
+        $this->setCarriersTaxes();
         return $message;
+    }
+
+    public function setCarriersTaxes(){
+        $carriers = Db::getInstance()->ExecuteS('
+            SELECT * 
+            FROM '._DB_PREFIX_.'carrier 
+            WHERE external_module_name = "lowcostexpress"
+        ');
+
+        foreach ($carriers as $carrier) {
+            $carrier = new Carrier($carrier['id_carrier']);
+            $carrier->setTaxRulesGroup(1, true);
+        }
     }
 
     private function _displayContent($message)
