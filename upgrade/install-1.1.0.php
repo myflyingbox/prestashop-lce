@@ -53,6 +53,9 @@ function upgrade_module_1_1_0($module)
     Db::getInstance()->Execute('
         ALTER TABLE `'._DB_PREFIX_.'lce_quotes` 
             ADD `id_address` INT(11) NOT NULL AFTER `id_cart`;');
+
+    // Delete quote when products in cart are updated
+    $module->registerHook('actionCartUpdateQuantityBefore');
     
     return true;
 }

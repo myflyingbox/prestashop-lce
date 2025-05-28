@@ -233,6 +233,7 @@ class LowCostExpress extends CarrierModule
         $this->registerHook('displayAdminOrder'); // Displaying LCE Shipments on order admin page
         $this->registerHook('displayAfterCarrier'); // Display relay delivery options during checkout
         $this->registerHook('actionFrontControllerSetMedia'); // Load JS related to relay delivery selection
+        $this->registerHook('actionCartUpdateQuantityBefore'); // Delete quote when products in cart are updated
 
         return true;
     }
@@ -695,6 +696,16 @@ class LowCostExpress extends CarrierModule
             return true;
         } else {
             return false;
+        }
+    }
+
+    public function hookActionCartUpdateQuantityBefore($params)
+    {
+        $cart = $params['cart'];
+        $quote = LceQuote::getLatestForCart($cart, false);
+
+        if (Validate::isLoadedObject($quote)) {
+            $quote->delete();
         }
     }
 

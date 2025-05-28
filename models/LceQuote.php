@@ -414,4 +414,22 @@ class LceQuote extends ObjectModel
         }
         return $quote;
     }
+
+    public function delete()
+    {
+        $offers = Db::getInstance()->executeS('
+            SELECT `id_offer` 
+            FROM '._DB_PREFIX_.'lce_offers 
+            WHERE `id_quote` = '.(int) $this->id
+        );
+
+        foreach ($offers as $offer) {
+            $obj_offer = new LceOffer($offer['id_offer']);
+            $obj_offer->delete();
+            unset($obj_offer);
+        }
+
+        return parent::delete();
+    }
+    
 }
