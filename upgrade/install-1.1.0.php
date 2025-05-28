@@ -56,6 +56,11 @@ function upgrade_module_1_1_0($module)
 
     // Delete quote when products in cart are updated
     $module->registerHook('actionCartUpdateQuantityBefore');
+    if (version_compare(_PS_VERSION_, '1.7.1.0', '<')) {
+        $module->registerHook('actionDeleteProductInCartAfter');
+    } else {
+        $module->registerHook('actionObjectProductInCartDeleteAfter');
+    }
     
     return true;
 }

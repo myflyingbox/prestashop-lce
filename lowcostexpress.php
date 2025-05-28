@@ -234,6 +234,11 @@ class LowCostExpress extends CarrierModule
         $this->registerHook('displayAfterCarrier'); // Display relay delivery options during checkout
         $this->registerHook('actionFrontControllerSetMedia'); // Load JS related to relay delivery selection
         $this->registerHook('actionCartUpdateQuantityBefore'); // Delete quote when products in cart are updated
+        if (version_compare(_PS_VERSION_, '1.7.1.0', '<')) {
+            $this->registerHook('actionDeleteProductInCartAfter');
+        } else {
+            $this->registerHook('actionObjectProductInCartDeleteAfter');
+        }
 
         return true;
     }
@@ -702,6 +707,24 @@ class LowCostExpress extends CarrierModule
     public function hookActionCartUpdateQuantityBefore($params)
     {
         $cart = $params['cart'];
+        $quote = LceQuote::getLatestForCart($cart, false);
+
+        if (Validate::isLoadedObject($quote)) {
+            $quote->delete();
+        }
+    }
+
+    // Before v1.7.1
+    public function hookActionDeleteProductInCartAfter($params)
+    {
+        return $this->hookActionObjectProductInCartDeleteAfter($params);
+    }
+
+    // After v1.7.1
+    public function hookActionObjectProductInCartDeleteAfter($params)
+    {
+        $id_cart = $params['id_cart'];
+        $cart = new Cart($id_cart);
         $quote = LceQuote::getLatestForCart($cart, false);
 
         if (Validate::isLoadedObject($quote)) {
