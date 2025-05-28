@@ -200,6 +200,12 @@
         <p class="preference_description">{l s='If checked, the price displayed to the customer will include the cost of insurance, based on cart value (max 2000€).' mod='lowcostexpress'}</p>
     </div>
 
+    <label for="MOD_LCE_DEFAULT_EXTENDED_WARRANTY">{l s='Extended warranty by default:' mod='lowcostexpress'}</label>
+    <div class='margin-form'>
+        <input id="MOD_LCE_DEFAULT_EXTENDED_WARRANTY" name="MOD_LCE_DEFAULT_EXTENDED_WARRANTY" type="checkbox" value="1"{if $MOD_LCE_DEFAULT_EXTENDED_WARRANTY eq true} CHECKED{/if} />
+        <p class="preference_description">{l s='If checked, the price displayed to the customer will include the cost of extended warranty.' mod='lowcostexpress'}</p>
+    </div>
+
     <label for="MOD_LCE_MAX_REAL_WEIGHT">{l s='Max real weight per parcel:' mod='lowcostexpress'}</label>
     <div class='margin-form'>
       <input id="MOD_LCE_MAX_REAL_WEIGHT" name="MOD_LCE_MAX_REAL_WEIGHT" type="text" value="{$MOD_LCE_MAX_REAL_WEIGHT|escape:'htmlall':'UTF-8'}" />
