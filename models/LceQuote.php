@@ -26,6 +26,7 @@ class LceQuote extends ObjectModel
 {
     public $id_quote;
     public $id_cart;
+    public $id_address;
     public $api_quote_uuid;
     public $date_add;
     public $date_upd;
@@ -36,6 +37,7 @@ class LceQuote extends ObjectModel
         'multilang' => false,
         'fields' => array(
             'id_cart' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
+            'id_address' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
             'api_quote_uuid' => array('type' => self::TYPE_STRING, 'required' => true),
             'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
             'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
@@ -45,19 +47,30 @@ class LceQuote extends ObjectModel
         ),
     );
 
-    public static function getLatestForCart($cart, $timelimit = true)
+    public static function getLatestForCart($cart, $check_address = true)
     {
-        # We accept a margin of 5 seconds between cart update and quote creation
-        if ($timelimit) {
-            $sql = 'SELECT `quote`.`id_quote` FROM '._DB_PREFIX_.'lce_quotes AS quote
-                    LEFT JOIN '._DB_PREFIX_.'cart AS cart ON `quote`.`id_cart` = `cart`.`id_cart`
-                    WHERE (`cart`.`id_cart` = '.(int) $cart->id.' AND `quote`.`date_upd` > `cart`.`date_upd`)
-                    ORDER BY `quote`.`date_upd` DESC';
+        /**
+         * Check if : 
+         * - id_address is the same than previous quote
+         * - The address has not been modified
+         */
+        if ($check_address) {
+            $sql = '
+                SELECT `quote`.`id_quote` FROM '._DB_PREFIX_.'lce_quotes AS quote
+                INNER JOIN '._DB_PREFIX_.'cart AS cart 
+                ON `quote`.`id_cart` = `cart`.`id_cart` 
+                INNER JOIN '._DB_PREFIX_.'address AS address 
+                ON `cart`.`id_address_delivery` = `address`.`id_address` AND `quote`.`id_address` = `address`.`id_address` 
+                WHERE (`cart`.`id_cart` = '.(int) $cart->id.' AND `quote`.`date_upd` > `address`.`date_upd`)
+                ORDER BY `quote`.`date_upd` DESC
+            ';
         } else {
-            $sql = 'SELECT `quote`.`id_quote` FROM '._DB_PREFIX_.'lce_quotes AS quote
-                    LEFT JOIN '._DB_PREFIX_.'cart AS cart ON `quote`.`id_cart` = `cart`.`id_cart`
-                    WHERE (`cart`.`id_cart` = '.(int) $cart->id.')
-                    ORDER BY `quote`.`date_upd` DESC';
+            $sql = '
+                SELECT `quote`.`id_quote` FROM '._DB_PREFIX_.'lce_quotes AS quote
+                INNER JOIN '._DB_PREFIX_.'cart AS cart 
+                ON `quote`.`id_cart` = `cart`.`id_cart`
+                WHERE (`cart`.`id_cart` = '.(int) $cart->id.')
+                ORDER BY `quote`.`date_upd` DESC';
         }
         if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql)) {
             $quote = new self($row['id_quote']);
@@ -65,6 +78,36 @@ class LceQuote extends ObjectModel
             return $quote;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * @param Cart $cart
+     * @return array of lce_product_code available for the given cart
+     */
+    public static function getCarriersForCart($cart)
+    {   
+        if (!Validate::isLoadedObject($cart)) {
+            return [];
+        }
+
+        $id_zone = Address::getZoneById((int)$cart->id_address_delivery);
+        
+        $lce_product_codes = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('
+            SELECT GROUP_CONCAT(c.lce_product_code SEPARATOR ",") AS codes
+            FROM '._DB_PREFIX_.'carrier c 
+            INNER JOIN '._DB_PREFIX_.'carrier_zone cz ON (cz.id_carrier = c.id_carrier)
+            WHERE c.external_module_name = "lowcostexpress" 
+            AND c.active = 1 
+            AND c.deleted = 0 
+            AND cz.id_zone = '.(int)$id_zone .' 
+        ');
+
+        if ($lce_product_codes != '') {
+            return explode(',', $lce_product_codes);
+        }
+        else{
+            return [];
         }
     }
 
@@ -323,7 +366,10 @@ class LceQuote extends ObjectModel
                     'country' => $delivery_country->iso_code,
                     'is_a_company' => false,
                 ),
-                'parcels' => self::parcelDataFromCart($cart)
+                'parcels' => self::parcelDataFromCart($cart),
+                'offers_filters' => array(
+                    'with_product_codes' => self::getCarriersForCart($cart)
+                )
             );
 
             if (Configuration::get('MOD_LCE_DEFAULT_INSURE')) {
@@ -337,6 +383,7 @@ class LceQuote extends ObjectModel
 
             $quote = new LceQuote();
             $quote->id_cart = $cart->id;
+            $quote->id_address = $cart->id_address_delivery;
             $quote->api_quote_uuid = $api_quote->id;
             if ($quote->add()) {
                 // Now we create the offers

@@ -49,5 +49,10 @@ function upgrade_module_1_1_0($module)
             ADD COLUMN `total_price_with_extended_cover` INT(11) NOT NULL AFTER `price_with_extended_cover`;
     ');
 
+    // Add fields id_address
+    Db::getInstance()->Execute('
+        ALTER TABLE `'._DB_PREFIX_.'lce_quotes` 
+            ADD `id_address` INT(11) NOT NULL AFTER `id_cart`;');
+    
     return true;
 }

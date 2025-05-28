@@ -701,8 +701,12 @@ class LowCostExpress extends CarrierModule
     // Calculation of shipping cost, based on API requests
     public function getOrderShippingCost($cart, $shipping_cost)
     {
+        if ($cart->id_address_delivery == 0) {
+            return false;
+        }
+
         // We check if we already have a LceQuote for this cart. If not, we request one.
-        $quote = LceQuote::getLatestForCart($cart);
+        $quote = LceQuote::getLatestForCart($cart, true);
 
         // No quote found. Generating a new one.
         if (!$quote) {
@@ -733,7 +737,10 @@ class LowCostExpress extends CarrierModule
                         'country' => $delivery_country->iso_code,
                         'is_a_company' => false,
                     ),
-                    'parcels' => LceQuote::parcelDataFromCart($cart)
+                    'parcels' => LceQuote::parcelDataFromCart($cart),
+                    'offers_filters' => array(
+                        'with_product_codes' => LceQuote::getCarriersForCart($cart)
+                    )
                 );
 
                 // Ajout des valeurs d'assurance pour l'assurance classique ou la garantie étendue
@@ -751,6 +758,7 @@ class LowCostExpress extends CarrierModule
 
                     $quote = new LceQuote();
                     $quote->id_cart = $cart->id;
+                    $quote->id_address = $cart->id_address_delivery;
                     $quote->api_quote_uuid = $api_quote->id;
                     if ($quote->add()) {
                         // Now we create the offers
