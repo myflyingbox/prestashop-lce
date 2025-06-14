@@ -32,6 +32,9 @@ class LceOffer extends ObjectModel
     public $base_price_in_cents;
     public $total_price_in_cents;
     public $insurance_price_in_cents;
+    public $extended_cover_available;
+    public $price_with_extended_cover;
+    public $total_price_with_extended_cover;
     public $currency;
     public $date_add;
     public $date_upd;
@@ -48,6 +51,9 @@ class LceOffer extends ObjectModel
             'base_price_in_cents' => array('type' => self::TYPE_INT, 'required' => true),
             'total_price_in_cents' => array('type' => self::TYPE_INT, 'required' => true),
             'insurance_price_in_cents' => array('type' => self::TYPE_INT),
+            'extended_cover_available' => array('type' => self::TYPE_BOOL),
+            'price_with_extended_cover' => array('type' => self::TYPE_INT),
+            'total_price_with_extended_cover' => array('type' => self::TYPE_INT),
             'currency' => array('type' => self::TYPE_STRING, 'required' => true),
             'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
             'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
