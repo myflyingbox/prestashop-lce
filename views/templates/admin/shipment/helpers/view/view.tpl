@@ -335,6 +335,15 @@
                               </p>
                             </div>
                         {/if}
+
+                        {if $offer->extended_cover_available}
+                          <div class="col-lg-2 col-md-6" style="line-height:50px;">
+                            <input id="extended_cover" name="extended_cover" type="checkbox" value="1"{if $MOD_LCE_DEFAULT_EXTENDED_WARRANTY == 1} checked {/if} />
+                            <label for="extended_cover">{l s='Extended cover' mod='lowcostexpress'}</label>
+                          </div>
+                        {else}
+                          <input id="extended_cover" name="extended_cover" type="hidden" value="0"/>
+                        {/if}
                     </div>
 
 
