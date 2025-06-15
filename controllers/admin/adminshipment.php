@@ -123,6 +123,9 @@ class AdminShipmentController extends ModuleAdminController
                 $offer_data->extended_cover_available = $api_offer->extended_cover_available;
                 $offer_data->total_price_with_extended_cover = $api_offer->total_price_with_extended_cover->formatted;
 
+                $offer_data->pickup_available = $api_offer->product->pick_up;
+                $offer_data->dropoff_available = $api_offer->product->drop_off;
+
                 if (property_exists($api_offer->product->collection_informations, $this->context->language->iso_code)) {
                     $lang = $this->context->language->iso_code;
                 } else {
@@ -663,6 +666,10 @@ class AdminShipmentController extends ModuleAdminController
                 $lang = 'en';
             }
             $data->product_details = $offer->product->details->$lang;
+
+            $data->pickup_available = $offer->product->pick_up;
+            $data->dropoff_available = $offer->product->drop_off;
+            $data->extended_cover_available = $offer->extended_cover_available;
 
             $offers[] = $data;
         }
