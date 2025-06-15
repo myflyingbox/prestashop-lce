@@ -126,11 +126,15 @@ class AdminShipmentController extends ModuleAdminController
                     // Price with extended warranty
                     $offer_data->extended_cover_available = true;
                     $offer_data->total_price = $api_offer->total_price_with_extended_cover->formatted;
+                    $offer_data->total_price_with_extended_cover = $api_offer->total_price_with_extended_cover->formatted;
+                    $offer_data->total_price_without_extended_cover = $api_offer->total_price->formatted;
                 }
                 else {
                     // Price without extended warranty
                     $offer_data->extended_cover_available = false;
                     $offer_data->total_price = $api_offer->total_price->formatted;
+                    $offer_data->total_price_with_extended_cover = $api_offer->total_price->formatted;
+                    $offer_data->total_price_without_extended_cover = $api_offer->total_price->formatted;
                 }
 
                 if (property_exists($api_offer->product->collection_informations, $this->context->language->iso_code)) {
