@@ -43,7 +43,8 @@ require_once _PS_MODULE_DIR_.'lowcostexpress/controllers/admin/adminshipment.php
 
 class LowCostExpress extends CarrierModule
 {
-    public static $settings = array('MOD_LCE_API_LOGIN',
+    public static $settings = array(
+        'MOD_LCE_API_LOGIN',
         'MOD_LCE_API_PASSWORD',
         'MOD_LCE_API_ENV',
         'MOD_LCE_DEFAULT_SHIPPER_NAME',
@@ -58,6 +59,7 @@ class LowCostExpress extends CarrierModule
         'MOD_LCE_DEFAULT_ORIGIN',
         'MOD_LCE_DEFAULT_CONTENT',
         'MOD_LCE_DEFAULT_INSURE',
+        'MOD_LCE_DEFAULT_EXTENDED_WARRANTY',
         'MOD_LCE_THERMAL_PRINTING',
         'MOD_LCE_UPDATE_ORDER_STATUS',
         'MOD_LCE_FORCE_DIMENSIONS_TABLE',
@@ -67,10 +69,11 @@ class LowCostExpress extends CarrierModule
         'MOD_LCE_PRICE_TAX_RULES',
         'MOD_LCE_MAX_REAL_WEIGHT',
         'MOD_LCE_MAX_VOL_WEIGHT',
-        'MOD_LCE_FORCE_WEIGHT_DIMS_TABLE',
-      );
+        'MOD_LCE_FORCE_WEIGHT_DIMS_TABLE'
+    );
 
-    public static $mandatory_settings = array('MOD_LCE_API_LOGIN',
+    public static $mandatory_settings = array(
+        'MOD_LCE_API_LOGIN',
         'MOD_LCE_API_PASSWORD',
         'MOD_LCE_API_ENV',
         'MOD_LCE_DEFAULT_ORIGIN',
@@ -82,7 +85,8 @@ class LowCostExpress extends CarrierModule
         'MOD_LCE_DEFAULT_POSTAL_CODE',
         'MOD_LCE_DEFAULT_COUNTRY',
         'MOD_LCE_DEFAULT_PHONE',
-        'MOD_LCE_DEFAULT_EMAIL', );
+        'MOD_LCE_DEFAULT_EMAIL'
+    );
 
     public $id_carrier;
 
@@ -220,6 +224,7 @@ class LowCostExpress extends CarrierModule
         if (Tools::strlen($default_content) == 0) {
             Configuration::updateValue('MOD_LCE_DEFAULT_CONTENT', 'N/A');
         }
+        Configuration::updateValue('MOD_LCE_DEFAULT_EXTENDED_WARRANTY', '0');
 
         // register hooks
         $this->registerHook('displayOrderDetail'); // Front-side parcel tracking
@@ -551,18 +556,20 @@ class LowCostExpress extends CarrierModule
                             $carrier->addZone($zone['id_zone']);
                         }
 
-                        //copy logo
-                        $logo_file_name = $lce_service->logoFileName();
-                        if (!file_exists(dirname(__FILE__).'/views/img/carriers/'.$logo_file_name)) {
-                            $logo_file_name = 'myflyingbox.png';
-                        }
-                        // Note: PS stores the logos as JPG files even if they are really PNG...
-                        copy(
-                            dirname(__FILE__).'/views/img/carriers/'.$logo_file_name,
-                            _PS_SHIP_IMG_DIR_.'/'.$carrier->id.'.jpg'
-                        );
                     }
                 }
+
+                // Copy logo
+                $logo_file_name = $lce_service->logoFileName();
+                if (!file_exists(dirname(__FILE__).'/views/img/carriers/'.$logo_file_name)) {
+                    $logo_file_name = 'myflyingbox.png';
+                }
+                // Note: PS stores the logos as JPG files even if they are really PNG...
+                copy(
+                    dirname(__FILE__).'/views/img/carriers/'.$logo_file_name,
+                    _PS_SHIP_IMG_DIR_.'/'.$lce_service->id_carrier.'.jpg'
+                );
+
             }
         } catch (Exception $e) {
             $message = $this->displayError($this->purify($e->getMessage()));
@@ -631,6 +638,7 @@ class LowCostExpress extends CarrierModule
             'MOD_LCE_DEFAULT_ORIGIN' => Configuration::get('MOD_LCE_DEFAULT_ORIGIN'),
             'MOD_LCE_DEFAULT_CONTENT' => Configuration::get('MOD_LCE_DEFAULT_CONTENT'),
             'MOD_LCE_DEFAULT_INSURE' => Configuration::get('MOD_LCE_DEFAULT_INSURE'),
+            'MOD_LCE_DEFAULT_EXTENDED_WARRANTY' => Configuration::get('MOD_LCE_DEFAULT_EXTENDED_WARRANTY'),
             'MOD_LCE_THERMAL_PRINTING' => Configuration::get('MOD_LCE_THERMAL_PRINTING'),
             'MOD_LCE_UPDATE_ORDER_STATUS' => Configuration::get('MOD_LCE_UPDATE_ORDER_STATUS'),
             'MOD_LCE_FORCE_DIMENSIONS_TABLE' => Configuration::get('MOD_LCE_FORCE_DIMENSIONS_TABLE'),
@@ -710,7 +718,8 @@ class LowCostExpress extends CarrierModule
                     'parcels' => LceQuote::parcelDataFromCart($cart)
                 );
 
-                if (Configuration::get('MOD_LCE_DEFAULT_INSURE')) {
+                // Ajout des valeurs d'assurance pour l'assurance classique ou la garantie étendue
+                if (Configuration::get('MOD_LCE_DEFAULT_INSURE') || Configuration::get('MOD_LCE_DEFAULT_EXTENDED_WARRANTY')) {
                     $params['parcels'][0]['insured_value'] = $cart->getOrderTotal(false, Cart::ONLY_PRODUCTS);
                     $currency = new Currency($cart->id_currency);
                     // Getting total order value
@@ -737,6 +746,9 @@ class LowCostExpress extends CarrierModule
                                 $offer->lce_product_code = $api_offer->product->code;
                                 $offer->base_price_in_cents = $api_offer->price->amount_in_cents;
                                 $offer->total_price_in_cents = $api_offer->total_price->amount_in_cents;
+                                $offer->extended_cover_available = $api_offer->extended_cover_available;
+                                $offer->price_with_extended_cover = $api_offer->price_with_extended_cover->amount_in_cents;
+                                $offer->total_price_with_extended_cover = $api_offer->total_price_with_extended_cover->amount_in_cents;
                                 if ($api_offer->insurance_price) {
                                     $offer->insurance_price_in_cents = $api_offer->insurance_price->amount_in_cents;
                                 }
@@ -762,10 +774,26 @@ class LowCostExpress extends CarrierModule
                 $surcharge_amount = (int) Configuration::get('MOD_LCE_PRICE_SURCHARGE_STATIC');
                 $surcharge_percent = (int) Configuration::get('MOD_LCE_PRICE_SURCHARGE_PERCENT');
                 $price_taxation_rule = Configuration::get('MOD_LCE_PRICE_TAX_RULES');
-                if ($price_taxation_rule == 'before_taxes') {
-                    $price = $lce_offer->base_price_in_cents;
+                
+                // Check if we should use the price with extended cover
+                if (Configuration::get('MOD_LCE_DEFAULT_EXTENDED_WARRANTY') && 
+                    $lce_offer->extended_cover_available && 
+                    $lce_offer->price_with_extended_cover > 0 && 
+                    $lce_offer->total_price_with_extended_cover > 0) {
+                    
+                    // Use the price with extended cover
+                    if ($price_taxation_rule == 'before_taxes') {
+                        $price = $lce_offer->price_with_extended_cover;
+                    } else {
+                        $price = $lce_offer->total_price_with_extended_cover;
+                    }
                 } else {
-                    $price = $lce_offer->total_price_in_cents;
+                    // Use the normal price
+                    if ($price_taxation_rule == 'before_taxes') {
+                        $price = $lce_offer->base_price_in_cents;
+                    } else {
+                        $price = $lce_offer->total_price_in_cents;
+                    }
                 }
 
                 // If we want to insure shipments by default, we add the insurance cost to the base cost
@@ -834,26 +862,28 @@ class LowCostExpress extends CarrierModule
             );
         } else {
             try {
-              // We get the list of shipments for this order
-              $shipments = LceShipment::findAllForOrder((int) $params['id_order']);
+                // We get the list of shipments for this order
+                $shipments = LceShipment::findAllForOrder((int) $params['id_order']);
 
-              // Generating URLs to open the 'show' view of each shipment
-              $shipment_urls = array();
-              foreach ($shipments as $s) {
-                  $shipment_urls[$s->id_shipment] = $this->context->link->getAdminLink('AdminShipment').
+                // Generating URLs to open the 'show' view of each shipment
+                $shipment_urls = array();
+                foreach ($shipments as $s) {
+                    $shipment_urls[$s->id_shipment] = $this->context->link->getAdminLink('AdminShipment').
                                                                     '&viewlce_shipments&id_shipment='.$s->id_shipment;
-              }
+                }
 
-              $var = array(
-                  'shipments' => $shipments,
-                  'shipment_urls' => $shipment_urls,
-                  'id_order' => (int) ($params['id_order']),
-                  'new_shipment_path' => $this->context->link->getAdminLink('AdminShipment').
-                                                            '&addlce_shipments&order_id='.(int) $params['id_order'],
-              );
-              } catch (Exception $e) {
-                  Tools::error_log('MFB quote request exception: '.$e->getMessage());
-              }
+                $var = array(
+                    'shipments' => $shipments,
+                    'shipment_urls' => $shipment_urls,
+                    'id_order' => (int) ($params['id_order']),
+                    'new_shipment_path' => $this->context->link->getAdminLink('AdminShipment').
+                            '&addlce_shipments&order_id='.(int) $params['id_order'],
+                    'new_return_path' => $this->context->link->getAdminLink('AdminShipment').
+                            '&addlce_shipments&order_id='.(int) $params['id_order'].'&is_return=1',
+                );
+            } catch (Exception $e) {
+                Tools::error_log('MFB quote request exception: '.$e->getMessage());
+            }
         }
 
         // Making the variable available in the view
