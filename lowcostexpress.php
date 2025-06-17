@@ -810,9 +810,11 @@ class LowCostExpress extends CarrierModule
                                 $offer->lce_product_code = $api_offer->product->code;
                                 $offer->base_price_in_cents = $api_offer->price->amount_in_cents;
                                 $offer->total_price_in_cents = $api_offer->total_price->amount_in_cents;
-                                $offer->extended_cover_available = $api_offer->extended_cover_available;
-                                $offer->price_with_extended_cover = $api_offer->price_with_extended_cover->amount_in_cents;
-                                $offer->total_price_with_extended_cover = $api_offer->total_price_with_extended_cover->amount_in_cents;
+                                $offer->extended_cover_available = (int)$api_offer->extended_cover_available;
+                                if ((int)$api_offer->extended_cover_available != 0) {
+                                    $offer->price_with_extended_cover = $api_offer->price_with_extended_cover->amount_in_cents;
+                                    $offer->total_price_with_extended_cover = $api_offer->total_price_with_extended_cover->amount_in_cents;
+                                }
                                 if ($api_offer->insurance_price) {
                                     $offer->insurance_price_in_cents = $api_offer->insurance_price->amount_in_cents;
                                 }
