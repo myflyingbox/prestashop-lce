@@ -49,5 +49,4 @@ $params = array(
 
 $api_response = $offer->getDeliveryLocations($params);
 
-
-echo Tools::jsonEncode($api_response);
+echo json_encode($api_response); 

@@ -711,11 +711,11 @@ class AdminShipmentController extends ModuleAdminController
 
         if (!$shipment) {
             header('HTTP/1.0 404 Not Found');
-            die(Tools::jsonEncode(array('error' => $this->l('Shipment not found.'))));
+            die(json_encode(array('error' => $this->l('Shipment not found.'))));
         }
         if ($shipment->api_order_uuid) {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(Tools::jsonEncode(array('error' => $this->l('Shipment is already booked.'))));
+            die(json_encode(array('error' => $this->l('Shipment is already booked.'))));
         }
         $offer_uuid = Tools::getValue('offer_uuid');
         $quote_uuid = Tools::getValue('quote_uuid');
@@ -729,9 +729,9 @@ class AdminShipmentController extends ModuleAdminController
 
         if (!$shipment->save()) {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(Tools::jsonEncode(array('error' => $this->l('Shipment could not be updated.'))));
+            die(json_encode(array('error' => $this->l('Shipment could not be updated.'))));
         } else {
-            die(Tools::jsonEncode(array('result' => $this->l('Shipment updated.'))));
+            die(json_encode(array('result' => $this->l('Shipment updated.'))));
         }
     }
 
@@ -745,17 +745,17 @@ class AdminShipmentController extends ModuleAdminController
 
         if (!$shipment) {
             header('HTTP/1.0 404 Not Found');
-            die(Tools::jsonEncode(array('error' => $this->l('Shipment not found.'))));
+            die(json_encode(array('error' => $this->l('Shipment not found.'))));
         }
 
         if ($shipment->api_order_uuid) {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(Tools::jsonEncode(array('error' => $this->l('Shipment is already booked.'))));
+            die(json_encode(array('error' => $this->l('Shipment is already booked.'))));
         }
 
         if ($shipment->api_offer_uuid != $offer_uuid) {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(Tools::jsonEncode(array(
+            die(json_encode(array(
                 'error' => $this->l('Inconsistency between submitted offer uuid and saved offer uuid.'),
             )));
         }
@@ -764,7 +764,7 @@ class AdminShipmentController extends ModuleAdminController
 
         if (!$lce_service) {
             header('HTTP/1.0 404 Not Found');
-            die(Tools::jsonEncode(array(
+            die(json_encode(array(
                 'error' => $this->l('Service not found. Please refresh your services in module config.')
             )));
         }
@@ -836,7 +836,7 @@ class AdminShipmentController extends ModuleAdminController
         } catch (\Exception $e) {
             header('Content-type: application/json');
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(Tools::jsonEncode(array('status' => 'error', 'message' => $e->getMessage())));
+            die(json_encode(array('status' => 'error', 'message' => $e->getMessage())));
         }
 
         // Saving the order uuid
@@ -886,12 +886,12 @@ class AdminShipmentController extends ModuleAdminController
 
         if (!$shipment->save()) {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(Tools::jsonEncode(array(
+            die(json_encode(array(
                 'status' => 'error',
                 'message' => $this->l('Shipment could not be updated.')
             )));
         } else {
-            die(Tools::jsonEncode(array(
+            die(json_encode(array(
                 'status' => 'success',
                 'message' => $this->l('Shipment updated with order uuid.')
             )));
