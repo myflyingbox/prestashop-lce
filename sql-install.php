@@ -87,6 +87,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_parcels` (
 $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_quotes` (
     `id_quote` int(11) NOT NULL AUTO_INCREMENT,
     `id_cart` int(11) NOT NULL,
+    `id_address` int(11) NOT NULL,
     `id_shipment` int(11),
     `api_quote_uuid` VARCHAR(255) NOT NULL DEFAULT "",
     `date_add` DATETIME,
