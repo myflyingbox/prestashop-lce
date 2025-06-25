@@ -114,6 +114,8 @@ $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_28e643618826288005a54b1
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_a2b544e8022bd4f36d8c6c144b7278dd'] = 'TTC';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_78d3c4042eed822716197082ba68431f'] = 'Assurer par défaut ?';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_0ae2ea5baea0c32471525909b2fed37f'] = 'Si cochée, le prix affiché au client inclura le coût de l\'assurance, basé sur la valeur du panier (maximum 2000€).';
+$_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_617ddb3493d05cc2b0576cce356265c1'] = 'Garantie étendue par défaut ?';
+$_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_aa48bbf7d87b6f5d1ac826ce25ced5ee'] = 'Si coché, le prix affiché au client inclura le coût de la garantie étendue.';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_3bc363ad46c7729d277bc48a3dbc6f9a'] = 'Poids réel maximum par colis :';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_e98d2dff9860254e640a4cbd6f5be266'] = 'En kg. Permet de déterminer comment répartir les articles d\'un chariot en plusieurs colis simulés, en fonction du poids réel.';
 $_MODULE['<{lowcostexpress}prestashop>settings.bootstrap_7f24deda3e16253b011a5b4815f1706f'] = 'Poids volumétrique maximal par colis :';
@@ -198,6 +200,8 @@ $_MODULE['<{lowcostexpress}prestashop>settings_28e643618826288005a54b1a36741ef1'
 $_MODULE['<{lowcostexpress}prestashop>settings_a2b544e8022bd4f36d8c6c144b7278dd'] = 'TTC';
 $_MODULE['<{lowcostexpress}prestashop>settings_78d3c4042eed822716197082ba68431f'] = 'Assurer par défaut ?';
 $_MODULE['<{lowcostexpress}prestashop>settings_0ae2ea5baea0c32471525909b2fed37f'] = 'Si cochée, le prix affiché au client inclura le coût de l\'assurance, basé sur la valeur du panier (maximum 2000€).';
+$_MODULE['<{lowcostexpress}prestashop>settings_617ddb3493d05cc2b0576cce356265c1'] = 'Garantie étendue par défaut ?';
+$_MODULE['<{lowcostexpress}prestashop>settings_aa48bbf7d87b6f5d1ac826ce25ced5ee'] = 'Si cette option est cochée, le prix affiché au client comprendra le coût de la garantie étendue.';
 $_MODULE['<{lowcostexpress}prestashop>settings_3bc363ad46c7729d277bc48a3dbc6f9a'] = 'Poids réel maximum par colis :';
 $_MODULE['<{lowcostexpress}prestashop>settings_e98d2dff9860254e640a4cbd6f5be266'] = 'En kg. Permet de déterminer comment répartir les articles d\'un chariot en plusieurs colis simulés, en fonction du poids réel.';
 $_MODULE['<{lowcostexpress}prestashop>settings_7f24deda3e16253b011a5b4815f1706f'] = 'Poids volumétrique maximal par colis :';
@@ -285,6 +289,9 @@ $_MODULE['<{lowcostexpress}prestashop>view_f4626a8173670af33de11ee6d04b707b'] = 
 $_MODULE['<{lowcostexpress}prestashop>view_1a14edaf330a15a3c8c785284d424a66'] = 'Je veux assurer mon envoi ';
 $_MODULE['<{lowcostexpress}prestashop>view_a454543939e5734f681b50cabe577e62'] = 'Valeur à assurer (max 2000€) :';
 $_MODULE['<{lowcostexpress}prestashop>view_78ec5d0c0eeaec0714d579ebcc38a313'] = 'Coût de l\'assurance :';
+$_MODULE['<{lowcostexpress}prestashop>view_eb59299451f201805d06ea6c7efe1e8b'] = 'Garantie étendue';
+$_MODULE['<{lowcostexpress}prestashop>view_cd5b9039dddf3a3c42d9043ba20ec5a7'] = 'Prix sans garantie étendue';
+$_MODULE['<{lowcostexpress}prestashop>view_dd89bbe21ca6c6be1051548450e6e744'] = 'Prix avec garantie étendue';
 $_MODULE['<{lowcostexpress}prestashop>view_b870958ff81268c1a02d9c84d48bf90a'] = 'Confirmer la commande de transport';
 $_MODULE['<{lowcostexpress}prestashop>view_1a02e0da1702237c48f53a796d5fb9d8'] = 'Retour à la commande';
 $_MODULE['<{lowcostexpress}prestashop>view_729a51874fe901b092899e9e8b31c97a'] = 'Etes-vous sûr ?';
