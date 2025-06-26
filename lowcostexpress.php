@@ -478,6 +478,11 @@ class LowCostExpress extends CarrierModule
                             $carrier_exists = true;
                             $lce_service->id_carrier = (int) $row['id_carrier'];
                             $lce_service->$service_save_action();
+
+                            // Set id_tax_rules_group in table carrier_tax_rules_group_shop 
+                            $carrier = new Carrier((int)$row['id_carrier']);
+                            $carrier->setTaxRulesGroup(1, true);
+                            unset($carrier);
                         }
                     } else {
                         $carrier_exists = false;
@@ -584,21 +589,7 @@ class LowCostExpress extends CarrierModule
         } catch (Exception $e) {
             $message = $this->displayError($this->purify($e->getMessage()));
         }
-        $this->setCarriersTaxes();
         return $message;
-    }
-
-    public function setCarriersTaxes(){
-        $carriers = Db::getInstance()->ExecuteS('
-            SELECT * 
-            FROM '._DB_PREFIX_.'carrier 
-            WHERE external_module_name = "lowcostexpress"
-        ');
-
-        foreach ($carriers as $carrier) {
-            $carrier = new Carrier($carrier['id_carrier']);
-            $carrier->setTaxRulesGroup(1, true);
-        }
     }
 
     private function _displayContent($message)
