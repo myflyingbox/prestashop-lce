@@ -127,3 +127,19 @@ div.myflyingbox-settings-header.no-bootstrap ol.getting-started {
 div.myflyingbox-settings p.error {
     color: red;
 }
+
+.adminshipment .ui-widget-header{
+  background-image:none;
+  background-color: transparent;
+  border: none;
+}
+
+.adminshipment .ui-widget-overlay{
+  background: rgba(0, 0, 0, 0.6);
+  opacity:1;
+  z-index:1000;
+}
+
+.adminshipment .ui-dialog{
+  z-index:1001;
+}
