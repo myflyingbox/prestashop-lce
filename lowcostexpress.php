@@ -43,7 +43,8 @@ require_once _PS_MODULE_DIR_.'lowcostexpress/controllers/admin/adminshipment.php
 
 class LowCostExpress extends CarrierModule
 {
-    public static $settings = array('MOD_LCE_API_LOGIN',
+    public static $settings = array(
+        'MOD_LCE_API_LOGIN',
         'MOD_LCE_API_PASSWORD',
         'MOD_LCE_API_ENV',
         'MOD_LCE_DEFAULT_SHIPPER_NAME',
@@ -58,6 +59,7 @@ class LowCostExpress extends CarrierModule
         'MOD_LCE_DEFAULT_ORIGIN',
         'MOD_LCE_DEFAULT_CONTENT',
         'MOD_LCE_DEFAULT_INSURE',
+        'MOD_LCE_DEFAULT_EXTENDED_WARRANTY',
         'MOD_LCE_THERMAL_PRINTING',
         'MOD_LCE_UPDATE_ORDER_STATUS',
         'MOD_LCE_FORCE_DIMENSIONS_TABLE',
@@ -67,10 +69,11 @@ class LowCostExpress extends CarrierModule
         'MOD_LCE_PRICE_TAX_RULES',
         'MOD_LCE_MAX_REAL_WEIGHT',
         'MOD_LCE_MAX_VOL_WEIGHT',
-        'MOD_LCE_FORCE_WEIGHT_DIMS_TABLE',
-      );
+        'MOD_LCE_FORCE_WEIGHT_DIMS_TABLE'
+    );
 
-    public static $mandatory_settings = array('MOD_LCE_API_LOGIN',
+    public static $mandatory_settings = array(
+        'MOD_LCE_API_LOGIN',
         'MOD_LCE_API_PASSWORD',
         'MOD_LCE_API_ENV',
         'MOD_LCE_DEFAULT_ORIGIN',
@@ -82,7 +85,8 @@ class LowCostExpress extends CarrierModule
         'MOD_LCE_DEFAULT_POSTAL_CODE',
         'MOD_LCE_DEFAULT_COUNTRY',
         'MOD_LCE_DEFAULT_PHONE',
-        'MOD_LCE_DEFAULT_EMAIL', );
+        'MOD_LCE_DEFAULT_EMAIL'
+    );
 
     public $id_carrier;
 
@@ -220,6 +224,7 @@ class LowCostExpress extends CarrierModule
         if (Tools::strlen($default_content) == 0) {
             Configuration::updateValue('MOD_LCE_DEFAULT_CONTENT', 'N/A');
         }
+        Configuration::updateValue('MOD_LCE_DEFAULT_EXTENDED_WARRANTY', '0');
 
         // register hooks
         $this->registerHook('displayOrderDetail'); // Front-side parcel tracking
@@ -228,6 +233,12 @@ class LowCostExpress extends CarrierModule
         $this->registerHook('displayAdminOrder'); // Displaying LCE Shipments on order admin page
         $this->registerHook('displayAfterCarrier'); // Display relay delivery options during checkout
         $this->registerHook('actionFrontControllerSetMedia'); // Load JS related to relay delivery selection
+        $this->registerHook('actionCartUpdateQuantityBefore'); // Delete quote when products in cart are updated
+        if (version_compare(_PS_VERSION_, '1.7.1.0', '<')) {
+            $this->registerHook('actionDeleteProductInCartAfter');
+        } else {
+            $this->registerHook('actionObjectProductInCartDeleteAfter');
+        }
 
         return true;
     }
@@ -509,6 +520,10 @@ class LowCostExpress extends CarrierModule
                     }
 
                     if ($carrier->add()) {
+
+                        // Set tax rules group to 1 for all shops for PS 1.7.0+
+                        $carrier->setTaxRulesGroup(1, true);
+
                         // DEPRECATED: Strictly speaking this is not necessary anymore, as this method is now obsolete.
                         // This will be removed in the future, when the mechanisms based on LceService are fully
                         // used by all customers and there is no remaining bug.
@@ -569,7 +584,21 @@ class LowCostExpress extends CarrierModule
         } catch (Exception $e) {
             $message = $this->displayError($this->purify($e->getMessage()));
         }
+        $this->setCarriersTaxes();
         return $message;
+    }
+
+    public function setCarriersTaxes(){
+        $carriers = Db::getInstance()->ExecuteS('
+            SELECT * 
+            FROM '._DB_PREFIX_.'carrier 
+            WHERE external_module_name = "lowcostexpress"
+        ');
+
+        foreach ($carriers as $carrier) {
+            $carrier = new Carrier($carrier['id_carrier']);
+            $carrier->setTaxRulesGroup(1, true);
+        }
     }
 
     private function _displayContent($message)
@@ -633,6 +662,7 @@ class LowCostExpress extends CarrierModule
             'MOD_LCE_DEFAULT_ORIGIN' => Configuration::get('MOD_LCE_DEFAULT_ORIGIN'),
             'MOD_LCE_DEFAULT_CONTENT' => Configuration::get('MOD_LCE_DEFAULT_CONTENT'),
             'MOD_LCE_DEFAULT_INSURE' => Configuration::get('MOD_LCE_DEFAULT_INSURE'),
+            'MOD_LCE_DEFAULT_EXTENDED_WARRANTY' => Configuration::get('MOD_LCE_DEFAULT_EXTENDED_WARRANTY'),
             'MOD_LCE_THERMAL_PRINTING' => Configuration::get('MOD_LCE_THERMAL_PRINTING'),
             'MOD_LCE_UPDATE_ORDER_STATUS' => Configuration::get('MOD_LCE_UPDATE_ORDER_STATUS'),
             'MOD_LCE_FORCE_DIMENSIONS_TABLE' => Configuration::get('MOD_LCE_FORCE_DIMENSIONS_TABLE'),
@@ -674,11 +704,43 @@ class LowCostExpress extends CarrierModule
         }
     }
 
+    public function hookActionCartUpdateQuantityBefore($params)
+    {
+        $cart = $params['cart'];
+        $quote = LceQuote::getLatestForCart($cart, false);
+
+        if (Validate::isLoadedObject($quote)) {
+            $quote->delete();
+        }
+    }
+
+    // Before v1.7.1
+    public function hookActionDeleteProductInCartAfter($params)
+    {
+        return $this->hookActionObjectProductInCartDeleteAfter($params);
+    }
+
+    // After v1.7.1
+    public function hookActionObjectProductInCartDeleteAfter($params)
+    {
+        $id_cart = $params['id_cart'];
+        $cart = new Cart($id_cart);
+        $quote = LceQuote::getLatestForCart($cart, false);
+
+        if (Validate::isLoadedObject($quote)) {
+            $quote->delete();
+        }
+    }
+
     // Calculation of shipping cost, based on API requests
     public function getOrderShippingCost($cart, $shipping_cost)
     {
+        if ($cart->id_address_delivery == 0) {
+            return false;
+        }
+
         // We check if we already have a LceQuote for this cart. If not, we request one.
-        $quote = LceQuote::getLatestForCart($cart);
+        $quote = LceQuote::getLatestForCart($cart, true);
 
         // No quote found. Generating a new one.
         if (!$quote) {
@@ -709,10 +771,14 @@ class LowCostExpress extends CarrierModule
                         'country' => $delivery_country->iso_code,
                         'is_a_company' => false,
                     ),
-                    'parcels' => LceQuote::parcelDataFromCart($cart)
+                    'parcels' => LceQuote::parcelDataFromCart($cart),
+                    'offers_filters' => array(
+                        'with_product_codes' => LceQuote::getCarriersForCart($cart)
+                    )
                 );
 
-                if (Configuration::get('MOD_LCE_DEFAULT_INSURE')) {
+                // Ajout des valeurs d'assurance pour l'assurance classique ou la garantie étendue
+                if (Configuration::get('MOD_LCE_DEFAULT_INSURE') || Configuration::get('MOD_LCE_DEFAULT_EXTENDED_WARRANTY')) {
                     $params['parcels'][0]['insured_value'] = $cart->getOrderTotal(false, Cart::ONLY_PRODUCTS);
                     $currency = new Currency($cart->id_currency);
                     // Getting total order value
@@ -726,6 +792,7 @@ class LowCostExpress extends CarrierModule
 
                     $quote = new LceQuote();
                     $quote->id_cart = $cart->id;
+                    $quote->id_address = $cart->id_address_delivery;
                     $quote->api_quote_uuid = $api_quote->id;
                     if ($quote->add()) {
                         // Now we create the offers
@@ -739,6 +806,9 @@ class LowCostExpress extends CarrierModule
                                 $offer->lce_product_code = $api_offer->product->code;
                                 $offer->base_price_in_cents = $api_offer->price->amount_in_cents;
                                 $offer->total_price_in_cents = $api_offer->total_price->amount_in_cents;
+                                $offer->extended_cover_available = $api_offer->extended_cover_available;
+                                $offer->price_with_extended_cover = $api_offer->price_with_extended_cover->amount_in_cents;
+                                $offer->total_price_with_extended_cover = $api_offer->total_price_with_extended_cover->amount_in_cents;
                                 if ($api_offer->insurance_price) {
                                     $offer->insurance_price_in_cents = $api_offer->insurance_price->amount_in_cents;
                                 }
@@ -764,10 +834,26 @@ class LowCostExpress extends CarrierModule
                 $surcharge_amount = (int) Configuration::get('MOD_LCE_PRICE_SURCHARGE_STATIC');
                 $surcharge_percent = (int) Configuration::get('MOD_LCE_PRICE_SURCHARGE_PERCENT');
                 $price_taxation_rule = Configuration::get('MOD_LCE_PRICE_TAX_RULES');
-                if ($price_taxation_rule == 'before_taxes') {
-                    $price = $lce_offer->base_price_in_cents;
+                
+                // Check if we should use the price with extended cover
+                if (Configuration::get('MOD_LCE_DEFAULT_EXTENDED_WARRANTY') && 
+                    $lce_offer->extended_cover_available && 
+                    $lce_offer->price_with_extended_cover > 0 && 
+                    $lce_offer->total_price_with_extended_cover > 0) {
+                    
+                    // Use the price with extended cover
+                    if ($price_taxation_rule == 'before_taxes') {
+                        $price = $lce_offer->price_with_extended_cover;
+                    } else {
+                        $price = $lce_offer->total_price_with_extended_cover;
+                    }
                 } else {
-                    $price = $lce_offer->total_price_in_cents;
+                    // Use the normal price
+                    if ($price_taxation_rule == 'before_taxes') {
+                        $price = $lce_offer->base_price_in_cents;
+                    } else {
+                        $price = $lce_offer->total_price_in_cents;
+                    }
                 }
 
                 // If we want to insure shipments by default, we add the insurance cost to the base cost
