@@ -348,7 +348,7 @@
                             <input id="extended_cover" name="extended_cover" type="checkbox" value="1"{if $MOD_LCE_DEFAULT_EXTENDED_WARRANTY == 1} checked {/if} />
                             <label for="extended_cover" style="line-height:40px;">{l s='Extended cover' mod='lowcostexpress'}</label>
                             <p style="line-height:20px;">
-                                {l s='Price without extended warranty :' mod='lowcostexpress'} <b>{$offer->total_price_without_extended_cover|escape:'htmlall':'UTF-8'}</b>
+                                {l s='Price without extended warranty :' mod='lowcostexpress'} <b>{$offer->total_price|escape:'htmlall':'UTF-8'}</b>
                                 <br/>
                                 {l s='Price with extended warranty :' mod='lowcostexpress'} <b>{$offer->total_price_with_extended_cover|escape:'htmlall':'UTF-8'}</b>
                             </p>

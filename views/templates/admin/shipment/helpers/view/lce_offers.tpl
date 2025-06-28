@@ -43,6 +43,10 @@
           {if $offer->insurance_price}
             <br><i>{l s='Optional insurance available' mod='lowcostexpress'}</i>
           {/if}
+          {if $offer->extended_cover_available}
+            <br><i>{l s='Optional extended warranty available' mod='lowcostexpress'} ({$offer->total_price_with_extended_cover|escape:'htmlall':'UTF-8'})</i>
+          {/if}
+        </td>
 
           <ul>
             <li>{$offer->collection_informations|escape:'htmlall':'UTF-8'|nl2br}</li>
