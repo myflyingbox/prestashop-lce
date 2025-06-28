@@ -306,6 +306,7 @@ $_MODULE['<{lowcostexpress}prestashop>lce_offers_df644ae155e79abf54175bd15d75f36
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_3ec365dd533ddb7ef3d1c111186ce872'] = 'Détails';
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_f7bf0110b8a7f32f448b77b63b29d5b0'] = 'Prix total :';
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_b2ce3a14c098da5ee7ef29c6b41010ce'] = 'Assurance ad-valorem facultative';
+$_MODULE['<{lowcostexpress}prestashop>lce_offers_9768f4d78024edc21d10de8eec36e5df'] = 'Garantie étendue disponible en option';
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_38d21c0d8e5b7aba43b986d4c66f037a'] = 'Enlèvement des colis';
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_65229710813d5cd9be4b0209182e0816'] = 'Dépôt des colis';
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_0f56d7f1b9179d44a187a95ed94313de'] = 'Garantie étendue disponible';
