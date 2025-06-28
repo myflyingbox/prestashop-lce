@@ -87,6 +87,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_parcels` (
 $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_quotes` (
     `id_quote` int(11) NOT NULL AUTO_INCREMENT,
     `id_cart` int(11) NOT NULL,
+    `id_address` int(11) NOT NULL,
     `id_shipment` int(11),
     `api_quote_uuid` VARCHAR(255) NOT NULL DEFAULT "",
     `date_add` DATETIME,
@@ -104,6 +105,9 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_offers` (
     `base_price_in_cents` INT(11) NOT NULL,
     `total_price_in_cents` INT(11) NOT NULL,
     `insurance_price_in_cents` INT(11),
+    `extended_cover_available` TINYINT(1) DEFAULT 0,
+    `price_with_extended_cover` INT(11) NOT NULL,
+    `total_price_with_extended_cover` INT(11) NOT NULL,
     `currency` VARCHAR(255) NOT NULL DEFAULT "",
     `pickup_available` BOOLEAN NOT NULL DEFAULT "1",
     `dropoff_available` BOOLEAN NOT NULL DEFAULT "1",

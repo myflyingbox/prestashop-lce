@@ -37,5 +37,29 @@ function upgrade_module_1_1_0($module)
         ALTER TABLE `' . _DB_PREFIX_ . 'lce_shipments` 
             ADD `is_return` TINYINT(1) NOT NULL DEFAULT 0 AFTER `delete`; ');
 
+    // Add default value for extended warranty
+    Configuration::updateValue('MOD_LCE_DEFAULT_EXTENDED_WARRANTY', '0');
+
+    // Add fields for extended warranty
+    Db::getInstance()->Execute('
+        ALTER TABLE `'._DB_PREFIX_.'lce_offers` 
+            ADD COLUMN `extended_cover_available` TINYINT(1) DEFAULT 0 AFTER `insurance_price_in_cents`,
+            ADD COLUMN `price_with_extended_cover` INT(11) NOT NULL AFTER `extended_cover_available`,
+            ADD COLUMN `total_price_with_extended_cover` INT(11) NOT NULL AFTER `price_with_extended_cover`;
+    ');
+
+    // Add fields id_address
+    Db::getInstance()->Execute('
+        ALTER TABLE `'._DB_PREFIX_.'lce_quotes` 
+            ADD `id_address` INT(11) NOT NULL AFTER `id_cart`;');
+
+    // Delete quote when products in cart are updated
+    $module->registerHook('actionCartUpdateQuantityBefore');
+    if (version_compare(_PS_VERSION_, '1.7.1.0', '<')) {
+        $module->registerHook('actionDeleteProductInCartAfter');
+    } else {
+        $module->registerHook('actionObjectProductInCartDeleteAfter');
+    }
+    
     return true;
 }
