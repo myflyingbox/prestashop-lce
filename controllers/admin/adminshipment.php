@@ -118,6 +118,13 @@ class AdminShipmentController extends ModuleAdminController
                 $offer_data->id = $api_offer->id;
                 $offer_data->product_name = $lce_service->carrierName().' '.$api_offer->product->name;
                 $offer_data->total_price = $api_offer->total_price->formatted;
+                
+                // Extended cover
+                $offer_data->extended_cover_available = $api_offer->extended_cover_available;
+                $offer_data->total_price_with_extended_cover = $api_offer->total_price_with_extended_cover->formatted;
+
+                $offer_data->pickup_available = $api_offer->product->pick_up;
+                $offer_data->dropoff_available = $api_offer->product->drop_off;
 
                 if (property_exists($api_offer->product->collection_informations, $this->context->language->iso_code)) {
                     $lang = $this->context->language->iso_code;
@@ -273,6 +280,7 @@ class AdminShipmentController extends ModuleAdminController
             ),
             'insurable_value' => $insurable_value,
             'insurance_cost' => $insurance_cost,
+            'MOD_LCE_DEFAULT_EXTENDED_WARRANTY' => (int)Configuration::get('MOD_LCE_DEFAULT_EXTENDED_WARRANTY')
         );
 
         return parent::renderView();
@@ -634,6 +642,10 @@ class AdminShipmentController extends ModuleAdminController
                 $data->insurance_price =  false;
             }
 
+            // Extended cover
+            $data->extended_cover_available = $offer->extended_cover_available;
+            $data->total_price_with_extended_cover = $offer->total_price_with_extended_cover->formatted;
+
             if (property_exists($offer->product->collection_informations, $this->context->language->iso_code)) {
                 $lang = $this->context->language->iso_code;
             } else {
@@ -654,6 +666,10 @@ class AdminShipmentController extends ModuleAdminController
                 $lang = 'en';
             }
             $data->product_details = $offer->product->details->$lang;
+
+            $data->pickup_available = $offer->product->pick_up;
+            $data->dropoff_available = $offer->product->drop_off;
+            $data->extended_cover_available = $offer->extended_cover_available;
 
             $offers[] = $data;
         }
@@ -685,11 +701,11 @@ class AdminShipmentController extends ModuleAdminController
 
         if (!$shipment) {
             header('HTTP/1.0 404 Not Found');
-            die(Tools::jsonEncode(array('error' => $this->l('Shipment not found.'))));
+            die(json_encode(array('error' => $this->l('Shipment not found.'))));
         }
         if ($shipment->api_order_uuid) {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(Tools::jsonEncode(array('error' => $this->l('Shipment is already booked.'))));
+            die(json_encode(array('error' => $this->l('Shipment is already booked.'))));
         }
         $offer_uuid = Tools::getValue('offer_uuid');
         $quote_uuid = Tools::getValue('quote_uuid');
@@ -703,9 +719,9 @@ class AdminShipmentController extends ModuleAdminController
 
         if (!$shipment->save()) {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(Tools::jsonEncode(array('error' => $this->l('Shipment could not be updated.'))));
+            die(json_encode(array('error' => $this->l('Shipment could not be updated.'))));
         } else {
-            die(Tools::jsonEncode(array('result' => $this->l('Shipment updated.'))));
+            die(json_encode(array('result' => $this->l('Shipment updated.'))));
         }
     }
 
@@ -715,20 +731,21 @@ class AdminShipmentController extends ModuleAdminController
         $shipment = new LceShipment((int) Tools::getValue('id_shipment'));
 
         $offer_uuid = Tools::getValue('offer_uuid');
+        $extended_cover = (int)Tools::getValue('extended_cover', 0);
 
         if (!$shipment) {
             header('HTTP/1.0 404 Not Found');
-            die(Tools::jsonEncode(array('error' => $this->l('Shipment not found.'))));
+            die(json_encode(array('error' => $this->l('Shipment not found.'))));
         }
 
         if ($shipment->api_order_uuid) {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(Tools::jsonEncode(array('error' => $this->l('Shipment is already booked.'))));
+            die(json_encode(array('error' => $this->l('Shipment is already booked.'))));
         }
 
         if ($shipment->api_offer_uuid != $offer_uuid) {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(Tools::jsonEncode(array(
+            die(json_encode(array(
                 'error' => $this->l('Inconsistency between submitted offer uuid and saved offer uuid.'),
             )));
         }
@@ -737,7 +754,7 @@ class AdminShipmentController extends ModuleAdminController
 
         if (!$lce_service) {
             header('HTTP/1.0 404 Not Found');
-            die(Tools::jsonEncode(array(
+            die(json_encode(array(
                 'error' => $this->l('Service not found. Please refresh your services in module config.')
             )));
         }
@@ -800,13 +817,16 @@ class AdminShipmentController extends ModuleAdminController
             $params['thermal_labels'] = true;
         }
 
+        // Extended warranty
+        $params['with_extended_cover'] = (bool)$extended_cover;
+
         // Placing the order on the API
         try {
             $order_api = Lce\Resource\Order::place($shipment->api_offer_uuid, $params);
         } catch (\Exception $e) {
             header('Content-type: application/json');
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(Tools::jsonEncode(array('status' => 'error', 'message' => $e->getMessage())));
+            die(json_encode(array('status' => 'error', 'message' => $e->getMessage())));
         }
 
         // Saving the order uuid
@@ -856,12 +876,12 @@ class AdminShipmentController extends ModuleAdminController
 
         if (!$shipment->save()) {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(Tools::jsonEncode(array(
+            die(json_encode(array(
                 'status' => 'error',
                 'message' => $this->l('Shipment could not be updated.')
             )));
         } else {
-            die(Tools::jsonEncode(array(
+            die(json_encode(array(
                 'status' => 'success',
                 'message' => $this->l('Shipment updated with order uuid.')
             )));
