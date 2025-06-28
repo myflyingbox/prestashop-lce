@@ -303,6 +303,7 @@ $_MODULE['<{lowcostexpress}prestashop>lce_offers_df644ae155e79abf54175bd15d75f36
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_3ec365dd533ddb7ef3d1c111186ce872'] = 'Détails';
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_f7bf0110b8a7f32f448b77b63b29d5b0'] = 'Prix total :';
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_b2ce3a14c098da5ee7ef29c6b41010ce'] = 'Assurance ad-valorem facultative';
+$_MODULE['<{lowcostexpress}prestashop>lce_offers_9768f4d78024edc21d10de8eec36e5df'] = 'Garantie étendue disponible en option';
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_75a3ea6c830bd8cc2b9a0148a92e01ae'] = 'Choisir l\'offre sélectionnée';
 $_MODULE['<{lowcostexpress}prestashop>tracking_details_2bedb98272aec3ab48e6962b54a1f8ff'] = 'Information de suivi, colis n°';
 $_MODULE['<{lowcostexpress}prestashop>tracking_details_359ff4ae83f885f7d3227a4353ea525e'] = 'Date événement';

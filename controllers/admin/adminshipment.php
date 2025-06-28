@@ -117,25 +117,11 @@ class AdminShipmentController extends ModuleAdminController
                 $offer_data = new stdClass();
                 $offer_data->id = $api_offer->id;
                 $offer_data->product_name = $lce_service->carrierName().' '.$api_offer->product->name;
-
-                if (Configuration::get('MOD_LCE_DEFAULT_EXTENDED_WARRANTY') && 
-                    $api_offer->extended_cover_available && 
-                    $api_offer->price_with_extended_cover->amount > 0 && 
-                    $api_offer->total_price_with_extended_cover->amount > 0) {
-
-                    // Price with extended warranty
-                    $offer_data->extended_cover_available = true;
-                    $offer_data->total_price = $api_offer->total_price_with_extended_cover->formatted;
-                    $offer_data->total_price_with_extended_cover = $api_offer->total_price_with_extended_cover->formatted;
-                    $offer_data->total_price_without_extended_cover = $api_offer->total_price->formatted;
-                }
-                else {
-                    // Price without extended warranty
-                    $offer_data->extended_cover_available = false;
-                    $offer_data->total_price = $api_offer->total_price->formatted;
-                    $offer_data->total_price_with_extended_cover = $api_offer->total_price->formatted;
-                    $offer_data->total_price_without_extended_cover = $api_offer->total_price->formatted;
-                }
+                $offer_data->total_price = $api_offer->total_price->formatted;
+                
+                // Extended cover
+                $offer_data->extended_cover_available = $api_offer->extended_cover_available;
+                $offer_data->total_price_with_extended_cover = $api_offer->total_price_with_extended_cover->formatted;
 
                 if (property_exists($api_offer->product->collection_informations, $this->context->language->iso_code)) {
                     $lang = $this->context->language->iso_code;
@@ -652,6 +638,10 @@ class AdminShipmentController extends ModuleAdminController
             } else {
                 $data->insurance_price =  false;
             }
+
+            // Extended cover
+            $data->extended_cover_available = $offer->extended_cover_available;
+            $data->total_price_with_extended_cover = $offer->total_price_with_extended_cover->formatted;
 
             if (property_exists($offer->product->collection_informations, $this->context->language->iso_code)) {
                 $lang = $this->context->language->iso_code;
