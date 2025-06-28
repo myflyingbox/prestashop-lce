@@ -58,6 +58,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_shipments` (
     `date_upd` DATETIME,
     `date_booking` DATETIME,
     `delete` tinyint(1) unsigned NOT NULL DEFAULT "0",
+    `is_return` TINYINT(1) NOT NULL DEFAULT "0",
     PRIMARY KEY  (`id_shipment`)
   ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
 
