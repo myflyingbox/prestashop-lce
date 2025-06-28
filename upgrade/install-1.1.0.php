@@ -34,8 +34,8 @@ function upgrade_module_1_1_0($module)
 
     // Add fields is_return on lce_shipments table
     Db::getInstance()->Execute('
-        ALTER TABLE `'._DB_PREFIX_.'lce_shipments` 
-            ADD `is_return` TINYINT(1) NOT NULL DEFAULT '0' AFTER `delete`; ');
+        ALTER TABLE `' . _DB_PREFIX_ . 'lce_shipments` 
+            ADD `is_return` TINYINT(1) NOT NULL DEFAULT 0 AFTER `delete`; ');
 
     return true;
 }
