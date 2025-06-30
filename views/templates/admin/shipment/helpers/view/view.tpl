@@ -276,7 +276,7 @@
                 <tr>
                   <td>
                     <h3 style="margin:0px;border-bottom:none;background-color:transparent;">{$offer->product_name|escape:'htmlall':'UTF-8'}</h3>
-                    <br>{l s='Total price:' mod='lowcostexpress'} <b>{$offer->total_price|escape:'htmlall':'UTF-8'}</b>
+                    <br>{l s='Total price:' mod='lowcostexpress'} <span id="offer_price">{$offer->total_price|escape:'htmlall':'UTF-8'}</span>
                     
                     <ul style="margin:10px 0px;">
                       <li>{$offer->collection_informations|escape:'htmlall':'UTF-8'|nl2br}</li>
@@ -288,7 +288,7 @@
                         <li>{l s='Dropoff available' mod='lowcostexpress'}</li>
                       {/if}
                       {if $offer->extended_cover_available}
-                        <li>{l s='Extended warranty available' mod='lowcostexpress'}</li>
+                        <li>{l s='Extended warranty available' mod='lowcostexpress'} (<strong>{$offer->total_price_with_extended_cover|escape:'htmlall':'UTF-8'}</strong>)</li>
                       {/if}
                     </ul>
                   </td>
@@ -348,9 +348,9 @@
                             <input id="extended_cover" name="extended_cover" type="checkbox" value="1"{if $MOD_LCE_DEFAULT_EXTENDED_WARRANTY == 1} checked {/if} />
                             <label for="extended_cover" style="line-height:40px;">{l s='Extended cover' mod='lowcostexpress'}</label>
                             <p style="line-height:20px;">
-                                {l s='Price without extended warranty :' mod='lowcostexpress'} <b>{$offer->total_price|escape:'htmlall':'UTF-8'}</b>
+                                {l s='Price without extended warranty :' mod='lowcostexpress'} <span id="offer_price_without_extended_cover">{$offer->total_price|escape:'htmlall':'UTF-8'}</span>
                                 <br/>
-                                {l s='Price with extended warranty :' mod='lowcostexpress'} <b>{$offer->total_price_with_extended_cover|escape:'htmlall':'UTF-8'}</b>
+                                {l s='Price with extended warranty :' mod='lowcostexpress'} <span id="offer_price_with_extended_cover">{$offer->total_price_with_extended_cover|escape:'htmlall':'UTF-8'}</span>
                             </p>
                             <br>
                           </div>
@@ -532,5 +532,29 @@ $(function() {
     $("#dialog-confirm-booking").dialog('open');
     return false;
   });
+
+  function setOfferPrice(){
+    if ($("input#extended_cover").is(':checked')) {
+      $("#offer_price").html($("#offer_price_with_extended_cover").html());
+    } else {
+      $("#offer_price").html($("#offer_price_without_extended_cover").html());
+    }
+  }
+
+  $("input#extended_cover").click(function() {
+    setOfferPrice();
+  });
+
+  setOfferPrice();
 });
 </script>
+
+{literal}
+<style>
+#offer_price,
+#offer_price_with_extended_cover,
+#offer_price_without_extended_cover{
+  font-weight: 700;
+}
+</style>
+{/literal}
