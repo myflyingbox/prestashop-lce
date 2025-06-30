@@ -40,14 +40,7 @@
         <td>
           <h3 style="margin:0px;">{$offer->product_name|escape:'htmlall':'UTF-8'}</h3>
           <br>{l s='Total price:' mod='lowcostexpress'} <b>{$offer->total_price|escape:'htmlall':'UTF-8'}</b>
-          {if $offer->insurance_price}
-            <br><i>{l s='Optional insurance available' mod='lowcostexpress'}</i>
-          {/if}
-          {if $offer->extended_cover_available}
-            <br><i>{l s='Optional extended warranty available' mod='lowcostexpress'} ({$offer->total_price_with_extended_cover|escape:'htmlall':'UTF-8'})</i>
-          {/if}
-        </td>
-
+          <br>
           <ul>
             <li>{$offer->collection_informations|escape:'htmlall':'UTF-8'|nl2br}</li>
             <li>{$offer->delivery_informations|escape:'htmlall':'UTF-8'|nl2br}</li>
@@ -57,8 +50,11 @@
             {if $offer->dropoff_available}
               <li>{l s='Dropoff available' mod='lowcostexpress'}</li>
             {/if}
+            {if $offer->insurance_price}
+              <li>{l s='Optional insurance available' mod='lowcostexpress'}</li>
+            {/if}
             {if $offer->extended_cover_available}
-              <li>{l s='Extended warranty available' mod='lowcostexpress'}</li>
+              <li>{l s='Extended warranty available' mod='lowcostexpress'} (<strong>{$offer->total_price_with_extended_cover|escape:'htmlall':'UTF-8'}</strong>)</li>
             {/if}
           </ul>
         </td>
