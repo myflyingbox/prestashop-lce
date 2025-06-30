@@ -317,11 +317,15 @@ class LowCostExpress extends CarrierModule
         $message = '';
 
         if (Tools::isSubmit('submit_'.$this->name)) {
-            $message = $this->_saveSettings();
+            $message .= $this->_saveSettings();
+        }
+
+        if (!$this->_mandatoryIsValid()) {
+            $message .= $this->displayWarning($this->l('You must set a value for all mandatory settings'));
         }
 
         if (Tools::isSubmit('submit_'.$this->name.'_refresh_products')) {
-            $message = $this->_refreshLceProducts();
+            $message .= $this->_refreshLceProducts();
         }
 
         $this->_displayContent($message);
@@ -333,39 +337,41 @@ class LowCostExpress extends CarrierModule
         return $this->display(__FILE__, 'views/templates/admin/settings.tpl');
     }
 
+    private function _mandatoryIsValid()
+    {
+        $mandatory_is_valid = true;
+        $configs = Configuration::getMultiple(self::$mandatory_settings);
+        if (is_array($configs)) {
+            foreach ($configs as $config) {
+                if (empty($config)) {
+                    $mandatory_is_valid = false;
+                }
+            }
+        }
+        return $mandatory_is_valid;
+    }
+
     private function _saveSettings()
     {
         $message = '';
-        $data_missing = false;
+        $record_error = false;
 
-        foreach (self::$mandatory_settings as $setting) {
-            $setting_value = Tools::getValue($setting);
-            if (empty($setting_value)) {
-                $data_missing = true;
+        foreach (self::$settings as $setting) {
+            if (!Configuration::updateValue($setting, Tools::getValue($setting))) {
+                $record_error = true;
             }
         }
 
-        if (!$data_missing) {
-            $record_error = false;
-            foreach (self::$settings as $setting) {
-                if (!Configuration::updateValue($setting, Tools::getValue($setting))) {
-                    $record_error = true;
-                }
-            }
-
-            if ($record_error) {
-                $message = $this->displayError($this->l('There was an error while saving your settings'));
-            } else {
-                $this->_updateReferenceDimensions();
-                $message = $this->displayConfirmation($this->l('Your settings have been saved'));
-            }
+        if ($record_error) {
+            $message = $this->displayError($this->l('There was an error while saving your settings'));
         } else {
-            $message = $this->displayError($this->l('Error: you must set a value for all mandatory settings'));
+            $this->_updateReferenceDimensions();
+            $message = $this->displayConfirmation($this->l('Your settings have been saved'));
         }
 
         // If we have no service loaded yet, and we have a working API connection, we
         // automatically initialize carriers and MFB services
-        if (LceService::totalCount() == 0 && $this->testApiConnection()) {
+        if (LceService::totalCount() == 0 && $this->_mandatoryIsValid() && $this->testApiConnection()) {
             $shipper_country = Configuration::get('MOD_LCE_DEFAULT_COUNTRY');
             $this->_refreshLceProducts($shipper_country);
         }

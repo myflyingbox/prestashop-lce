@@ -6,6 +6,7 @@ $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_10d3eaef8e59a4d697778a75901
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_d0efed8b696d877a10b08cc7036dbd45'] = 'Vos expéditions simplifiées avec les principaux transporteurs express (DHL, UPS, Chronopost, BPost...) à tarifs négociés ultra-compétitifs.';
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_bb8956c67b82c7444a80c6b2433dd8b4'] = 'Êtes-vous sûr de vouloir désinstaller ce module ?';
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_4afc5c5b51957bd2c806be8c4704ed82'] = 'php-curl ne semble pas être installé sur votre système. Veuillez contacter votre hébergeur. Cette extension est nécessaire au bon fonctionnement du module.';
+$_MODULE['<{lowcostexpress}prestashop>lowcostexpress_4cbb69da9723171e7a305fd674ad4988'] = 'Vous devez définir une valeur pour tous les paramètres obligatoires';
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_5272c9791a230181b34f682952776e42'] = 'Une erreur est apparue à l\'enregistrement de vos paramètres';
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_e4b5b201f1062ddd02c4db8d5f779f5f'] = 'Vos paramètres ont été enregistrés';
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_a891e8720a7769d98b7b338b48a03f55'] = 'Erreur : vous devez spécifier une valeur pour tous les paramètres obligatoires';
@@ -308,7 +309,6 @@ $_MODULE['<{lowcostexpress}prestashop>lce_offers_f7bf0110b8a7f32f448b77b63b29d5b
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_38d21c0d8e5b7aba43b986d4c66f037a'] = 'Enlèvement des colis';
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_65229710813d5cd9be4b0209182e0816'] = 'Dépôt des colis';
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_b2ce3a14c098da5ee7ef29c6b41010ce'] = 'Assurance ad-valorem facultative';
-$_MODULE['<{lowcostexpress}prestashop>lce_offers_9768f4d78024edc21d10de8eec36e5df'] = 'Garantie étendue disponible en option';
 $_MODULE['<{lowcostexpress}prestashop>lce_offers_75a3ea6c830bd8cc2b9a0148a92e01ae'] = 'Choisir l\'offre sélectionnée';
 $_MODULE['<{lowcostexpress}prestashop>tracking_details_2bedb98272aec3ab48e6962b54a1f8ff'] = 'Information de suivi, colis n°';
 $_MODULE['<{lowcostexpress}prestashop>tracking_details_359ff4ae83f885f7d3227a4353ea525e'] = 'Date événement';
