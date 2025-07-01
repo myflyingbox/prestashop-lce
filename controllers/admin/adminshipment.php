@@ -335,7 +335,7 @@ class AdminShipmentController extends ModuleAdminController
             $this->fields_form = array();
             $this->fields_form[] = array('form' => array(
                 'legend' => array(
-                    'title' => $this->l('Pickup and delivery')
+                    'title' => $this->module->l('Pickup and delivery')
                 ),
                 'input' => array(
                     array(
@@ -352,52 +352,52 @@ class AdminShipmentController extends ModuleAdminController
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->l('Shipper name:'),
+                        'label' => $this->module->l('Shipper name:'),
                         'name' => 'shipper_name',
                         'size' => 40,
-                        'desc' => $this->l('Name of contact person.'),
+                        'desc' => $this->module->l('Name of contact person.'),
                         'required' => true
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->l('Shipper company (your shop):'),
+                        'label' => $this->module->l('Shipper company (your shop):'),
                         'name' => 'shipper_company_name',
                         'size' => 40,
-                        'desc' => $this->l('Name of your shop.')
+                        'desc' => $this->module->l('Name of your shop.')
                     ),
                     array(
                         'type' => 'textarea',
-                        'label' => $this->l('Pickup address:'),
+                        'label' => $this->module->l('Pickup address:'),
                         'name' => 'shipper_street',
                         'cols' => 38,
                         'rows' => 3,
-                        'desc' => $this->l('Street information.'),
+                        'desc' => $this->module->l('Street information.'),
                         'required' => true
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->l('City:'),
+                        'label' => $this->module->l('City:'),
                         'name' => 'shipper_city',
                         'size' => 40,
                         'required' => true
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->l('Postal code:'),
+                        'label' => $this->module->l('Postal code:'),
                         'name' => 'shipper_postal_code',
                         'size' => 40,
                         'required' => true
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->l('State:'),
+                        'label' => $this->module->l('State:'),
                         'name' => 'shipper_state',
                         'size' => 40,
-                        'desc' => $this->l('Only if necessary.')
+                        'desc' => $this->module->l('Only if necessary.')
                     ),
                     array(
                         'type' => 'select',
-                        'label' => $this->l('Country:'),
+                        'label' => $this->module->l('Country:'),
                         'name' => 'shipper_country',
                         'required' => true,
                         'options' => array(
@@ -408,14 +408,14 @@ class AdminShipmentController extends ModuleAdminController
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->l('Contact phone:'),
+                        'label' => $this->module->l('Contact phone:'),
                         'name' => 'shipper_phone',
                         'size' => 40,
                         'required' => true
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->l('Contact email:'),
+                        'label' => $this->module->l('Contact email:'),
                         'name' => 'shipper_email',
                         'size' => 40,
                         'required' => false
@@ -426,23 +426,23 @@ class AdminShipmentController extends ModuleAdminController
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->l('Recipient name:'),
+                        'label' => $this->module->l('Recipient name:'),
                         'name' => 'recipient_name',
                         'size' => 40,
-                        'desc' => $this->l('Name of contact person.'),
+                        'desc' => $this->module->l('Name of contact person.'),
                         'required' => true
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->l('Recipient company:'),
+                        'label' => $this->module->l('Recipient company:'),
                         'name' => 'recipient_company_name',
                         'size' => 40,
-                        'desc' => $this->l('Name of your shop.')
+                        'desc' => $this->module->l('Name of your shop.')
                     ),
                     array(
                         'type' => 'checkbox',
                         'name' => 'recipient_is_a',
-                        'label' => $this->l('Is company address?'),
+                        'label' => $this->module->l('Is company address?'),
                         'values' => array(
                             'query' => array(
                                 array(
@@ -454,42 +454,42 @@ class AdminShipmentController extends ModuleAdminController
                             'id' => 'id',
                             'name' => 'name'
                         ),
-                        'desc' => $this->l('Select if this address is a company address, as opposed to personal address.')
+                        'desc' => $this->module->l('Select if this address is a company address, as opposed to personal address.')
                     ),
                     array(
                         'type' => 'textarea',
-                        'label' => $this->l('Delivery address:'),
+                        'label' => $this->module->l('Delivery address:'),
                         'name' => 'recipient_street',
                         'cols' => 38,
                         'rows' => 3,
                         'size' => '40',
-                        'desc' => $this->l('Street information.'),
+                        'desc' => $this->module->l('Street information.'),
                         'required' => true
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->l('City:'),
+                        'label' => $this->module->l('City:'),
                         'name' => 'recipient_city',
                         'size' => 40,
                         'required' => true
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->l('Postal code:'),
+                        'label' => $this->module->l('Postal code:'),
                         'name' => 'recipient_postal_code',
                         'size' => 40,
                         'required' => true
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->l('State:'),
+                        'label' => $this->module->l('State:'),
                         'name' => 'recipient_state',
                         'size' => 40,
-                        'desc' => $this->l('Only if necessary.')
+                        'desc' => $this->module->l('Only if necessary.')
                     ),
                     array(
                         'type' => 'select',
-                        'label' => $this->l('Country:'),
+                        'label' => $this->module->l('Country:'),
                         'name' => 'recipient_country',
                         'required' => true,
                         'options' => array(
@@ -500,21 +500,21 @@ class AdminShipmentController extends ModuleAdminController
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->l('Contact phone:'),
+                        'label' => $this->module->l('Contact phone:'),
                         'name' => 'recipient_phone',
                         'size' => 40,
                         'required' => true
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->l('Contact email:'),
+                        'label' => $this->module->l('Contact email:'),
                         'name' => 'recipient_email',
                         'size' => 40,
                         'required' => false
                     ),
                 ),
                 'submit' => array(
-                    'title' => $this->l('Save'),
+                    'title' => $this->module->l('Save'),
                     'class' => 'button btn btn-primary pull-right',
                 ),
             ));
@@ -701,11 +701,11 @@ class AdminShipmentController extends ModuleAdminController
 
         if (!$shipment) {
             header('HTTP/1.0 404 Not Found');
-            die(json_encode(array('error' => $this->l('Shipment not found.'))));
+            die(json_encode(array('error' => $this->module->l('Shipment not found.'))));
         }
         if ($shipment->api_order_uuid) {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(json_encode(array('error' => $this->l('Shipment is already booked.'))));
+            die(json_encode(array('error' => $this->module->l('Shipment is already booked.'))));
         }
         $offer_uuid = Tools::getValue('offer_uuid');
         $quote_uuid = Tools::getValue('quote_uuid');
@@ -719,9 +719,9 @@ class AdminShipmentController extends ModuleAdminController
 
         if (!$shipment->save()) {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(json_encode(array('error' => $this->l('Shipment could not be updated.'))));
+            die(json_encode(array('error' => $this->module->l('Shipment could not be updated.'))));
         } else {
-            die(json_encode(array('result' => $this->l('Shipment updated.'))));
+            die(json_encode(array('result' => $this->module->l('Shipment updated.'))));
         }
     }
 
@@ -735,18 +735,18 @@ class AdminShipmentController extends ModuleAdminController
 
         if (!$shipment) {
             header('HTTP/1.0 404 Not Found');
-            die(json_encode(array('error' => $this->l('Shipment not found.'))));
+            die(json_encode(array('error' => $this->module->l('Shipment not found.'))));
         }
 
         if ($shipment->api_order_uuid) {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(json_encode(array('error' => $this->l('Shipment is already booked.'))));
+            die(json_encode(array('error' => $this->module->l('Shipment is already booked.'))));
         }
 
         if ($shipment->api_offer_uuid != $offer_uuid) {
             header('HTTP/1.0 422 Unprocessable Entity');
             die(json_encode(array(
-                'error' => $this->l('Inconsistency between submitted offer uuid and saved offer uuid.'),
+                'error' => $this->module->l('Inconsistency between submitted offer uuid and saved offer uuid.'),
             )));
         }
 
@@ -755,7 +755,7 @@ class AdminShipmentController extends ModuleAdminController
         if (!$lce_service) {
             header('HTTP/1.0 404 Not Found');
             die(json_encode(array(
-                'error' => $this->l('Service not found. Please refresh your services in module config.')
+                'error' => $this->module->l('Service not found. Please refresh your services in module config.')
             )));
         }
 
@@ -878,12 +878,12 @@ class AdminShipmentController extends ModuleAdminController
             header('HTTP/1.0 422 Unprocessable Entity');
             die(json_encode(array(
                 'status' => 'error',
-                'message' => $this->l('Shipment could not be updated.')
+                'message' => $this->module->l('Shipment could not be updated.')
             )));
         } else {
             die(json_encode(array(
                 'status' => 'success',
-                'message' => $this->l('Shipment updated with order uuid.')
+                'message' => $this->module->l('Shipment updated with order uuid.')
             )));
         }
     }
