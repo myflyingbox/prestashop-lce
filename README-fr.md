@@ -39,6 +39,14 @@ curl -s http://getcomposer.org/installer | php
 php composer.phar install
 ```
 
+Si vous installez le module sur une version de PHP antérieure à la 8.0, faites la même chose sur la version historique de la bibliothèque :
+
+```bash
+cd lowcostexpress/lib/php-lce-0.0.3
+curl -s http://getcomposer.org/installer | php
+php composer.phar install
+```
+
 ### Installation à partir d'un paquet
 
 Ouvrez la [liste des publications](https://github.com/lce/prestashop-lce/releases) et téléchargez le dernier paquet disponible (premier de la liste).
