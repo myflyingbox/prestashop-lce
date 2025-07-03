@@ -9,7 +9,6 @@ $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_4afc5c5b51957bd2c806be8c470
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_4cbb69da9723171e7a305fd674ad4988'] = 'Vous devez définir une valeur pour tous les paramètres obligatoires';
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_5272c9791a230181b34f682952776e42'] = 'Une erreur est apparue à l\'enregistrement de vos paramètres';
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_e4b5b201f1062ddd02c4db8d5f779f5f'] = 'Vos paramètres ont été enregistrés';
-$_MODULE['<{lowcostexpress}prestashop>lowcostexpress_a891e8720a7769d98b7b338b48a03f55'] = 'Erreur : vous devez spécifier une valeur pour tous les paramètres obligatoires';
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_713a37f0bd5d34a226e87b79a9f6309b'] = 'Vous n\'avez pas configuré votre compte MY FLYING BOX';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_44a9f54cd70ac298a99c0fe50a27fc1f'] = 'My Flying Box';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_9c0a9dc92860563743612cc03af548d6'] = 'Enlèvement et livraison';
