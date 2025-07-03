@@ -26,8 +26,12 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-// Loading LCE php library
-require_once _PS_MODULE_DIR_.'lowcostexpress/lib/php-lce/bootstrap.php';
+// Loading LCE php library based on PHP version
+if (version_compare(PHP_VERSION, '8.0.0', '>=')) {
+    require_once _PS_MODULE_DIR_.'lowcostexpress/lib/php-lce/bootstrap.php';
+} else {
+    require_once _PS_MODULE_DIR_.'lowcostexpress/lib/php-lce-0.0.3/bootstrap.php';
+}
 
 // Loading Models
 require_once _PS_MODULE_DIR_.'lowcostexpress/models/LceShipment.php';
