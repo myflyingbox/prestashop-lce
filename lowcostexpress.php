@@ -237,6 +237,12 @@ class LowCostExpress extends CarrierModule
         $this->registerHook('displayAdminOrder'); // Displaying LCE Shipments on order admin page
         $this->registerHook('displayAfterCarrier'); // Display relay delivery options during checkout
         $this->registerHook('actionFrontControllerSetMedia'); // Load JS related to relay delivery selection
+        $this->registerHook('actionCartUpdateQuantityBefore'); // Delete quote when products in cart are updated
+        if (version_compare(_PS_VERSION_, '1.7.1.0', '<')) {
+            $this->registerHook('actionDeleteProductInCartAfter');
+        } else {
+            $this->registerHook('actionObjectProductInCartDeleteAfter');
+        }
 
         return true;
     }
@@ -702,11 +708,43 @@ class LowCostExpress extends CarrierModule
         }
     }
 
+    public function hookActionCartUpdateQuantityBefore($params)
+    {
+        $cart = $params['cart'];
+        $quote = LceQuote::getLatestForCart($cart, false);
+
+        if (Validate::isLoadedObject($quote)) {
+            $quote->delete();
+        }
+    }
+
+    // Before v1.7.1
+    public function hookActionDeleteProductInCartAfter($params)
+    {
+        return $this->hookActionObjectProductInCartDeleteAfter($params);
+    }
+
+    // After v1.7.1
+    public function hookActionObjectProductInCartDeleteAfter($params)
+    {
+        $id_cart = $params['id_cart'];
+        $cart = new Cart($id_cart);
+        $quote = LceQuote::getLatestForCart($cart, false);
+
+        if (Validate::isLoadedObject($quote)) {
+            $quote->delete();
+        }
+    }
+
     // Calculation of shipping cost, based on API requests
     public function getOrderShippingCost($cart, $shipping_cost)
     {
+        if ($cart->id_address_delivery == 0) {
+            return false;
+        }
+
         // We check if we already have a LceQuote for this cart. If not, we request one.
-        $quote = LceQuote::getLatestForCart($cart);
+        $quote = LceQuote::getLatestForCart($cart, true);
 
         // No quote found. Generating a new one.
         if (!$quote) {
@@ -737,7 +775,10 @@ class LowCostExpress extends CarrierModule
                         'country' => $delivery_country->iso_code,
                         'is_a_company' => false,
                     ),
-                    'parcels' => LceQuote::parcelDataFromCart($cart)
+                    'parcels' => LceQuote::parcelDataFromCart($cart),
+                    'offers_filters' => array(
+                        'with_product_codes' => LceQuote::getCarriersForCart($cart)
+                    )
                 );
 
                 // Ajout des valeurs d'assurance pour l'assurance classique ou la garantie étendue
@@ -755,6 +796,7 @@ class LowCostExpress extends CarrierModule
 
                     $quote = new LceQuote();
                     $quote->id_cart = $cart->id;
+                    $quote->id_address = $cart->id_address_delivery;
                     $quote->api_quote_uuid = $api_quote->id;
                     if ($quote->add()) {
                         // Now we create the offers
@@ -768,9 +810,11 @@ class LowCostExpress extends CarrierModule
                                 $offer->lce_product_code = $api_offer->product->code;
                                 $offer->base_price_in_cents = $api_offer->price->amount_in_cents;
                                 $offer->total_price_in_cents = $api_offer->total_price->amount_in_cents;
-                                $offer->extended_cover_available = $api_offer->extended_cover_available;
-                                $offer->price_with_extended_cover = $api_offer->price_with_extended_cover->amount_in_cents;
-                                $offer->total_price_with_extended_cover = $api_offer->total_price_with_extended_cover->amount_in_cents;
+                                $offer->extended_cover_available = (int)$api_offer->extended_cover_available;
+                                if ((int)$api_offer->extended_cover_available != 0) {
+                                    $offer->price_with_extended_cover = $api_offer->price_with_extended_cover->amount_in_cents;
+                                    $offer->total_price_with_extended_cover = $api_offer->total_price_with_extended_cover->amount_in_cents;
+                                }
                                 if ($api_offer->insurance_price) {
                                     $offer->insurance_price_in_cents = $api_offer->insurance_price->amount_in_cents;
                                 }

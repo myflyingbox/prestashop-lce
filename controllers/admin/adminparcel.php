@@ -266,10 +266,10 @@ class AdminParcelController extends ModuleAdminController
 
         if ($parcel->validateFields(false) && $parcel->{$action}()) {
             $shipment->invalidateOffer();
-            die(Tools::jsonEncode($parcel));
+            die(json_encode($parcel));
         } else {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(Tools::jsonEncode(array('error' => $this->l('Parcel could not be saved.'))));
+            die(json_encode(array('error' => $this->l('Parcel could not be saved.'))));
         }
     }
 
@@ -280,20 +280,20 @@ class AdminParcelController extends ModuleAdminController
 
         if (!$parcel) {
             header('HTTP/1.0 404 Not Found');
-            die(Tools::jsonEncode(array('error' => $this->l('Parcel not found.'))));
+            die(json_encode(array('error' => $this->l('Parcel not found.'))));
         }
 
         $shipment = new LceShipment($parcel->id_shipment);
         if ($shipment->api_order_uuid) {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(Tools::jsonEncode(array('error' => $this->l('Shipment is already booked.'))));
+            die(json_encode(array('error' => $this->l('Shipment is already booked.'))));
         }
 
         if ($parcel->delete()) {
             // When deleting a package, existing offers are not anymore valid.
             $shipment->invalidateOffer();
 
-            die(Tools::jsonEncode(array('result' => $this->l('Parcel deleted.'))));
+            die(json_encode(array('result' => $this->l('Parcel deleted.'))));
         }
     }
 }
