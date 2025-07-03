@@ -1,3 +1,6 @@
 [submodule "lib/php-lce"]
 	path = lib/php-lce
 	url = https://github.com/lce/php-lce.git
+[submodule "lib/php-lce-0.0.3"]
+	path = lib/php-lce-0.0.3
+	url = https://github.com/myflyingbox/php-lce.git
