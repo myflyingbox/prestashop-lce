@@ -266,24 +266,31 @@
               <table class="table">
                 <thead>
                   <tr>
-                    <th>{l s='Product name' mod='lowcostexpress'}</th>
-                    <th>{l s='Pickup details' mod='lowcostexpress'}</th>
-                    <th>{l s='Delivery details' mod='lowcostexpress'}</th>
-                    <th>{l s='Other details' mod='lowcostexpress'}</th>
+                    <th style="width: 40%;text-align:center;"><b>{l s='Product name' mod='lowcostexpress'}</b></th>
+                    {*<th>{l s='Pickup details' mod='lowcostexpress'}</th>*}
+                    {*<th>{l s='Delivery details' mod='lowcostexpress'}</th>*}
+                    <th style="text-align:center;"><b>{l s='Other details' mod='lowcostexpress'}</b></th>
                   </tr>
                 </thead>
                 <tbody>
                 <tr>
-                  <td>{$offer->product_name|escape:'htmlall':'UTF-8'}
-                      <br/>{l s='Total price:' mod='lowcostexpress'} <b>{$offer->total_price|escape:'htmlall':'UTF-8'}</b>
-                  </td>
-
                   <td>
-                    {$offer->collection_informations|escape:'htmlall':'UTF-8'|nl2br}
-                  </td>
-
-                  <td>
-                    {$offer->delivery_informations|escape:'htmlall':'UTF-8'|nl2br}
+                    <h3 style="margin:0px;border-bottom:none;background-color:transparent;">{$offer->product_name|escape:'htmlall':'UTF-8'}</h3>
+                    <br>{l s='Total price:' mod='lowcostexpress'} <span id="offer_price">{$offer->total_price|escape:'htmlall':'UTF-8'}</span>
+                    
+                    <ul style="margin:10px 0px;">
+                      <li>{$offer->collection_informations|escape:'htmlall':'UTF-8'|nl2br}</li>
+                      <li>{$offer->delivery_informations|escape:'htmlall':'UTF-8'|nl2br}</li>
+                      {if $offer->pickup_available}
+                        <li>{l s='Pickup available' mod='lowcostexpress'}</li>
+                      {/if}
+                      {if $offer->dropoff_available}
+                        <li>{l s='Dropoff available' mod='lowcostexpress'}</li>
+                      {/if}
+                      {if $offer->extended_cover_available}
+                        <li>{l s='Extended warranty available' mod='lowcostexpress'} (<strong>{$offer->total_price_with_extended_cover|escape:'htmlall':'UTF-8'}</strong>)</li>
+                      {/if}
+                    </ul>
                   </td>
 
                   <td>
@@ -298,7 +305,7 @@
 
                     <div class="row">
                         {if $collection_dates neq false}
-                        <div class="col-lg-2 col-md-6">
+                        <div class="col-lg-3 col-md-6">
                             <label for="collection_date">{l s='Preferred pickup date:' mod='lowcostexpress'}</label>
                             <div class="margin-form">
                               <select id="collection_date" name="collection_date" style="width: 100%;">
@@ -312,7 +319,7 @@
                         {/if}
 
                         {if $relay_delivery_locations neq false}
-                        <div class="col-lg-2 col-md-6">
+                        <div class="col-lg-3 col-md-6">
                           <label for="selected_relay_location">{l s='Selected delivery location:' mod='lowcostexpress'}</label>
                           <div class="margin-form">
                             <select id="selected_relay_location" name="selected_relay_location" style="width: 100%;">
@@ -325,7 +332,7 @@
                         {/if}
 
                         {if $insurance_cost neq false}
-                          <div class="col-lg-2 col-md-6">
+                          <div class="col-lg-3 col-md-6">
                               <input id="ad_valorem_insurance" name="ad_valorem_insurance" type="checkbox" value="1"{if $shipment->ad_valorem_insurance eq true} CHECKED{/if} />
                               <label for="ad_valorem_insurance">{l s='Ad-valorem insurance:' mod='lowcostexpress'}</label>
                               <p>
@@ -334,6 +341,21 @@
                                 {l s='Insurance cost:' mod='lowcostexpress'} <b>{$insurance_cost|escape:'htmlall':'UTF-8'}</b>
                               </p>
                             </div>
+                        {/if}
+
+                        {if $offer->extended_cover_available}
+                          <div class="col-lg-3 col-md-6">
+                            <input id="extended_cover" name="extended_cover" type="checkbox" value="1"{if $MOD_LCE_DEFAULT_EXTENDED_WARRANTY == 1} checked {/if} />
+                            <label for="extended_cover" style="line-height:40px;">{l s='Extended cover' mod='lowcostexpress'}</label>
+                            <p style="line-height:20px;">
+                                {l s='Price without extended warranty :' mod='lowcostexpress'} <span id="offer_price_without_extended_cover">{$offer->total_price|escape:'htmlall':'UTF-8'}</span>
+                                <br/>
+                                {l s='Price with extended warranty :' mod='lowcostexpress'} <span id="offer_price_with_extended_cover">{$offer->total_price_with_extended_cover|escape:'htmlall':'UTF-8'}</span>
+                            </p>
+                            <br>
+                          </div>
+                        {else}
+                          <input id="extended_cover" name="extended_cover" type="hidden" value="0"/>
                         {/if}
                     </div>
 
@@ -510,5 +532,29 @@ $(function() {
     $("#dialog-confirm-booking").dialog('open');
     return false;
   });
+
+  function setOfferPrice(){
+    if ($("input#extended_cover").is(':checked')) {
+      $("#offer_price").html($("#offer_price_with_extended_cover").html());
+    } else {
+      $("#offer_price").html($("#offer_price_without_extended_cover").html());
+    }
+  }
+
+  $("input#extended_cover").click(function() {
+    setOfferPrice();
+  });
+
+  setOfferPrice();
 });
 </script>
+
+{literal}
+<style>
+#offer_price,
+#offer_price_with_extended_cover,
+#offer_price_without_extended_cover{
+  font-weight: 700;
+}
+</style>
+{/literal}

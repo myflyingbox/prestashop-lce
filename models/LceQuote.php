@@ -352,6 +352,14 @@ class LceQuote extends ObjectModel
                     if ($api_offer->insurance_price) {
                         $offer->insurance_price_in_cents = $api_offer->insurance_price->amount_in_cents;
                     }
+                    // Save extended warranty
+                    if (isset($api_offer->extended_cover_available)) {
+                        $offer->extended_cover_available = $api_offer->extended_cover_available;
+                        if ($api_offer->extended_cover_available && isset($api_offer->price_with_extended_cover)) {
+                            $offer->price_with_extended_cover = $api_offer->price_with_extended_cover->amount_in_cents;
+                            $offer->total_price_with_extended_cover = $api_offer->total_price_with_extended_cover->amount_in_cents;
+                        }
+                    }
                     $offer->currency = $api_offer->total_price->currency;
                     $offer->add();
                 }
