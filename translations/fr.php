@@ -6,6 +6,7 @@ $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_10d3eaef8e59a4d697778a75901
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_d0efed8b696d877a10b08cc7036dbd45'] = 'Vos expéditions simplifiées avec les principaux transporteurs express (DHL, UPS, Chronopost, BPost...) à tarifs négociés ultra-compétitifs.';
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_bb8956c67b82c7444a80c6b2433dd8b4'] = 'Êtes-vous sûr de vouloir désinstaller ce module ?';
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_4afc5c5b51957bd2c806be8c4704ed82'] = 'php-curl ne semble pas être installé sur votre système. Veuillez contacter votre hébergeur. Cette extension est nécessaire au bon fonctionnement du module.';
+$_MODULE['<{lowcostexpress}prestashop>lowcostexpress_4cbb69da9723171e7a305fd674ad4988'] = 'Vous devez définir une valeur pour tous les paramètres obligatoires';
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_5272c9791a230181b34f682952776e42'] = 'Une erreur est apparue à l\'enregistrement de vos paramètres';
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_e4b5b201f1062ddd02c4db8d5f779f5f'] = 'Vos paramètres ont été enregistrés';
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_a891e8720a7769d98b7b338b48a03f55'] = 'Erreur : vous devez spécifier une valeur pour tous les paramètres obligatoires';
