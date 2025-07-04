@@ -61,5 +61,11 @@ function upgrade_module_1_1_0($module)
         $module->registerHook('actionObjectProductInCartDeleteAfter');
     }
     
+    // Initialize the Google Maps API key with the previous hard-coded value to avoid breaking current installations
+    // This is a temporary solution until the key is properly configured in the module settings.
+    // This will ensure that existing users do not experience issues with the Google Maps functionality.
+    // After publication of the new version of the module, the key will be locked to be usable only on current active customers' websites.
+    Configuration::updateValue('MOD_LCE_GOOGLE_CLOUD_API_KEY', 'AIzaSyBDTbHvOQcvZG4EmPI5GDAHge7ivXVvIKA');
+
     return true;
 }
