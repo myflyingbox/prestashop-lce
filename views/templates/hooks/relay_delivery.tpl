@@ -33,43 +33,50 @@ var customer_lastname="{$customer_lastname|escape:'javascript':'UTF-8'}";
 var customer_firstname="{$customer_firstname|escape:'javascript':'UTF-8'}";
 var cart_id="{$cart_id|escape:'javascript':'UTF-8'}";
 var carrier_ids="{$carrier_ids|escape:'javascript':'UTF-8'}".split('-');
-var ajax_url="{$module_uri|escape:'javascript':'UTF-8'}";
+var ajax_url_mfb="{$link->getModuleLink('lowcostexpress','relay',[])}";
 var oldCodePostal=null;
 var errormessage="{l s='No relay location has been selected ! Please select a location to continue.' mod='lowcostexpress'}";
 
-    {literal}
-        $(function() {
-
-            // Listener for cart navigation to next step
-            $(document).delegate("#HOOK_PAYMENT a, [name='processCarrier']", "click", function(e) {
-                if (carrier_ids.indexOf($('input[name=id_carrier]:checked').val()) > 0 && $("input[name=selected_relay_code]").val().length == 0) {
-                    alert(errormessage);
-                    $.scrollTo($('#relay_container'), 800);
-                    e.preventDefault();
-                    return false;
-                }
-            });
-
-            // Trigger map display toggle when a carrier service is selected
-            $('form#js-delivery input[type="radio"]').change(function(e) {
-                toggle_map_display(e);
-            });
-
-            // move in DOM to prevent compatibility issues with Common Services' modules
-            if($("#relay_container").length>0)
-            {
-                $('#relay_dummy_container').remove();
-            } else {
-                $('#relay_dummy_container').insertAfter($('#extra_carrier'));
-                $('#relay_dummy_container').attr('id', 'relay_container');
+{literal}
+function mfbWaitForjQuery(callback) {
+    if (typeof jQuery !== 'undefined') {
+        callback(jQuery);
+    } else {
+        setTimeout(function() { mfbWaitForjQuery(callback); }, 100);
+    }
+}
+    
+document.addEventListener('DOMContentLoaded', function() {
+    mfbWaitForjQuery(function($) {
+        // Listener for cart navigation to next step
+        $(document).delegate("#HOOK_PAYMENT a, [name='processCarrier']", "click", function(e) {
+            if (carrier_ids.indexOf($('input[name=id_carrier]:checked').val()) > 0 && $("input[name=selected_relay_code]").val().length == 0) {
+                alert(errormessage);
+                $.scrollTo($('#relay_container'), 800);
+                e.preventDefault();
+                return false;
             }
-
-            // Trigger map display toggle on first load
-            toggle_map_display();
-
         });
-    {/literal}
 
+        // Trigger map display toggle when a carrier service is selected
+        $('form#js-delivery input[type="radio"]').change(function(e) {
+            toggle_map_display(e);
+        });
+
+        // move in DOM to prevent compatibility issues with Common Services' modules
+        if($("#relay_container").length>0)
+        {
+            $('#relay_dummy_container').remove();
+        } else {
+            $('#relay_dummy_container').insertAfter($('#extra_carrier'));
+            $('#relay_dummy_container').attr('id', 'relay_container');
+        }
+
+        // Trigger map display toggle on first load
+        toggle_map_display();
+    });
+});
+{/literal}
 </script>
 
 <div id="relay_dummy_container" style="display:none;" class="container-fluid lowcostexpress">
