@@ -73,7 +73,8 @@ class LowCostExpress extends CarrierModule
         'MOD_LCE_PRICE_TAX_RULES',
         'MOD_LCE_MAX_REAL_WEIGHT',
         'MOD_LCE_MAX_VOL_WEIGHT',
-        'MOD_LCE_FORCE_WEIGHT_DIMS_TABLE'
+        'MOD_LCE_FORCE_WEIGHT_DIMS_TABLE',
+        'MOD_LCE_GOOGLE_CLOUD_API_KEY'
     );
 
     public static $mandatory_settings = array(
@@ -102,7 +103,7 @@ class LowCostExpress extends CarrierModule
     {
         $this->name = 'lowcostexpress';
         $this->tab = 'shipping_logistics';
-        $this->version = '1.0.16';
+        $this->version = '1.1.0';
         $this->author = 'MY FLYING BOX SAS';
 
         parent::__construct();
@@ -674,6 +675,7 @@ class LowCostExpress extends CarrierModule
             'MOD_LCE_MAX_REAL_WEIGHT' => Configuration::get('MOD_LCE_MAX_REAL_WEIGHT'),
             'MOD_LCE_MAX_VOL_WEIGHT' => Configuration::get('MOD_LCE_MAX_VOL_WEIGHT'),
             'MOD_LCE_FORCE_WEIGHT_DIMS_TABLE' => Configuration::get('MOD_LCE_FORCE_WEIGHT_DIMS_TABLE'),
+            'MOD_LCE_GOOGLE_CLOUD_API_KEY' => Configuration::get('MOD_LCE_GOOGLE_CLOUD_API_KEY'),
         ));
     }
 
@@ -995,9 +997,14 @@ class LowCostExpress extends CarrierModule
                 array('position' => 'head', 'priority' => 1)
             );
 
+            // Use the configured Google Maps API key
+            $google_maps_api_key = Configuration::get('MOD_LCE_GOOGLE_CLOUD_API_KEY');
+            if (!$google_maps_api_key) {
+                $google_maps_api_key = '';
+            }
             $this->context->controller->registerJavascript(
                 'module-lowcostexpress-gmaps',
-                'https://maps.google.com/maps/api/js?key=AIzaSyBDTbHvOQcvZG4EmPI5GDAHge7ivXVvIKA',
+                'https://maps.google.com/maps/api/js?key=' . urlencode($google_maps_api_key),
                 array(
                   'server' => 'remote',
                   'priority' => 100,

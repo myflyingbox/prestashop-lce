@@ -371,6 +371,16 @@
                 <p class="help-block">{l s='If checked, the module will try to obtain thermal-printer friendly labels, whenever possible.' mod='lowcostexpress'}</p>
             </div>
         </div>
+
+        <div class="form-group">
+            <label for="MOD_LCE_GOOGLE_CLOUD_API_KEY" class="control-label col-lg-4">
+                {l s='Google API Key:' mod='lowcostexpress'}
+            </label>
+            <div class="col-lg-6">
+                <input id="MOD_LCE_GOOGLE_CLOUD_API_KEY" name="MOD_LCE_GOOGLE_CLOUD_API_KEY" type="text" value="{$MOD_LCE_GOOGLE_CLOUD_API_KEY|escape:'htmlall':'UTF-8'}" />
+                <p class="help-block">{l s='Enter your Google API key to enable map features (the key needs access to the Maps Javascript API and the Geocoding API). You can get a key from the Google Cloud Console.' mod='lowcostexpress'}</p>
+            </div>
+        </div>
     </div>
     <div class="panel-footer" style="text-align:right;">
         <input id="submit_{$module_name|escape:'htmlall':'UTF-8'}" name="submit_{$module_name|escape:'htmlall':'UTF-8'}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="btn btn-primary" />
