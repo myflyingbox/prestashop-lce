@@ -49,7 +49,7 @@
                     <a href="https://www.myflyingbox.com/fr/companies/new?origin=prestashop_module_settings" class="btn-mfb" target="_blank">
                         {l s='Open an account' mod='lowcostexpress'}
                     </a>
-                    {l s='or retrieve your credentials from the confirmation email' mod='lowcostexpress'}
+                    {l s='or retrieve your credentials from your account dashboard (menu Tools -> API, tab "Accounts")' mod='lowcostexpress'}
                     </li>
                     <li>
                         {l s='Fill in and save the module settings below.' mod='lowcostexpress'}
@@ -78,7 +78,7 @@
     </div>
     <div class="panel-body">
         <div class="form-group clearfix">
-            <p class="col-lg-12">{l s='The connection identifiers can be found in your account creation confirmation email. Note that you must use the account identifier and the API key corresponding to the environment you want to use (staging if you just want to test, production for real operations). If you cannot find your identifiers, contact us at support@myflyingbox.com so we can generate new ones.' mod='lowcostexpress'}</p>
+            <p class="col-lg-12">{l s='Connection credentials can be found on your MY FLYING BOX account dashboard at https://dashboard.myflyingbox.com (menu Tools -> API, tab "Accounts"). Note that you must use the account identifier and the API key corresponding to the environment you want to use (staging if you just want to test, production for real operations). If you cannot find your identifiers, contact us at support@myflyingbox.com.' mod='lowcostexpress'}</p>
         </div>
         <div class="form-group">
             <label for="MOD_LCE_API_LOGIN" class="control-label col-lg-4">
@@ -86,7 +86,7 @@
             </label>
             <div class="col-lg-6">
                 <input id="MOD_LCE_API_LOGIN" name="MOD_LCE_API_LOGIN" type="text" value="{$MOD_LCE_API_LOGIN|escape:'htmlall':'UTF-8'}" class="" />
-                <p class="help-block">{l s='This is NOT your email address, but your account identifier (usually derived from the name of your company).' mod='lowcostexpress'}</p>
+                <p class="help-block">{l s='This is NOT your email address, but your account API identifier.' mod='lowcostexpress'}</p>
             </div>
         </div>
         <div class="form-group">
@@ -95,7 +95,7 @@
             </label>
             <div class="col-lg-6">
                 <input id="MOD_LCE_API_PASSWORD" name="MOD_LCE_API_PASSWORD" type="text" value="{$MOD_LCE_API_PASSWORD|escape:'htmlall':'UTF-8'}" />
-                <p class="help-block">{l s='You can find the password in the section "API accounts" of your account confirmation email.' mod='lowcostexpress'}</p>
+                <p class="help-block">{l s='You can find the password on your MY FLYING BOX account dashboard at https://dashboard.myflyingbox.com (menu Tools -> API, tab "Accounts").' mod='lowcostexpress'}</p>
                 {if $show_connection_error}
                     <p class="error">
                         {l s='We could not connect to the API using these credentials. Please make sure that you are using the correct identifier and password for the selected environment.' mod='lowcostexpress'}

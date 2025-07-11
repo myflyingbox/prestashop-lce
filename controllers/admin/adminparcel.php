@@ -40,6 +40,7 @@ class AdminParcelController extends ModuleAdminController
         $this->className = 'LceParcel'; // Class of the object managed by this controller
         $this->context = Context::getContext();
         $this->identifier = 'id_parcel'; // The unique identifier column for the corresponding object
+  //$this->module = Module::getInstanceByName('lowcostexpress');
 
         parent::__construct();
     }
@@ -60,7 +61,7 @@ class AdminParcelController extends ModuleAdminController
         $this->fields_form = array();
         $this->fields_form[] = array('form' => array(
             'legend' => array(
-                'title' => $this->l('Dimensions')
+                'title' => $this->module->l('Dimensions', 'AdminParcel')
             ),
             'input' => array(
                 array(
@@ -69,7 +70,7 @@ class AdminParcelController extends ModuleAdminController
                 ),
                 array(
                     'type' => 'text',
-                    'label' => $this->l('Length (cm):'),
+                    'label' => $this->module->l('Length (cm):', 'AdminParcel'),
                     'name' => 'length',
                     'size' => 5,
                     'class' => 'fixed-width-sm',
@@ -77,7 +78,7 @@ class AdminParcelController extends ModuleAdminController
                 ),
                 array(
                     'type' => 'text',
-                    'label' => $this->l('Width (cm):'),
+                    'label' => $this->module->l('Width (cm):', 'AdminParcel'),
                     'name' => 'width',
                     'size' => 5,
                     'class' => 'fixed-width-sm',
@@ -85,7 +86,7 @@ class AdminParcelController extends ModuleAdminController
                 ),
                 array(
                     'type' => 'text',
-                    'label' => $this->l('Height (cm):'),
+                    'label' => $this->module->l('Height (cm):', 'AdminParcel'),
                     'name' => 'height',
                     'size' => 5,
                     'class' => 'fixed-width-sm',
@@ -93,7 +94,7 @@ class AdminParcelController extends ModuleAdminController
                 ),
                 array(
                     'type' => 'text',
-                    'label' => $this->l('Weight (kg):'),
+                    'label' => $this->module->l('Weight (kg):', 'AdminParcel'),
                     'name' => 'weight',
                     'size' => 5,
                     'class' => 'fixed-width-sm',
@@ -104,21 +105,21 @@ class AdminParcelController extends ModuleAdminController
 
         $this->fields_form[] = array('form' => array(
             'legend' => array(
-                'title' => $this->l('Customs'),
+                'title' => $this->module->l('Customs', 'AdminParcel'),
             ),
             'input' => array(
                 array(
                     'type' => 'text',
-                    'label' => $this->l('Value:'),
+                    'label' => $this->module->l('Value:', 'AdminParcel'),
                     'name' => 'value',
                     'size' => 5,
                     'class' => 'fixed-width-sm',
-                    'desc' => $this->l('Declared value of the content.')
+                    'desc' => $this->module->l('Declared value of the content.', 'AdminParcel')
                 ),
                 array(
                     'type' => 'select',
-                    'label' => $this->l('Currency:'),
-                    'desc' => $this->l('Currency code for the value.'),
+                    'label' => $this->module->l('Currency:', 'AdminParcel'),
+                    'desc' => $this->module->l('Currency code for the value.', 'AdminParcel'),
                     'name' => 'currency',
                     'options' => array(
                         'query' => $currencies,
@@ -128,16 +129,16 @@ class AdminParcelController extends ModuleAdminController
                 ),
                 array(
                     'type' => 'text',
-                    'label' => $this->l('Description:'),
+                    'label' => $this->module->l('Description:', 'AdminParcel'),
                     'name' => 'description',
                     'size' => 40,
                     'class' => 'fixed-width-xl',
-                    'desc' => $this->l('Description of the goods.')
+                    'desc' => $this->module->l('Description of the goods.', 'AdminParcel')
                 ),
                 array(
                     'type' => 'select',
-                    'label' => $this->l('Country of origin:'),
-                    'desc' => $this->l('Country code of the origin of the products in the package.'),
+                    'label' => $this->module->l('Country of origin:', 'AdminParcel'),
+                    'desc' => $this->module->l('Country code of the origin of the products in the package.', 'AdminParcel'),
                     'name' => 'country_of_origin',
                     'options' => array(
                         'query' => $countries,
@@ -150,21 +151,21 @@ class AdminParcelController extends ModuleAdminController
 
         $this->fields_form[] = array('form' => array(
             'legend' => array(
-                'title' => $this->l('Ad Valorem Insurance')
+                'title' => $this->module->l('Ad Valorem Insurance', 'AdminParcel')
             ),
             'input' => array(
                 array(
                     'type' => 'text',
-                    'label' => $this->l('Value to insure:'),
+                    'label' => $this->module->l('Value to insure:', 'AdminParcel'),
                     'name' => 'value_to_insure',
                     'size' => 5,
                     'class' => 'fixed-width-sm',
-                    'desc' => $this->l('You can leave blank if you do not intend to purchase insurance. Maximum 2000€ total per shipment.'),
+                    'desc' => $this->module->l('You can leave blank if you do not intend to purchase insurance. Maximum 2000€ total per shipment.', 'AdminParcel'),
                 ),
                 array(
                     'type' => 'select',
-                    'label' => $this->l('Currency:'),
-                    'desc' => $this->l('Currency code for the value to insure.'),
+                    'label' => $this->module->l('Currency:', 'AdminParcel'),
+                    'desc' => $this->module->l('Currency code for the value to insure.', 'AdminParcel'),
                     'name' => 'insured_value_currency',
                     'options' => array(
                         'query' => $currencies,
@@ -177,36 +178,36 @@ class AdminParcelController extends ModuleAdminController
 
         $this->fields_form[] = array('form' => array(
             'legend' => array(
-                'title' => $this->l('References')
+                'title' => $this->module->l('References', 'AdminParcel')
             ),
             'input' => array(
                 array(
                     'type' => 'text',
-                    'label' => $this->l('Shipper reference:'),
+                    'label' => $this->module->l('Shipper reference:', 'AdminParcel'),
                     'name' => 'shipper_reference',
                     'size' => 5,
                     'class' => 'fixed-width-lg',
-                    'desc' => $this->l('Your reference. May be printed on the label, depending on the carrier.'),
+                    'desc' => $this->module->l('Your reference. May be printed on the label, depending on the carrier.', 'AdminParcel'),
                 ),
                 array(
                     'type' => 'text',
-                    'label' => $this->l('Recipient reference:'),
+                    'label' => $this->module->l('Recipient reference:', 'AdminParcel'),
                     'name' => 'recipient_reference',
                     'size' => 5,
                     'class' => 'fixed-width-lg',
-                    'desc' => $this->l('Recipient\'s reference may be printed on the label, depending on the carrier.'),
+                    'desc' => $this->module->l('Recipient\'s reference may be printed on the label, depending on the carrier.', 'AdminParcel'),
                 ),
                 array(
                     'type' => 'text',
-                    'label' => $this->l('Customer reference:'),
+                    'label' => $this->module->l('Customer reference:', 'AdminParcel'),
                     'name' => 'customer_reference',
                     'size' => 5,
                     'class' => 'fixed-width-lg',
-                    'desc' => $this->l('If your customer is not the recipient, specific reference for the customer.'),
+                    'desc' => $this->module->l('If your customer is not the recipient, specific reference for the customer.', 'AdminParcel'),
                 ),
             ),
             'submit' => array(
-                'title' => $this->l('Save'),
+                'title' => $this->module->l('Save', 'AdminParcel'),
                 'class' => 'button btn btn-primary pull-right',
             ),
         ));
@@ -269,7 +270,7 @@ class AdminParcelController extends ModuleAdminController
             die(json_encode($parcel));
         } else {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(json_encode(array('error' => $this->l('Parcel could not be saved.'))));
+            die(json_encode(array('error' => $this->module->l('Parcel could not be saved.', 'AdminParcel'))));
         }
     }
 
@@ -280,20 +281,20 @@ class AdminParcelController extends ModuleAdminController
 
         if (!$parcel) {
             header('HTTP/1.0 404 Not Found');
-            die(json_encode(array('error' => $this->l('Parcel not found.'))));
+            die(json_encode(array('error' => $this->module->l('Parcel not found.', 'AdminParcel'))));
         }
 
         $shipment = new LceShipment($parcel->id_shipment);
         if ($shipment->api_order_uuid) {
             header('HTTP/1.0 422 Unprocessable Entity');
-            die(json_encode(array('error' => $this->l('Shipment is already booked.'))));
+            die(json_encode(array('error' => $this->module->l('Shipment is already booked.', 'AdminParcel'))));
         }
 
         if ($parcel->delete()) {
             // When deleting a package, existing offers are not anymore valid.
             $shipment->invalidateOffer();
 
-            die(json_encode(array('result' => $this->l('Parcel deleted.'))));
+            die(json_encode(array('result' => $this->module->l('Parcel deleted.', 'AdminParcel'))));
         }
     }
 }

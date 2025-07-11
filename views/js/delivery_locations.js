@@ -56,11 +56,24 @@ function toggle_map_display(e)
 };
 
 function load_locations(carrier_id) {
+	// Prestashop 1.7 compatibility. For some reason the ajax URL is escaped despite smarty filter to unescape it
+	ajax_url_mfb = ajax_url_mfb.replace(/&amp;/g, '&');
+	
   jQuery.ajax({
-    url:      ajax_url+'/ajax/get_relay_delivery_locations.php',
-    data: 'cart_id='+cart_id+'&carrier_id='+carrier_id+'&postal_code='+customer_postal_code+'&address='+customer_address_street+'&city='+customer_city+'&country='+customer_country,
-    dataType: 'json',
+    url: ajax_url_mfb,
+	type: 'POST',
+	dataType: 'json',
+	cache: false,
     timeout:  15000,
+	data: {
+		'action': 'get_relay',
+		'cart_id': cart_id,
+		'carrier_id': carrier_id,
+		'postal_code': customer_postal_code,
+		'address': customer_address_street,
+		'city': customer_city,
+		'country': customer_country
+	},
     error:    error_loading_locations,
     success:  show_locations,
     complete: function() {
@@ -184,17 +197,28 @@ function show_locations(data) {
 	});
 }
 
-function select_location(source){
-  var loc = lce_locations[jQuery(source.target).attr('data')];
-  var relay_description = loc.company + '<br/> ' + loc.street + ' - ' + loc.city;
-  $.ajax({
-      url: ajax_url+'/ajax/save_relay_delivery_location.php?relay_code='+loc.code+'&cart_id='+cart_id,
-      success: function(data) {
-        jQuery('#input_selected_relay').html('<input type="hidden" name="selected_relay_code" value="'+loc.code+'"/>');
-        jQuery('#selected_relay_description').html(relay_description);
-        infowindow.close();
-      }
-  });
+function select_location(source) {
+		// Prestashop 1.7 compatibility. For some reason the ajax URL is escaped despite smarty filter to unescape it
+		ajax_url_mfb = ajax_url_mfb.replace(/&amp;/g, '&');
+  	var loc = lce_locations[jQuery(source.target).attr('data')];
+  	var relay_description = loc.company + '<br/> ' + loc.street + ' - ' + loc.city;
+  	$.ajax({
+		url: ajax_url_mfb,
+		type: 'POST',
+		dataType: 'text',
+		cache: false,
+    	timeout:  15000,
+		data: {
+			'action': 'save_relay',
+			'relay_code': loc.code,
+			'cart_id' : cart_id
+		},
+      	success: function(data) {
+        	jQuery('#input_selected_relay').html('<input type="hidden" name="selected_relay_code" value="'+loc.code+'"/>');
+        	jQuery('#selected_relay_description').html(relay_description);
+        	infowindow.close();
+      	}
+  	});
 }
 
 function error_loading_locations(jqXHR, textStatus, errorThrown ) {
