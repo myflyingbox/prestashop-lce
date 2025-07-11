@@ -56,9 +56,6 @@ function toggle_map_display(e)
 };
 
 function load_locations(carrier_id) {
-	// Prestashop 1.7 compatibility. For some reason the ajax URL is escaped despite smarty filter to unescape it
-	ajax_url_mfb = ajax_url_mfb.replace(/&amp;/g, '&');
-	
   jQuery.ajax({
     url: ajax_url_mfb,
 	type: 'POST',
