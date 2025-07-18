@@ -29,6 +29,7 @@ class LowcostexpressRelayModuleFrontController extends ModuleFrontController
 {
     public function initContent()
     {
+        $this->ajax = true;
         parent::initContent();
 
         $action = Tools::getValue('action', 'get_relay');
