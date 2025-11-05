@@ -49,13 +49,22 @@ function mfbWaitForjQuery(callback) {
 document.addEventListener('DOMContentLoaded', function() {
     mfbWaitForjQuery(function($) {
         // Listener for cart navigation to next step
-        $(document).delegate("#HOOK_PAYMENT a, [name='processCarrier']", "click", function(e) {
-            if (carrier_ids.indexOf($('input[name=id_carrier]:checked').val()) > 0 && $("input[name=selected_relay_code]").val().length == 0) {
-                alert(errormessage);
-                $.scrollTo($('#relay_container'), 800);
-                e.preventDefault();
-                return false;
+        $(document).on("click", "#HOOK_PAYMENT a, [name='processCarrier'], button[name='confirmDeliveryOption']", function(e) {
+          var selected_carrier_id = $('form#js-delivery input[type="radio"]:checked').val().split(',')[0];
+          // Only block if the selected carrier is one of our relay carriers
+          if (carrier_ids.indexOf(selected_carrier_id) !== -1 && $("input[name=selected_relay_code]").val().length === 0) {
+            alert(errormessage);
+            if ($.scrollTo) {
+              $.scrollTo($('#relay_container'), 800);
+            } else if (window.scrollTo) {
+              var relay = document.getElementById('relay_container');
+              if (relay) relay.scrollIntoView({
+                behavior: 'smooth'
+              });
             }
+            e.preventDefault();
+            return false;
+          }
         });
 
         // Trigger map display toggle when a carrier service is selected
