@@ -18,13 +18,14 @@
  * @author    MyFlyingBox <contact@myflyingbox.com>
  * @copyright 2016 MyFlyingBox
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
- * @version   1.0
- *
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
-$sql = array();
+$sql = [];
 
-$sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_shipments` (
+$sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'lce_shipments` (
     `id_shipment` int(11) NOT NULL AUTO_INCREMENT,
     `order_id` int(11) NOT NULL,
     `carrier_id` int(11),
@@ -60,9 +61,9 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_shipments` (
     `delete` tinyint(1) unsigned NOT NULL DEFAULT "0",
     `is_return` TINYINT(1) NOT NULL DEFAULT "0",
     PRIMARY KEY  (`id_shipment`)
-  ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
+  ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 
-$sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_parcels` (
+$sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'lce_parcels` (
     `id_parcel` int(11) NOT NULL AUTO_INCREMENT,
     `id_shipment` int(11) NOT NULL,
     `length` int(11) NOT NULL,
@@ -82,9 +83,9 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_parcels` (
     `date_upd` DATETIME,
     `delete` tinyint(1) unsigned NOT NULL DEFAULT "0",
     PRIMARY KEY  (`id_parcel`)
-  ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
+  ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 
-$sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_quotes` (
+$sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'lce_quotes` (
     `id_quote` int(11) NOT NULL AUTO_INCREMENT,
     `id_cart` int(11) NOT NULL,
     `id_address` int(11) NOT NULL,
@@ -94,9 +95,9 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_quotes` (
     `date_upd` DATETIME,
     `delete` tinyint(1) unsigned NOT NULL DEFAULT "0",
     PRIMARY KEY  (`id_quote`)
-  ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
+  ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 
-$sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_offers` (
+$sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'lce_offers` (
     `id_offer` int(11) NOT NULL AUTO_INCREMENT,
     `id_quote` int(11) NOT NULL,
     `lce_service_id` int(11),
@@ -115,9 +116,9 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_offers` (
     `date_upd` DATETIME,
     `delete` tinyint(1) unsigned NOT NULL DEFAULT "0",
     PRIMARY KEY  (`id_offer`)
-  ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
+  ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 
-$sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_dimensions` (
+$sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'lce_dimensions` (
     `id_dimension` int(11) NOT NULL AUTO_INCREMENT,
     `weight` decimal(5,3) NOT NULL,
     `length` int(11) NOT NULL,
@@ -128,27 +129,27 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_dimensions` (
     `date_add` DATETIME,
     `date_upd` DATETIME,
     PRIMARY KEY  (`id_dimension`)
-  ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
+  ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 
-$sql[] = 'CREATE TABLE IF NOT EXISTS '._DB_PREFIX_.'lce_services (
-          `id_service` int(11) NOT NULL AUTO_INCREMENT,
-          `id_carrier` int(11) NOT NULL,
-          `carrier_code` VARCHAR(255) NOT NULL DEFAULT "",
-          `code` VARCHAR(255) NOT NULL DEFAULT "",
-          `name` TEXT NOT NULL DEFAULT "",
-          `pickup_available` BOOLEAN NOT NULL DEFAULT "0",
-          `dropoff_available` BOOLEAN NOT NULL DEFAULT "0",
-          `relay_delivery` BOOLEAN NOT NULL DEFAULT "0",
-          `tracking_url` VARCHAR(255) NOT NULL DEFAULT "",
-          `date_add` DATETIME,
-          `date_upd` DATETIME,
-          PRIMARY KEY  (`id_service`)
-          ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
+$sql[] = 'CREATE TABLE IF NOT EXISTS ' . _DB_PREFIX_ . 'lce_services (
+    `id_service` int(11) NOT NULL AUTO_INCREMENT,
+    `id_carrier` int(11) NOT NULL,
+    `carrier_code` VARCHAR(255) NOT NULL DEFAULT "",
+    `code` VARCHAR(255) NOT NULL DEFAULT "",
+    `name` TEXT NOT NULL DEFAULT "",
+    `pickup_available` BOOLEAN NOT NULL DEFAULT "0",
+    `dropoff_available` BOOLEAN NOT NULL DEFAULT "0",
+    `relay_delivery` BOOLEAN NOT NULL DEFAULT "0",
+    `tracking_url` VARCHAR(255) NOT NULL DEFAULT "",
+    `date_add` DATETIME,
+    `date_upd` DATETIME,
+    PRIMARY KEY  (`id_service`)
+    ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 
-$sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'lce_cart_selected_relay` (
-        `id_cart` int(10) NOT null,
-        `relay_code` varchar(10) NOT null,
-        PRIMARY KEY (`id_cart`)
-        ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
+$sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'lce_cart_selected_relay` (
+    `id_cart` int(10) NOT null,
+    `relay_code` varchar(10) NOT null,
+    PRIMARY KEY (`id_cart`)
+    ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 
 return $sql;
