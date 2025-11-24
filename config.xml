@@ -2,7 +2,7 @@
 <module>
     <name>lowcostexpress</name>
     <displayName><![CDATA[MY FLYING BOX Express Shipping]]></displayName>
-    <version><![CDATA[1.1.4]]></version>
+    <version><![CDATA[1.1.5]]></version>
     <description><![CDATA[Your shipments made easy with major express carriers (DHL, UPS, Chronopost...) at competitive negotiated rates.]]></description>
     <author><![CDATA[MY FLYING BOX SAS]]></author>
     <tab><![CDATA[shipping_logistics]]></tab>

@@ -509,7 +509,11 @@
                     <input id="submit_{$module_name|escape:'htmlall':'UTF-8'}_refresh_products" name="submit_{$module_name|escape:'htmlall':'UTF-8'}_refresh_products" type="submit" value="{l s='Initialize/refresh products' mod='lowcostexpress'}" class="btn btn-primary" />
                 </div>
             </div>
-        </form>
     </div>
 </div>
+
+{* Dashboard synchronization settings (v1.1.5) *}
+{include file='./sync_settings.tpl'}
+
+        </form>
 </div>

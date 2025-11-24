@@ -72,6 +72,13 @@ class LowCostExpress extends CarrierModule
         'MOD_LCE_MAX_VOL_WEIGHT',
         'MOD_LCE_FORCE_WEIGHT_DIMS_TABLE',
         'MOD_LCE_GOOGLE_CLOUD_API_KEY',
+        // Dashboard synchronization settings
+        'MOD_LCE_SHOP_UUID',
+        'MOD_LCE_API_JWT_SHARED_SECRET',
+        'MOD_LCE_WEBHOOKS_SIGNATURE_KEY',
+        'MOD_LCE_DASHBOARD_SYNC_BEHAVIOR',
+        'MOD_LCE_SYNC_HISTORY_MAX_PAST_DAYS',
+        'MOD_LCE_SYNC_ORDER_MAX_DURATION',
     ];
 
     public static $mandatory_settings = [
@@ -100,7 +107,7 @@ class LowCostExpress extends CarrierModule
     {
         $this->name = 'lowcostexpress';
         $this->tab = 'shipping_logistics';
-        $this->version = '1.1.4';
+        $this->version = '1.1.5';
         $this->author = 'MY FLYING BOX SAS';
 
         parent::__construct();
@@ -337,11 +344,70 @@ class LowCostExpress extends CarrierModule
     }
 
     /*
+     * Dashboard synchronization helpers
+     */
+
+    /**
+     * Generate a UUIDv4
+     * @return string
+     */
+    public function generateUuidV4()
+    {
+        $data = random_bytes(16);
+        $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // Version 4
+        $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // Variant 10
+
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+    }
+
+    /**
+     * Generate a secure random key (512 bits = 64 bytes)
+     * @return string Base64 encoded key
+     */
+    public function generateSecureKey()
+    {
+        return base64_encode(random_bytes(64));
+    }
+
+    /**
+     * Auto-generate missing synchronization keys on first load
+     */
+    private function ensureSyncKeysExist()
+    {
+        // Generate shop UUID if not exists
+        if (!Configuration::get('MOD_LCE_SHOP_UUID')) {
+            Configuration::updateValue('MOD_LCE_SHOP_UUID', $this->generateUuidV4());
+        }
+
+        // Generate webhooks signature key if not exists
+        if (!Configuration::get('MOD_LCE_WEBHOOKS_SIGNATURE_KEY')) {
+            Configuration::updateValue('MOD_LCE_WEBHOOKS_SIGNATURE_KEY', $this->generateSecureKey());
+        }
+    }
+
+    /*
      * Settings page of the module
      */
     public function getContent()
     {
+        // Ensure sync keys are generated on first config page load
+        $this->ensureSyncKeysExist();
+
         $message = '';
+
+        // Handle JWT secret key generation/deletion
+        if (Tools::isSubmit('generate_jwt_secret')) {
+            $wasEmpty = empty(Configuration::get('MOD_LCE_API_JWT_SHARED_SECRET'));
+            Configuration::updateValue('MOD_LCE_API_JWT_SHARED_SECRET', $this->generateSecureKey());
+            if ($wasEmpty) {
+                $message .= $this->displayConfirmation($this->l('API authentication key has been generated successfully. Copy it to your MY FLYING BOX dashboard configuration.'));
+            } else {
+                $message .= $this->displayConfirmation($this->l('API authentication key has been regenerated. You must update it in your MY FLYING BOX dashboard configuration.'));
+            }
+        } elseif (Tools::isSubmit('delete_jwt_secret')) {
+            Configuration::updateValue('MOD_LCE_API_JWT_SHARED_SECRET', '');
+            $message .= $this->displayConfirmation($this->l('API authentication key has been deleted.'));
+        }
 
         if (Tools::isSubmit('submit_' . $this->name)) {
             $message .= $this->_saveSettings();
@@ -700,6 +766,13 @@ class LowCostExpress extends CarrierModule
             'MOD_LCE_MAX_VOL_WEIGHT' => Configuration::get('MOD_LCE_MAX_VOL_WEIGHT'),
             'MOD_LCE_FORCE_WEIGHT_DIMS_TABLE' => Configuration::get('MOD_LCE_FORCE_WEIGHT_DIMS_TABLE'),
             'MOD_LCE_GOOGLE_CLOUD_API_KEY' => Configuration::get('MOD_LCE_GOOGLE_CLOUD_API_KEY'),
+            // Dashboard synchronization settings
+            'MOD_LCE_SHOP_UUID' => Configuration::get('MOD_LCE_SHOP_UUID'),
+            'MOD_LCE_API_JWT_SHARED_SECRET' => Configuration::get('MOD_LCE_API_JWT_SHARED_SECRET'),
+            'MOD_LCE_WEBHOOKS_SIGNATURE_KEY' => Configuration::get('MOD_LCE_WEBHOOKS_SIGNATURE_KEY'),
+            'MOD_LCE_DASHBOARD_SYNC_BEHAVIOR' => Configuration::get('MOD_LCE_DASHBOARD_SYNC_BEHAVIOR') ?: 'never',
+            'MOD_LCE_SYNC_HISTORY_MAX_PAST_DAYS' => Configuration::get('MOD_LCE_SYNC_HISTORY_MAX_PAST_DAYS') ?: 30,
+            'MOD_LCE_SYNC_ORDER_MAX_DURATION' => Configuration::get('MOD_LCE_SYNC_ORDER_MAX_DURATION') ?: 90,
         ]);
     }
 
