@@ -140,12 +140,29 @@ class AdminShipmentController extends ModuleAdminController
                     $lang = 'en';
                 }
                 $offer_data->product_details = $api_offer->product->details->$lang;
+
+                // Electronic customs flags (from DB if available, fallback to API offer)
+                $offer_flags = ['support' => null, 'mandatory' => null];
+                $stored_offer = LceOffer::findByApiOfferUuid($shipment->api_offer_uuid);
+                if ($stored_offer && Validate::isLoadedObject($stored_offer)) {
+                    $offer_flags['support'] = (bool) $stored_offer->support_electronic_customs;
+                    $offer_flags['mandatory'] = (bool) $stored_offer->mandatory_electronic_customs;
+                } else {
+                    if (isset($api_offer->product->support_electronic_customs)) {
+                        $offer_flags['support'] = (bool) $api_offer->product->support_electronic_customs;
+                    }
+                    if (isset($api_offer->product->mandatory_electronic_customs)) {
+                        $offer_flags['mandatory'] = (bool) $api_offer->product->mandatory_electronic_customs;
+                    }
+                }
             } catch (\Exception $e) {
                 // TODO: add explicit error management (and display on interface)
                 $offer_data = false;
+                $offer_flags = ['support' => null, 'mandatory' => null];
             }
         } else {
             $offer_data = false;
+            $offer_flags = ['support' => null, 'mandatory' => null];
         }
 
         if ($shipment->api_order_uuid) {
@@ -254,6 +271,7 @@ class AdminShipmentController extends ModuleAdminController
             'link_book_offer_form' => $this->context->link->getAdminLink('AdminShipment') . '&ajax=1&updatelce_shipments&action=book_offer&id_shipment=' . $shipment->id,
             'link_download_labels' => $this->context->link->getAdminLink('AdminShipment') . '&viewlce_shipments&download_labels&id_shipment=' . $shipment->id_shipment,
             'shipment' => $shipment,
+            'offer_flags' => $offer_flags,
             'shipper_country' => Country::getNameById(
                 (int) $this->context->language->id,
                 Country::getByIso($shipment->shipper_country)

@@ -333,7 +333,7 @@
 
         <div class="form-group">
             <label for="MOD_LCE_DEFAULT_CONTENT" class="control-label col-lg-4">
-                {l s='Default parcel content:' mod='lowcostexpress'}
+            <span class="text-danger">*</span> {l s='Default parcel content:' mod='lowcostexpress'}
             </label>
             <div class="col-lg-6">
                 <input id="MOD_LCE_DEFAULT_CONTENT" name="MOD_LCE_DEFAULT_CONTENT" type="text" value="{$MOD_LCE_DEFAULT_CONTENT|escape:'htmlall':'UTF-8'}" />
@@ -432,6 +432,9 @@
     </div>
 </div>
 
+{* Dashboard synchronization settings (v1.1.5) *}
+{include file='./sync_settings.tpl'}
+
 </form>
 
 <div class="panel">
@@ -509,11 +512,8 @@
                     <input id="submit_{$module_name|escape:'htmlall':'UTF-8'}_refresh_products" name="submit_{$module_name|escape:'htmlall':'UTF-8'}_refresh_products" type="submit" value="{l s='Initialize/refresh products' mod='lowcostexpress'}" class="btn btn-primary" />
                 </div>
             </div>
+        </form>
     </div>
 </div>
 
-{* Dashboard synchronization settings (v1.1.5) *}
-{include file='./sync_settings.tpl'}
-
-        </form>
 </div>

@@ -45,5 +45,40 @@ function upgrade_module_1_1_5($module)
     // 6. Order sync max duration - default 90 days
     Configuration::updateValue('MOD_LCE_SYNC_ORDER_MAX_DURATION', 90);
 
+    // Register hooks for webhooks (in case install already done)
+    $module->registerHook('actionValidateOrder');
+    $module->registerHook('actionOrderStatusPostUpdate');
+
+    // Add electronic customs flags to lce_offers if missing
+    foreach (['support_electronic_customs', 'mandatory_electronic_customs'] as $column) {
+        $column_exists = Db::getInstance()->executeS(
+            'SHOW COLUMNS FROM `' . _DB_PREFIX_ . 'lce_offers` LIKE "' . pSQL($column) . '"'
+        );
+        if (!$column_exists) {
+            Db::getInstance()->execute(
+                'ALTER TABLE `' . _DB_PREFIX_ . 'lce_offers`
+                 ADD `' . bqSQL($column) . '` TINYINT(1) NOT NULL DEFAULT 0 AFTER `dropoff_available`'
+            );
+            Db::getInstance()->execute(
+                'UPDATE `' . _DB_PREFIX_ . 'lce_offers` SET `' . bqSQL($column) . '` = 0'
+            );
+        }
+    }
+
+    // Add ecommerce_order_platform to lce_shipments if missing
+    $column_exists = Db::getInstance()->executeS(
+        'SHOW COLUMNS FROM `' . _DB_PREFIX_ . 'lce_shipments` LIKE "ecommerce_order_platform"'
+    );
+    if (!$column_exists) {
+        Db::getInstance()->execute(
+            'ALTER TABLE `' . _DB_PREFIX_ . 'lce_shipments` 
+             ADD `ecommerce_order_platform` VARCHAR(255) NOT NULL DEFAULT "prestashop" AFTER `api_order_uuid`'
+        );
+        // Normalize existing rows
+        Db::getInstance()->execute(
+            'UPDATE `' . _DB_PREFIX_ . 'lce_shipments` SET `ecommerce_order_platform` = "prestashop"'
+        );
+    }
+
     return true;
 }

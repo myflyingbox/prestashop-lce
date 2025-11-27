@@ -37,6 +37,8 @@ class LceOffer extends ObjectModel
     public $price_with_extended_cover;
     public $total_price_with_extended_cover;
     public $currency;
+    public $support_electronic_customs;
+    public $mandatory_electronic_customs;
     public $date_add;
     public $date_upd;
 
@@ -56,6 +58,8 @@ class LceOffer extends ObjectModel
             'price_with_extended_cover' => ['type' => self::TYPE_INT],
             'total_price_with_extended_cover' => ['type' => self::TYPE_INT],
             'currency' => ['type' => self::TYPE_STRING, 'required' => true],
+            'support_electronic_customs' => ['type' => self::TYPE_BOOL],
+            'mandatory_electronic_customs' => ['type' => self::TYPE_BOOL],
             'date_add' => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
             'date_upd' => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
         ],
@@ -63,6 +67,31 @@ class LceOffer extends ObjectModel
             'quote' => ['type' => self::HAS_ONE, 'field' => 'id_quote', 'object' => 'LceQuote'],
         ],
     ];
+
+    /**
+     * Find offer by API offer UUID.
+     *
+     * @param string $api_offer_uuid
+     * @return LceOffer|false
+     */
+    public static function findByApiOfferUuid($api_offer_uuid)
+    {
+        if (empty($api_offer_uuid)) {
+            return false;
+        }
+
+        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow('
+            SELECT `id_offer`
+            FROM `' . _DB_PREFIX_ . 'lce_offers`
+            WHERE `api_offer_uuid` = "' . pSQL($api_offer_uuid) . '"'
+        );
+
+        if ($row && isset($row['id_offer'])) {
+            return new self((int) $row['id_offer']);
+        }
+
+        return false;
+    }
 
     public static function getForQuoteAndLceService($quote, $lce_service)
     {

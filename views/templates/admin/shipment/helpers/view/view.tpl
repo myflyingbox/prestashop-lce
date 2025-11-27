@@ -298,6 +298,11 @@
                 </tbody>
               </table>
               {if $shipment->api_order_uuid eq false}
+                {if isset($offer_flags.mandatory) && $offer_flags.mandatory === true}
+                  <div class="alert alert-danger">
+                    {l s='Electronic customs are mandatory for this service. Please order the label from your MFB dashboard; booking from the module is blocked.' mod='lowcostexpress'}
+                  </div>
+                {else}
                 <form id="book-offer">
                     <input type="hidden" name="offer_uuid" value="{$offer->id|escape:'htmlall':'UTF-8'}">
 
@@ -362,6 +367,7 @@
                     <input type="submit" id="book_lce_offer" value="{l s='Confirm booking' mod='lowcostexpress'}" name="book_lce_offer" class="btn btn-primary">
                   </div>
                 </form>
+                {/if}
               {/if}
             {/if}
 

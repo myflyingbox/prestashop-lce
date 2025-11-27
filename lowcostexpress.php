@@ -269,6 +269,9 @@ class LowCostExpress extends CarrierModule
         } else {
             $this->registerHook('actionObjectProductInCartDeleteAfter');
         }
+        // Webhooks (order events)
+        $this->registerHook('actionValidateOrder');
+        $this->registerHook('actionOrderStatusPostUpdate');
 
         return true;
     }
@@ -349,13 +352,16 @@ class LowCostExpress extends CarrierModule
 
     /**
      * Generate a UUIDv4
+     *
      * @return string
      */
     public function generateUuidV4()
     {
         $data = random_bytes(16);
-        $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // Version 4
-        $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // Variant 10
+        // Version 4
+        $data[6] = chr(ord($data[6]) & 0x0F | 0x40);
+        // Variant 10
+        $data[8] = chr(ord($data[8]) & 0x3F | 0x80);
 
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
@@ -367,6 +373,159 @@ class LowCostExpress extends CarrierModule
     public function generateSecureKey()
     {
         return base64_encode(random_bytes(64));
+    }
+
+    /**
+     * Hook: order validation (create)
+     */
+    public function hookActionValidateOrder($params)
+    {
+        if (empty($params['order']) || !$params['order'] instanceof Order) {
+            return;
+        }
+        /** @var Order $order */
+        $order = $params['order'];
+
+        if (!$this->shouldSendWebhooks()) {
+            return;
+        }
+
+        $state = isset($params['orderStatus']) && $params['orderStatus'] instanceof OrderState ? $params['orderStatus'] : null;
+        $this->sendOrderWebhook('order/create', $order, $state);
+    }
+
+    /**
+     * Hook: order status update (update/cancel)
+     */
+    public function hookActionOrderStatusPostUpdate($params)
+    {
+        if (empty($params['id_order'])) {
+            return;
+        }
+        $order = new Order((int) $params['id_order']);
+        if (!Validate::isLoadedObject($order)) {
+            return;
+        }
+        if (!$this->shouldSendWebhooks()) {
+            return;
+        }
+
+        $new_status = isset($params['newOrderStatus']) && $params['newOrderStatus'] instanceof OrderState ? $params['newOrderStatus'] : null;
+        $canceled_status_id = (int) Configuration::get('PS_OS_CANCELED');
+        $topic = ($new_status && (int) $new_status->id === $canceled_status_id) ? 'order/cancel' : 'order/update';
+
+        $this->sendOrderWebhook($topic, $order, $new_status);
+    }
+
+    /**
+     * Build and send an order webhook with minimal payload.
+     *
+     * @param string $topic
+     * @param Order $order
+     * @param OrderState|null $state
+     * @param bool $force
+     * @return bool
+     */
+    private function sendOrderWebhook($topic, Order $order, $state = null, $force = false)
+    {
+        $state_name = null;
+        if ($state instanceof OrderState) {
+            $state_name = isset($state->name[(int) $order->id_lang]) ? $state->name[(int) $order->id_lang] : $state->name[(int) Configuration::get('PS_LANG_DEFAULT')];
+        } else {
+            $state_id = (int) $order->current_state;
+            if ($state_id) {
+                $state_obj = new OrderState($state_id);
+                if (Validate::isLoadedObject($state_obj)) {
+                    $state_name = isset($state_obj->name[(int) $order->id_lang]) ? $state_obj->name[(int) $order->id_lang] : $state_obj->name[(int) Configuration::get('PS_LANG_DEFAULT')];
+                }
+            }
+        }
+
+        $payload = [
+            'order_id' => (int) $order->id,
+            'order_reference' => $order->reference,
+            'created_at' => $order->date_add,
+            'state' => $state_name ?: 'unknown',
+        ];
+
+        return $this->sendWebhook($topic, $payload, $force);
+    }
+
+    /**
+     * Check if webhooks should be sent based on dashboard_sync_behavior.
+     * @param bool $force Force sending even if behavior is on_demand (used for manual triggers)
+     * @return bool
+     */
+    public function shouldSendWebhooks($force = false)
+    {
+        $behavior = Configuration::get('MOD_LCE_DASHBOARD_SYNC_BEHAVIOR');
+        if ($behavior === 'never') {
+            return false;
+        }
+        if ($behavior === 'always') {
+            return true;
+        }
+        // on_demand
+        return (bool) $force;
+    }
+
+    /**
+     * Send a webhook to the MFB dashboard.
+     *
+     * @param string $topic
+     * @param array $payload
+     * @param bool $force Force sending even if behavior is on_demand
+     * @return bool
+     */
+    public function sendWebhook($topic, array $payload, $force = false)
+    {
+        if (!$this->shouldSendWebhooks($force)) {
+            return false;
+        }
+
+        $shop_uuid = Configuration::get('MOD_LCE_SHOP_UUID');
+        $signature_key = Configuration::get('MOD_LCE_WEBHOOKS_SIGNATURE_KEY');
+        if (empty($shop_uuid) || empty($signature_key)) {
+            Logger::addLog('[LCE] Webhook not sent: missing shop UUID or signature key', 3);
+            return false;
+        }
+
+        $body = json_encode($payload);
+        $signature = base64_encode(hash_hmac('sha256', $body, $signature_key, true));
+
+        $headers = [
+            'Content-Type: application/json',
+            'x-mfb-shop-id: ' . $shop_uuid,
+            'x-mfb-topic: ' . $topic,
+            'x-mfb-hmac-sha256: ' . $signature,
+            'x-mfb-triggered-at: ' . time(),
+            'x-mfb-module-version: ' . $this->version,
+        ];
+
+        $client_api_id = Configuration::get('MOD_LCE_API_LOGIN');
+        if (!empty($client_api_id)) {
+            $headers[] = 'x-mfb-client-api-id: ' . $client_api_id;
+        }
+
+        $ch = curl_init('https://dashboard.myflyingbox.com/webhooks/prestashop');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+
+        $response = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        if ($error || $http_code >= 400) {
+            Logger::addLog('[LCE] Webhook error (' . $topic . '): HTTP ' . $http_code . ' ' . $error . ' ' . $response, 3);
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -450,7 +609,19 @@ class LowCostExpress extends CarrierModule
         $message = '';
         $record_error = false;
 
+        // Settings that should not be updated via form submission (readonly fields, managed separately)
+        $protected_settings = [
+            'MOD_LCE_SHOP_UUID',
+            'MOD_LCE_API_JWT_SHARED_SECRET',
+            'MOD_LCE_WEBHOOKS_SIGNATURE_KEY',
+        ];
+
         foreach (self::$settings as $setting) {
+            // Skip protected settings - they are managed separately or auto-generated
+            if (in_array($setting, $protected_settings)) {
+                continue;
+            }
+
             if (!Configuration::updateValue($setting, Tools::getValue($setting))) {
                 $record_error = true;
             }
@@ -908,6 +1079,13 @@ class LowCostExpress extends CarrierModule
                                 if ($api_offer->insurance_price) {
                                     $offer->insurance_price_in_cents = $api_offer->insurance_price->amount_in_cents;
                                 }
+                                // Electronic customs flags
+                                if (isset($api_offer->product->support_electronic_customs)) {
+                                    $offer->support_electronic_customs = (int) $api_offer->product->support_electronic_customs;
+                                }
+                                if (isset($api_offer->product->mandatory_electronic_customs)) {
+                                    $offer->mandatory_electronic_customs = (int) $api_offer->product->mandatory_electronic_customs;
+                                }
                                 $offer->currency = $api_offer->total_price->currency;
                                 $offer->add();
                             }
@@ -1003,6 +1181,9 @@ class LowCostExpress extends CarrierModule
         $currentIndex = 'index.php?controller=' . Tools::safeOutput(Tools::getValue('controller'));
         $currentIndex .= '&id_order=' . (int) $params['id_order'];
 
+        $manual_sync_message = '';
+        $manual_sync_error = '';
+
         $var = [];
 
         if (!Configuration::get('MOD_LCE_API_LOGIN') || !Configuration::get('MOD_LCE_API_PASSWORD')) {
@@ -1011,6 +1192,19 @@ class LowCostExpress extends CarrierModule
             ];
         } else {
             try {
+                // Manual sync requested (on_demand)
+                if (Tools::isSubmit('lce_manual_sync') && (int) Tools::getValue('id_order') === (int) $params['id_order']) {
+                    $order = new Order((int) $params['id_order']);
+                    if (Validate::isLoadedObject($order)) {
+                        $sent = $this->sendOrderWebhook('order/sync_requested', $order, null, true);
+                        if ($sent) {
+                            $manual_sync_message = $this->l('Synchronization webhook has been sent to your MyFlyingBox dashboard.');
+                        } else {
+                            $manual_sync_error = $this->l('Synchronization webhook could not be sent. Please check configuration.');
+                        }
+                    }
+                }
+
                 // We get the list of shipments for this order
                 $shipments = LceShipment::findAllForOrder((int) $params['id_order']);
 
@@ -1021,6 +1215,25 @@ class LowCostExpress extends CarrierModule
                                                                     '&viewlce_shipments&id_shipment=' . $s->id_shipment;
                 }
 
+                // Offer flags (electronic customs) per shipment
+                $shipment_offer_flags = [];
+                foreach ($shipments as $s) {
+                    $flags = ['support' => null, 'mandatory' => null];
+                    if (!empty($s->api_offer_uuid)) {
+                        $offer = LceOffer::findByApiOfferUuid($s->api_offer_uuid);
+                        if ($offer && Validate::isLoadedObject($offer)) {
+                            $flags['support'] = (bool) $offer->support_electronic_customs;
+                            $flags['mandatory'] = (bool) $offer->mandatory_electronic_customs;
+                        }
+                    }
+                    $shipment_offer_flags[(int) $s->id_shipment] = $flags;
+                }
+
+                $sync_behavior = Configuration::get('MOD_LCE_DASHBOARD_SYNC_BEHAVIOR');
+                $sync_configured = Configuration::get('MOD_LCE_SHOP_UUID')
+                    && Configuration::get('MOD_LCE_WEBHOOKS_SIGNATURE_KEY')
+                    && Configuration::get('MOD_LCE_API_JWT_SHARED_SECRET') !== '';
+
                 $var = [
                     'shipments' => $shipments,
                     'shipment_urls' => $shipment_urls,
@@ -1030,6 +1243,14 @@ class LowCostExpress extends CarrierModule
                     'new_return_path' => $this->context->link->getAdminLink('AdminShipment') .
                             '&addlce_shipments&order_id=' . (int) $params['id_order'] . '&is_return=1',
                     'lang_iso_code' => $this->context->language->iso_code,
+                    'shipment_offer_flags' => $shipment_offer_flags,
+                    'sync_behavior' => $sync_behavior ?: 'never',
+                    'sync_configured' => (bool) $sync_configured,
+                    'manual_sync_message' => $manual_sync_message,
+                    'manual_sync_error' => $manual_sync_error,
+                    'config_link' => $this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]),
+                    'dashboard_link' => 'https://dashboard.myflyingbox.com',
+                    'current_index' => $currentIndex . '&token=' . $token,
                 ];
             } catch (Exception $e) {
                 Tools::error_log('MFB quote request exception: ' . $e->getMessage());

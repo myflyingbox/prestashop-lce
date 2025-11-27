@@ -394,6 +394,13 @@ class LceQuote extends ObjectModel
                             }
                         }
                     }
+                    // Electronic customs flags
+                    if (isset($api_offer->product->support_electronic_customs)) {
+                        $offer->support_electronic_customs = (int) $api_offer->product->support_electronic_customs;
+                    }
+                    if (isset($api_offer->product->mandatory_electronic_customs)) {
+                        $offer->mandatory_electronic_customs = (int) $api_offer->product->mandatory_electronic_customs;
+                    }
                     $offer->currency = $api_offer->total_price->currency;
                     $offer->add();
                 }

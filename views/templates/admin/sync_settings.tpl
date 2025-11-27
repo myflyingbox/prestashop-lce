@@ -51,29 +51,6 @@
             </div>
         </div>
 
-        {* Synchronization behavior *}
-        <div class="form-group">
-            <label for="MOD_LCE_DASHBOARD_SYNC_BEHAVIOR" class="control-label col-lg-4">
-                {l s='Synchronization with your MY FLYING BOX dashboard:' mod='lowcostexpress'}
-            </label>
-            <div class="col-lg-6">
-                <select id="MOD_LCE_DASHBOARD_SYNC_BEHAVIOR" name="MOD_LCE_DASHBOARD_SYNC_BEHAVIOR" class="form-control">
-                    <option value="never"{if $MOD_LCE_DASHBOARD_SYNC_BEHAVIOR eq 'never'} selected="selected"{/if}>
-                        {l s='Never (API and webhooks disabled)' mod='lowcostexpress'}
-                    </option>
-                    <option value="on_demand"{if $MOD_LCE_DASHBOARD_SYNC_BEHAVIOR eq 'on_demand'} selected="selected"{/if}>
-                        {l s='On demand (manual sync button)' mod='lowcostexpress'}
-                    </option>
-                    <option value="always"{if $MOD_LCE_DASHBOARD_SYNC_BEHAVIOR eq 'always'} selected="selected"{/if}>
-                        {l s='Always (automatic webhooks)' mod='lowcostexpress'}
-                    </option>
-                </select>
-                <p class="help-block">
-                    {l s='Choose how orders are synchronized with your MY FLYING BOX dashboard. "Never" disables all API features. "On demand" adds a manual sync button. "Always" automatically sends notifications for every order event.' mod='lowcostexpress'}
-                </p>
-            </div>
-        </div>
-
         {* API JWT Shared Secret *}
         <div class="form-group">
             <label for="MOD_LCE_API_JWT_SHARED_SECRET" class="control-label col-lg-4">
@@ -132,6 +109,29 @@
             </div>
         </div>
 
+        {* Synchronization behavior *}
+        <div class="form-group">
+            <label for="MOD_LCE_DASHBOARD_SYNC_BEHAVIOR" class="control-label col-lg-4">
+                {l s='Synchronization with your MY FLYING BOX dashboard:' mod='lowcostexpress'}
+            </label>
+            <div class="col-lg-6">
+                <select id="MOD_LCE_DASHBOARD_SYNC_BEHAVIOR" name="MOD_LCE_DASHBOARD_SYNC_BEHAVIOR" class="form-control">
+                    <option value="never"{if $MOD_LCE_DASHBOARD_SYNC_BEHAVIOR eq 'never'} selected="selected"{/if}>
+                        {l s='Never (API and webhooks disabled)' mod='lowcostexpress'}
+                    </option>
+                    <option value="on_demand"{if $MOD_LCE_DASHBOARD_SYNC_BEHAVIOR eq 'on_demand'} selected="selected"{/if}>
+                        {l s='On demand (manual sync button)' mod='lowcostexpress'}
+                    </option>
+                    <option value="always"{if $MOD_LCE_DASHBOARD_SYNC_BEHAVIOR eq 'always'} selected="selected"{/if}>
+                        {l s='Always (automatic webhooks)' mod='lowcostexpress'}
+                    </option>
+                </select>
+                <p class="help-block">
+                    {l s='Choose how orders are synchronized with your MY FLYING BOX dashboard. "Never" disables all API features. "On demand" adds a manual sync button. "Always" automatically sends notifications for every order event.' mod='lowcostexpress'}
+                </p>
+            </div>
+        </div>
+
         {* History accessibility duration *}
         <div class="form-group">
             <label for="MOD_LCE_SYNC_HISTORY_MAX_PAST_DAYS" class="control-label col-lg-4">
@@ -157,6 +157,11 @@
                 </p>
             </div>
         </div>
+    </div>
+
+    {* Save button *}
+    <div class="panel-footer" style="text-align:right;">
+        <input id="submit_{$module_name|escape:'htmlall':'UTF-8'}" name="submit_{$module_name|escape:'htmlall':'UTF-8'}" type="submit" value="{l s='Save' mod='lowcostexpress'}" class="btn btn-primary" />
     </div>
 </div>
 

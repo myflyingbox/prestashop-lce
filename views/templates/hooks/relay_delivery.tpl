@@ -31,7 +31,7 @@ var customer_lastname = "{$customer_lastname|escape:'javascript':'UTF-8'}";
 var customer_firstname = "{$customer_firstname|escape:'javascript':'UTF-8'}";
 var cart_id = "{$cart_id|escape:'javascript':'UTF-8'}";
 var carrier_ids = "{$carrier_ids|escape:'javascript':'UTF-8'}".split('-');
-var ajax_url_mfb = "{$link->getModuleLink('lowcostexpress','relay',[])}";
+var ajax_url_mfb = "{$link->getModuleLink('lowcostexpress','relay',[])|unescape:'html'}";
 var oldCodePostal = null;
 var errormessage = "{l s='No relay location has been selected ! Please select a location to continue.' mod='lowcostexpress'}";
 
