@@ -73,6 +73,9 @@
         <tr>
           <th>{l s='Date' mod='lowcostexpress'}</th>
           <th>{l s='Status' mod='lowcostexpress'}</th>
+          {if $var.show_booking_origin}
+            <th>{l s='Origin' mod='lowcostexpress'}</th>
+          {/if}
           <th>{l s='Number of packages' mod='lowcostexpress'}</th>
           <th>{l s='Type' mod='lowcostexpress'}</th>
           <th>{l s='Tracking status (per package #) | Location' mod='lowcostexpress'}</th>
@@ -89,6 +92,17 @@
                 {l s='Draft' mod='lowcostexpress'}
               {/if}
             </td>
+            {if $var.show_booking_origin}
+              <td>
+                {if $s->booking_platform == 'dashboard_mfb'}
+                  {l s='Dashboard MFB' mod='lowcostexpress'}
+                {elseif $s->booking_platform == 'prestashop'}
+                  {l s='Prestashop' mod='lowcostexpress'}
+                {else}
+                  -
+                {/if}
+              </td>
+            {/if}
             <td>{$s->parcels|@count|escape:'htmlall':'UTF-8'}</td>
             <td>
               {if $s->is_return ==1}

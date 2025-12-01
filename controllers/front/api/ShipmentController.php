@@ -153,6 +153,10 @@ class ShipmentController extends ApiController
         $shipment = $existing_shipment_id ? new LceShipment((int) $existing_shipment_id) : new LceShipment();
         $is_new = !$existing_shipment_id;
 
+        if ($is_new) {
+            $shipment->booking_platform = 'dashboard_mfb';
+        }
+
         if (!$is_new && (int) $shipment->order_id !== $id_order) {
             $this->jsonResponse([
                 'error' => 'ORDER_MISMATCH',
@@ -255,9 +259,6 @@ class ShipmentController extends ApiController
         $shipment->api_offer_uuid = $this->extractField($data, ['api_offer_id', 'offer_id', 'offer_uuid'], $shipment->api_offer_uuid);
         $shipment->api_quote_uuid = $this->extractField($data, ['api_quote_uuid', 'quote_uuid', 'quote_id'], $shipment->api_quote_uuid);
         $shipment->is_return = !empty($data['is_return']);
-        $shipment->ecommerce_order_platform = isset($data['ecommerce_order_platform'])
-            ? pSQL($data['ecommerce_order_platform'])
-            : 'mfb_dashboard';
         $shipment->ad_valorem_insurance = (!empty($data['insure_shipment']) || !empty($data['ad_valorem_insurance'])) ? 1 : 0;
         $shipment->date_booking = $this->extractDateTime($data, ['created_at', 'booked_at'], $shipment->date_booking);
 

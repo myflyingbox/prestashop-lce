@@ -31,6 +31,26 @@
             </p>
         </div>
 
+        {* Shop base URL (copied into dashboard) *}
+        <div class="form-group">
+            <label for="LCE_SHOP_BASE_URL" class="control-label col-lg-4">
+                {l s='Shop URL:' mod='lowcostexpress'}
+            </label>
+            <div class="col-lg-6">
+                <div class="input-group">
+                    <input id="LCE_SHOP_BASE_URL" name="LCE_SHOP_BASE_URL" type="text" value="{$LCE_SHOP_BASE_URL|escape:'htmlall':'UTF-8'}" readonly class="form-control" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" onclick="copyToClipboard('LCE_SHOP_BASE_URL')" title="{l s='Copy to clipboard' mod='lowcostexpress'}">
+                            <i class="icon-copy"></i>
+                        </button>
+                    </span>
+                </div>
+                <p class="help-block">
+                    {l s='Copy this URL into your MY FLYING BOX dashboard configuration.' mod='lowcostexpress'}
+                </p>
+            </div>
+        </div>
+
         {* Shop UUID *}
         <div class="form-group">
             <label for="MOD_LCE_SHOP_UUID" class="control-label col-lg-4">

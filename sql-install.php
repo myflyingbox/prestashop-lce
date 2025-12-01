@@ -33,7 +33,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'lce_shipments` (
     `api_quote_uuid` VARCHAR(255) NOT NULL DEFAULT "",
     `api_offer_uuid` VARCHAR(255) NOT NULL DEFAULT "",
     `api_order_uuid` VARCHAR(255) NOT NULL DEFAULT "",
-    `ecommerce_order_platform` VARCHAR(255) NOT NULL DEFAULT "prestashop",
+    `booking_platform` VARCHAR(255) NOT NULL DEFAULT "prestashop",
     `collection_date` DATETIME,
     `relay_delivery_code` VARCHAR(255) NOT NULL DEFAULT "",
     `shipper_name` VARCHAR(255) NOT NULL DEFAULT "",

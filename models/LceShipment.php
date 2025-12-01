@@ -41,7 +41,7 @@ class LceShipment extends ObjectModel
     public $shipper_country;
     public $shipper_phone;
     public $shipper_email;
-    public $ecommerce_order_platform;
+    public $booking_platform;
     public $recipient_is_a_company;
     public $recipient_name;
     public $recipient_company_name;
@@ -87,7 +87,7 @@ class LceShipment extends ObjectModel
             'shipper_country' => ['type' => self::TYPE_STRING],
             'shipper_phone' => ['type' => self::TYPE_STRING],
             'shipper_email' => ['type' => self::TYPE_STRING],
-            'ecommerce_order_platform' => ['type' => self::TYPE_STRING],
+            'booking_platform' => ['type' => self::TYPE_STRING],
             'recipient_is_a_company' => ['type' => self::TYPE_BOOL],
             'recipient_name' => ['type' => self::TYPE_STRING],
             'recipient_company_name' => ['type' => self::TYPE_STRING],
@@ -501,7 +501,7 @@ class LceShipment extends ObjectModel
         $shipment->shipper_phone = Configuration::get('MOD_LCE_DEFAULT_PHONE');
         $shipment->shipper_email = Configuration::get('MOD_LCE_DEFAULT_EMAIL');
         $shipment->ad_valorem_insurance = Configuration::get('MOD_LCE_DEFAULT_INSURE');
-        $shipment->ecommerce_order_platform = 'prestashop';
+        $shipment->booking_platform = 'prestashop';
 
         $shipment->recipient_name = $delivery_address->firstname . ' ' . $delivery_address->lastname;
         if (!empty($delivery_address->company)) {
@@ -583,7 +583,7 @@ class LceShipment extends ObjectModel
 
         $shipment->shipper_phone = $shipper_phone;
         $shipment->shipper_email = $customer->email;
-        $shipment->ecommerce_order_platform = 'prestashop';
+        $shipment->booking_platform = 'prestashop';
 
         $shipment->recipient_is_a_company = 1;
         $shipment->recipient_name = Configuration::get('MOD_LCE_DEFAULT_SHIPPER_NAME');

@@ -43,6 +43,7 @@ $_MODULE['<{lowcostexpress}prestashop>adminshipment_2d8ddcf4ab228f835076896ee0da
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_ba94e21b6ecdddca586a1f6fe4b17c2d'] = 'Expédition mise à jour.';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_ea378dde7c102633390f568e9b39e027'] = 'Incohérence entre l\'UUID envoyée et l\'UUID enregistrée.';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_ace1da72a7ba53b1bfba2a8c79bec1e9'] = 'Service non trouvé. Merci de mettre à jour la liste des services depuis la page de configuration du module.';
+$_MODULE['<{lowcostexpress}prestashop>adminshipment_835291f02e9a5de3813cba65d78907c7'] = 'Commande associée introuvable.';
 $_MODULE['<{lowcostexpress}prestashop>adminshipment_10d4b3f427fcfa6cb601384a9b015565'] = 'Expédition mise à jour avec l\'UUID de la commande.';
 $_MODULE['<{lowcostexpress}prestashop>adminparcel_f4843c1c797abf1a256c8802b6cd9f51'] = 'Dimensions';
 $_MODULE['<{lowcostexpress}prestashop>adminparcel_901183b3d513642198324b65a4df6e77'] = 'Longueur (cm) :';
@@ -76,8 +77,10 @@ $_MODULE['<{lowcostexpress}prestashop>adminparcel_c937440e07c124043c2bf834de162e
 $_MODULE['<{lowcostexpress}prestashop>adminparcel_c1e69aeadd2293ebb9df229314cbcf3f'] = 'Colis supprimé.';
 $_MODULE['<{lowcostexpress}prestashop>sync_settings_67324ca6a649e8e38929fc840f4ccd5d'] = 'Synchronisation du tableau de bord';
 $_MODULE['<{lowcostexpress}prestashop>sync_settings_556cf70918cda193c19e3a2aec4325da'] = 'Configurez la synchronisation entre votre PrestaShop et votre tableau de bord MY FLYING BOX pour gérer les expéditions depuis les deux interfaces.';
-$_MODULE['<{lowcostexpress}prestashop>sync_settings_55416fe1b7f8c2a4546aaca8fae6008c'] = 'Identifiant de la boutique (UUID) :';
+$_MODULE['<{lowcostexpress}prestashop>sync_settings_76c01eed328aa2411b18f007c77d2eeb'] = 'URL de la boutique :';
 $_MODULE['<{lowcostexpress}prestashop>sync_settings_a612782072a3b8f151c5e2120ef20efd'] = 'Copier dans le presse-papiers';
+$_MODULE['<{lowcostexpress}prestashop>sync_settings_c2897655789eb0a67972bb5ed7ff550e'] = 'Copiez cette URL dans la configuration de votre tableau de bord MY FLYING BOX.';
+$_MODULE['<{lowcostexpress}prestashop>sync_settings_55416fe1b7f8c2a4546aaca8fae6008c'] = 'Identifiant de la boutique (UUID) :';
 $_MODULE['<{lowcostexpress}prestashop>sync_settings_ba6fc4a80bc8b594501529cdfd7065c2'] = 'Cet identifiant unique permet à MY FLYING BOX de reconnaître votre boutique. Il est généré automatiquement et ne peut pas être modifié.';
 $_MODULE['<{lowcostexpress}prestashop>sync_settings_128d22c5316158a4190cb3741466916b'] = 'Clé d\'authentification API (JWT) :';
 $_MODULE['<{lowcostexpress}prestashop>sync_settings_bb5528ac90ac255ba9c5c89b922dba6e'] = 'Aucune clé générée pour le moment.';
@@ -283,11 +286,14 @@ $_MODULE['<{lowcostexpress}prestashop>shipment_details_7a276a29ce350f4bbbd79d9f2
 $_MODULE['<{lowcostexpress}prestashop>shipment_details_98f419b34e827f3b8559004d304b6f1f'] = 'Ajouter un retour';
 $_MODULE['<{lowcostexpress}prestashop>shipment_details_44749712dbec183e983dcd78a7736c41'] = 'Date';
 $_MODULE['<{lowcostexpress}prestashop>shipment_details_ec53a8c4f07baed5d8825072c89799be'] = 'Statut';
+$_MODULE['<{lowcostexpress}prestashop>shipment_details_3edf8ca26a1ec14dd6e91dd277ae1de6'] = 'Origine';
 $_MODULE['<{lowcostexpress}prestashop>shipment_details_4a7b84b49edac5f03eee6e4563946faa'] = 'Nombre de colis';
 $_MODULE['<{lowcostexpress}prestashop>shipment_details_a1fa27779242b4902f7ae3bdd5c6d508'] = 'Type';
 $_MODULE['<{lowcostexpress}prestashop>shipment_details_e40e75857b6c1bd659220caf6309edb0'] = 'Statut de suivi (par numéro de colis) | Lieu';
 $_MODULE['<{lowcostexpress}prestashop>shipment_details_205bc73c4ab4286a1fb9d4c18322777c'] = 'Confirmée';
 $_MODULE['<{lowcostexpress}prestashop>shipment_details_f03ab16cd58372c77ba45a3d9a5a1cb9'] = 'Brouillon';
+$_MODULE['<{lowcostexpress}prestashop>shipment_details_a91b6bb08d898979cf8fce7af2b7fcb0'] = 'Tableau de bord MFB';
+$_MODULE['<{lowcostexpress}prestashop>shipment_details_312c5bb2a2ee24704f721f622066b26f'] = 'Prestashop';
 $_MODULE['<{lowcostexpress}prestashop>shipment_details_988fd738de9c6d177440c5dcf69e73ce'] = 'Retour';
 $_MODULE['<{lowcostexpress}prestashop>shipment_details_6bb311efd788bb4b3123896667e767a7'] = 'Expédition';
 $_MODULE['<{lowcostexpress}prestashop>shipment_details_cab57c7ffc9e9fa28497a7afc1ae8a90'] = 'Le dédouanement électronique est obligatoire pour ce service. Veuillez commander l\'étiquette depuis votre tableau de bord MFB ; la validation depuis ce module est bloquée.';

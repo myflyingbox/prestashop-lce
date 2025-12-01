@@ -944,6 +944,7 @@ class LowCostExpress extends CarrierModule
             'MOD_LCE_DASHBOARD_SYNC_BEHAVIOR' => Configuration::get('MOD_LCE_DASHBOARD_SYNC_BEHAVIOR') ?: 'never',
             'MOD_LCE_SYNC_HISTORY_MAX_PAST_DAYS' => Configuration::get('MOD_LCE_SYNC_HISTORY_MAX_PAST_DAYS') ?: 30,
             'MOD_LCE_SYNC_ORDER_MAX_DURATION' => Configuration::get('MOD_LCE_SYNC_ORDER_MAX_DURATION') ?: 90,
+            'LCE_SHOP_BASE_URL' => $this->context->shop->getBaseURL(true),
         ]);
     }
 
@@ -1233,6 +1234,7 @@ class LowCostExpress extends CarrierModule
                 $sync_configured = Configuration::get('MOD_LCE_SHOP_UUID')
                     && Configuration::get('MOD_LCE_WEBHOOKS_SIGNATURE_KEY')
                     && Configuration::get('MOD_LCE_API_JWT_SHARED_SECRET') !== '';
+                $show_booking_origin = $sync_configured && $sync_behavior !== 'never';
 
                 $var = [
                     'shipments' => $shipments,
@@ -1246,6 +1248,7 @@ class LowCostExpress extends CarrierModule
                     'shipment_offer_flags' => $shipment_offer_flags,
                     'sync_behavior' => $sync_behavior ?: 'never',
                     'sync_configured' => (bool) $sync_configured,
+                    'show_booking_origin' => (bool) $show_booking_origin,
                     'manual_sync_message' => $manual_sync_message,
                     'manual_sync_error' => $manual_sync_error,
                     'config_link' => $this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]),
@@ -1261,7 +1264,10 @@ class LowCostExpress extends CarrierModule
         }
 
         // Making the variable available in the view
-        $this->context->smarty->assign('var', $var);
+        $this->context->smarty->assign([
+            'var' => $var,
+            'lang_iso_code' => $this->context->language->iso_code,
+        ]);
 
         // Rendering the partial view
         return $this->display(__FILE__, 'views/templates/admin/order/shipment_details.tpl');

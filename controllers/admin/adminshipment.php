@@ -776,9 +776,20 @@ class AdminShipmentController extends ModuleAdminController
             ]));
         }
 
+        $order = new Order((int) $shipment->order_id);
+        if (!Validate::isLoadedObject($order)) {
+            header('HTTP/1.0 404 Not Found');
+            exit(json_encode([
+                'error' => $this->module->l('Related order not found.', 'AdminShipment'),
+            ]));
+        }
+
         // Everything looks good, proceeding with booking
 
         $params = [
+            'ecommerce_order_platform' => 'prestashop',
+            'ecommerce_order_identifier' => (int) $order->id,
+            'ecommerce_order_reference' => (string) $order->reference,
             'shipper' => [
                 'company' => $shipment->shipper_company_name,
                 'name' => $shipment->shipper_name,

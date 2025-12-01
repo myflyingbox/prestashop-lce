@@ -65,20 +65,15 @@ function upgrade_module_1_1_5($module)
         }
     }
 
-    // Add ecommerce_order_platform to lce_shipments if missing
-    $column_exists = Db::getInstance()->executeS(
-        'SHOW COLUMNS FROM `' . _DB_PREFIX_ . 'lce_shipments` LIKE "ecommerce_order_platform"'
+
+    Db::getInstance()->execute(
+        'ALTER TABLE `' . _DB_PREFIX_ . 'lce_shipments` 
+            ADD `booking_platform` VARCHAR(255) NOT NULL DEFAULT "prestashop" AFTER `api_order_uuid`'
     );
-    if (!$column_exists) {
-        Db::getInstance()->execute(
-            'ALTER TABLE `' . _DB_PREFIX_ . 'lce_shipments` 
-             ADD `ecommerce_order_platform` VARCHAR(255) NOT NULL DEFAULT "prestashop" AFTER `api_order_uuid`'
-        );
-        // Normalize existing rows
-        Db::getInstance()->execute(
-            'UPDATE `' . _DB_PREFIX_ . 'lce_shipments` SET `ecommerce_order_platform` = "prestashop"'
-        );
-    }
+    // Normalize existing rows
+    Db::getInstance()->execute(
+        'UPDATE `' . _DB_PREFIX_ . 'lce_shipments` SET `booking_platform` = "prestashop"'
+    );
 
     return true;
 }

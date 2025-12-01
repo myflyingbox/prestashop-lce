@@ -95,6 +95,7 @@ class OrderSerializer
                 'id' => isset($order['current_state_id']) ? (int) $order['current_state_id'] : null,
                 'name' => isset($order['current_state_name']) ? $order['current_state_name'] : null,
                 'color' => isset($order['current_state_color']) ? $order['current_state_color'] : null,
+                'slug' => self::getStatusSlug(isset($order['current_state_id']) ? (int) $order['current_state_id'] : 0),
             ],
             'customer' => [
                 'id' => isset($order['customer_id']) ? (int) $order['customer_id'] : 0,
@@ -138,5 +139,41 @@ class OrderSerializer
             'gift_message' => isset($order['gift_message']) ? $order['gift_message'] : null,
             'recyclable' => isset($order['recyclable']) ? (bool) $order['recyclable'] : false,
         ];
+    }
+
+    /**
+     * Map known Prestashop order states to a stable slug.
+     *
+     * @param int $id_order_state
+     * @return string
+     */
+    protected static function getStatusSlug($id_order_state)
+    {
+        static $slug_map = null;
+
+        if ($slug_map === null) {
+            $config_keys = [
+                'PS_OS_CHEQUE' => 'ps_os_cheque',
+                'PS_OS_PAYMENT' => 'ps_os_payment',
+                'PS_OS_PREPARATION' => 'ps_os_preparation',
+                'PS_OS_SHIPPING' => 'ps_os_shipping',
+                'PS_OS_DELIVERED' => 'ps_os_delivered',
+                'PS_OS_CANCELED' => 'ps_os_canceled',
+                'PS_OS_REFUND' => 'ps_os_refund',
+                'PS_OS_ERROR' => 'ps_os_error',
+                'PS_OS_OUTOFSTOCK' => 'ps_os_outofstock',
+                'PS_OS_BANKWIRE' => 'ps_os_bankwire',
+            ];
+
+            $slug_map = [];
+            foreach ($config_keys as $config_key => $slug) {
+                $id = (int) Configuration::get($config_key);
+                if ($id > 0) {
+                    $slug_map[$id] = $slug;
+                }
+            }
+        }
+
+        return isset($slug_map[$id_order_state]) ? $slug_map[$id_order_state] : '';
     }
 }
