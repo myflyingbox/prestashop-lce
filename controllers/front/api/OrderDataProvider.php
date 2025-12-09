@@ -123,6 +123,9 @@ class OrderDataProvider
         $sql->select('od.product_name');
         $sql->select('od.product_quantity');
         $sql->select('od.product_price');
+        $sql->select('od.unit_price_tax_incl');
+        $sql->select('od.unit_price_tax_excl');
+        $sql->select('od.total_price_tax_excl');
         $sql->select('od.total_price_tax_incl');
         $sql->select('od.product_weight');
         $sql->from('order_detail', 'od');

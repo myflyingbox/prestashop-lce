@@ -68,8 +68,11 @@ class OrderSerializer
                 'reference' => isset($product['product_reference']) ? $product['product_reference'] : null,
                 'name' => isset($product['product_name']) ? $product['product_name'] : null,
                 'quantity' => isset($product['product_quantity']) ? (int) $product['product_quantity'] : 0,
-                'price' => isset($product['product_price']) ? (float) $product['product_price'] : 0.0,
-                'total' => isset($product['total_price_tax_incl']) ? (float) $product['total_price_tax_incl'] : 0.0,
+                'product_price' => isset($product['product_price']) ? (float) $product['product_price'] : 0.0,
+                'unit_price_tax_incl' => isset($product['unit_price_tax_incl']) ? (float) $product['unit_price_tax_incl'] : 0.0,
+                'unit_price_tax_excl' => isset($product['unit_price_tax_excl']) ? (float) $product['unit_price_tax_excl'] : 0.0,
+                'total_price_tax_incl' => isset($product['total_price_tax_incl']) ? (float) $product['total_price_tax_incl'] : 0.0,
+                'total_price_tax_excl' => isset($product['total_price_tax_excl']) ? (float) $product['total_price_tax_excl'] : 0.0,
                 'weight' => isset($product['product_weight']) ? (float) $product['product_weight'] : 0.0,
             ];
         }
