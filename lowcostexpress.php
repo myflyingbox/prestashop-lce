@@ -507,7 +507,11 @@ class LowCostExpress extends CarrierModule
             $headers[] = 'x-mfb-client-api-id: ' . $client_api_id;
         }
 
-        $ch = curl_init('https://dashboard.myflyingbox.com/webhooks/prestashop');
+        // Use custom webhook URL if set, otherwise use default.
+        // This allows testing with a local webhook receiver during development.
+        $webhook_url = Configuration::get('MOD_LCE_WEBHOOK_URL') ?: 'https://dashboard.myflyingbox.com/webhooks/prestashop';
+        
+        $ch = curl_init($webhook_url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
