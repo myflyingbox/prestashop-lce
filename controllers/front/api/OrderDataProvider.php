@@ -66,7 +66,7 @@ class OrderDataProvider
         $sql->select('co.iso_code AS country_iso, col.name AS country_name');
         $sql->select('o.id_carrier, cr.name AS carrier_name, crl.delay AS carrier_delay');
         $sql->select('lce.code AS mfb_service_code');
-        $sql->select('csr.selected_relay AS selected_relay');
+        $sql->select('csr.relay_code AS selected_relay');
         $sql->select('o.id_currency, cu.iso_code AS currency_iso_code, cul.symbol AS currency_sign');
         $sql->select('o.current_state AS current_state_id, osl.name AS current_state_name, os.color AS current_state_color');
         $sql->from('orders', 'o');
