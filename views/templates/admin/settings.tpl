@@ -32,9 +32,6 @@
                 {l s='[1]Negotiated rates[/1] without minimum volume,' tags=['<strong>'] mod='lowcostexpress'}
             </li>
             <li>
-                {l s='[1]Monthly invoicing[/1] with 30-day payment deadline,' tags=['<strong>'] mod='lowcostexpress'}
-            </li>
-            <li>
                 {l s='A [1]team of professionals[/1] with long experience in shipping,' tags=['<strong>'] mod='lowcostexpress'}
             </li>
             <li>
