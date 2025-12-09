@@ -65,6 +65,8 @@ class OrderDataProvider
         $sql->select('o.id_address_delivery, a.firstname AS address_firstname, a.lastname AS address_lastname, a.company AS address_company, a.address1, a.address2, a.postcode, a.city, a.id_country, a.phone, a.phone_mobile');
         $sql->select('co.iso_code AS country_iso, col.name AS country_name');
         $sql->select('o.id_carrier, cr.name AS carrier_name, crl.delay AS carrier_delay');
+        $sql->select('lce.code AS mfb_service_code');
+        $sql->select('csr.selected_relay AS selected_relay');
         $sql->select('o.id_currency, cu.iso_code AS currency_iso_code, cul.symbol AS currency_sign');
         $sql->select('o.current_state AS current_state_id, osl.name AS current_state_name, os.color AS current_state_color');
         $sql->from('orders', 'o');
@@ -73,6 +75,8 @@ class OrderDataProvider
         $sql->leftJoin('country', 'co', 'co.id_country = a.id_country');
         $sql->leftJoin('country_lang', 'col', 'col.id_country = a.id_country AND col.id_lang = ' . $id_lang);
         $sql->leftJoin('carrier', 'cr', 'cr.id_carrier = o.id_carrier');
+        $sql->leftjoin('lce_services', 'lce', 'lce.id_carrier = o.id_carrier');
+        $sql->leftJoin('lce_cart_selected_relay', 'csr', 'csr.id_cart = o.id_cart');
         $sql->leftJoin('carrier_lang', 'crl', 'crl.id_carrier = o.id_carrier AND crl.id_lang = ' . $id_lang);
         $sql->leftJoin('currency', 'cu', 'cu.id_currency = o.id_currency');
         $sql->leftJoin('currency_lang', 'cul', 'cul.id_currency = o.id_currency AND cul.id_lang = ' . $id_lang);

@@ -117,9 +117,11 @@ class OrderSerializer
                 'phone_mobile' => isset($order['phone_mobile']) ? $order['phone_mobile'] : null,
             ],
             'carrier' => [
-                'id' => isset($order['carrier_id']) ? (int) $order['carrier_id'] : 0,
+                'id' => isset($order['id_carrier']) ? (int) $order['id_carrier'] : 0,
                 'name' => isset($order['carrier_name']) ? $order['carrier_name'] : null,
                 'delay' => isset($order['carrier_delay']) ? $order['carrier_delay'] : null,
+                'mfb_service_code' => isset($order['mfb_service_code']) ? $order['mfb_service_code'] : null,
+                'selected_relay' => isset($order['selected_relay']) ? $order['selected_relay'] : null,
             ],
             'products' => self::formatProducts($products),
             'totals' => [
