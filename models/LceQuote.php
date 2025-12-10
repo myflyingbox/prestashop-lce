@@ -94,8 +94,8 @@ class LceQuote extends ObjectModel
 
         $id_zone = Address::getZoneById((int) $cart->id_address_delivery);
 
-        $lce_product_codes = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('
-            SELECT GROUP_CONCAT(c.lce_product_code SEPARATOR ",") AS codes
+        $lce_product_codes = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
+            SELECT c.lce_product_code
             FROM ' . _DB_PREFIX_ . 'carrier c 
             INNER JOIN ' . _DB_PREFIX_ . 'carrier_zone cz ON (cz.id_carrier = c.id_carrier)
             WHERE c.external_module_name = "lowcostexpress" 
@@ -104,8 +104,8 @@ class LceQuote extends ObjectModel
             AND cz.id_zone = ' . (int) $id_zone . ' 
         ');
 
-        if ($lce_product_codes != '') {
-            return explode(',', $lce_product_codes);
+        if (is_array($lce_product_codes) && count($lce_product_codes) > 0) {
+            return array_column($lce_product_codes, 'lce_product_code');
         } else {
             return [];
         }
