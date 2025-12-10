@@ -18,36 +18,33 @@
  * @author    MyFlyingBox <contact@myflyingbox.com>
  * @copyright 2016 MyFlyingBox
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
- * @version   1.0
- *
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
 // Loading LCE php library based on PHP version
 if (version_compare(PHP_VERSION, '8.0.0', '>=')) {
-    require_once _PS_MODULE_DIR_.'lowcostexpress/lib/php-lce/bootstrap.php';
+    require_once _PS_MODULE_DIR_ . 'lowcostexpress/lib/php-lce/bootstrap.php';
 } else {
-    require_once _PS_MODULE_DIR_.'lowcostexpress/lib/php-lce-0.0.3/bootstrap.php';
+    require_once _PS_MODULE_DIR_ . 'lowcostexpress/lib/php-lce-0.0.3/bootstrap.php';
 }
 
 // Loading Models
-require_once _PS_MODULE_DIR_.'lowcostexpress/models/LceShipment.php';
-require_once _PS_MODULE_DIR_.'lowcostexpress/models/LceParcel.php';
-require_once _PS_MODULE_DIR_.'lowcostexpress/models/LceQuote.php';
-require_once _PS_MODULE_DIR_.'lowcostexpress/models/LceOffer.php';
-require_once _PS_MODULE_DIR_.'lowcostexpress/models/LceDimension.php';
-require_once _PS_MODULE_DIR_.'lowcostexpress/models/LceService.php';
+require_once _PS_MODULE_DIR_ . 'lowcostexpress/models/LceShipment.php';
+require_once _PS_MODULE_DIR_ . 'lowcostexpress/models/LceParcel.php';
+require_once _PS_MODULE_DIR_ . 'lowcostexpress/models/LceQuote.php';
+require_once _PS_MODULE_DIR_ . 'lowcostexpress/models/LceOffer.php';
+require_once _PS_MODULE_DIR_ . 'lowcostexpress/models/LceDimension.php';
+require_once _PS_MODULE_DIR_ . 'lowcostexpress/models/LceService.php';
 
 // Loading Controllers
-require_once _PS_MODULE_DIR_.'lowcostexpress/controllers/admin/adminparcel.php';
-require_once _PS_MODULE_DIR_.'lowcostexpress/controllers/admin/adminshipment.php';
+require_once _PS_MODULE_DIR_ . 'lowcostexpress/controllers/admin/adminparcel.php';
+require_once _PS_MODULE_DIR_ . 'lowcostexpress/controllers/admin/adminshipment.php';
 
 class LowCostExpress extends CarrierModule
 {
-    public static $settings = array(
+    public static $settings = [
         'MOD_LCE_API_LOGIN',
         'MOD_LCE_API_PASSWORD',
         'MOD_LCE_API_ENV',
@@ -74,10 +71,17 @@ class LowCostExpress extends CarrierModule
         'MOD_LCE_MAX_REAL_WEIGHT',
         'MOD_LCE_MAX_VOL_WEIGHT',
         'MOD_LCE_FORCE_WEIGHT_DIMS_TABLE',
-        'MOD_LCE_GOOGLE_CLOUD_API_KEY'
-    );
+        'MOD_LCE_GOOGLE_CLOUD_API_KEY',
+        // Dashboard synchronization settings
+        'MOD_LCE_SHOP_UUID',
+        'MOD_LCE_API_JWT_SHARED_SECRET',
+        'MOD_LCE_WEBHOOKS_SIGNATURE_KEY',
+        'MOD_LCE_DASHBOARD_SYNC_BEHAVIOR',
+        'MOD_LCE_SYNC_HISTORY_MAX_PAST_DAYS',
+        'MOD_LCE_SYNC_ORDER_MAX_DURATION',
+    ];
 
-    public static $mandatory_settings = array(
+    public static $mandatory_settings = [
         'MOD_LCE_API_LOGIN',
         'MOD_LCE_API_PASSWORD',
         'MOD_LCE_API_ENV',
@@ -90,27 +94,30 @@ class LowCostExpress extends CarrierModule
         'MOD_LCE_DEFAULT_POSTAL_CODE',
         'MOD_LCE_DEFAULT_COUNTRY',
         'MOD_LCE_DEFAULT_PHONE',
-        'MOD_LCE_DEFAULT_EMAIL'
-    );
+        'MOD_LCE_DEFAULT_EMAIL',
+    ];
 
     public $id_carrier;
 
     private $_html = '';
-    private $_postErrors = array();
+    private $_postErrors = [];
     private $_moduleName = 'lowcostexpress';
 
     public function __construct()
     {
         $this->name = 'lowcostexpress';
         $this->tab = 'shipping_logistics';
-        $this->version = '1.1.3';
+        $this->version = '1.1.5';
         $this->author = 'MY FLYING BOX SAS';
 
         parent::__construct();
 
         $this->displayName = $this->l('MY FLYING BOX Express Shipping');
         $this->description = $this->l('Your shipments made easy with major express carriers (DHL, UPS, Chronopost...) at competitive negotiated rates.');
-        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = [
+            'min' => '1.7',
+            'max' => _PS_VERSION_,
+        ];
         $this->module_key = '5100c5ae613ddfacd4bc468aee7ee59e';
 
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module?');
@@ -118,7 +125,6 @@ class LowCostExpress extends CarrierModule
         $this->context->smarty->assign('module_name', $this->name);
 
         $this->bootstrap = true;
-
 
         // Check is php-curl is available
         if (!extension_loaded('curl')) {
@@ -138,44 +144,62 @@ class LowCostExpress extends CarrierModule
             '2'
         );
         $api->application = 'prestashop-lce';
-        $api->application_version = $this->version.' (PS '._PS_VERSION_.')';
+        $api->application_version = $this->version . ' (PS ' . _PS_VERSION_ . ')';
     }
 
-    //===============
-    // INSTALLATION
-    //===============
+    /**
+     * Installation
+     */
     public function install()
     {
-
         // Creating SQL tables
-        $sql = include dirname(__FILE__).'/sql-install.php';
+        $sql = include dirname(__FILE__) . '/sql-install.php';
         foreach ($sql as $s) {
             if (!Db::getInstance()->Execute($s)) {
                 return false;
             }
         }
 
+        // Initializing dimensions
+        $this->initDimensions();
+
         // Column adds to existing PS tables
-        Db::getInstance()->Execute('SHOW COLUMNS FROM `'._DB_PREFIX_."carrier` LIKE 'lce_product_code'");
+        Db::getInstance()->Execute('
+            SHOW COLUMNS FROM `' . _DB_PREFIX_ . "carrier` 
+            LIKE 'lce_product_code'
+        ");
         if (Db::getInstance()->numRows() == 0) {
-            Db::getInstance()->Execute('ALTER TABLE `'._DB_PREFIX_."carrier`
-                                        ADD `lce_product_code` VARCHAR(255) NOT NULL DEFAULT '' AFTER `name`;");
+            Db::getInstance()->Execute('
+                ALTER TABLE `' . _DB_PREFIX_ . "carrier`
+                ADD `lce_product_code` VARCHAR(255) NOT NULL DEFAULT '' AFTER `name`;
+            ");
         }
 
         // Migration 0.0.7 to 0.0.8
-        Db::getInstance()->Execute('SHOW COLUMNS FROM `'._DB_PREFIX_."lce_offers` LIKE 'base_price_in_cents'");
+        Db::getInstance()->Execute('
+            SHOW COLUMNS FROM `' . _DB_PREFIX_ . "lce_offers` 
+            LIKE 'base_price_in_cents'
+        ");
         if (Db::getInstance()->numRows() == 0) {
-            Db::getInstance()->Execute('ALTER TABLE `'._DB_PREFIX_.'lce_offers`
-                                         ADD `base_price_in_cents` INT(11) NOT NULL AFTER `lce_product_code`;');
+            Db::getInstance()->Execute('
+                ALTER TABLE `' . _DB_PREFIX_ . 'lce_offers`
+                ADD `base_price_in_cents` INT(11) NOT NULL AFTER `lce_product_code`;
+            ');
         }
 
         // Migration 0.0.10 to 0.0.11
-        Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'lce_dimensions`
-                                      CHANGE `weight` `weight` DECIMAL(5,3);');
-        Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'lce_dimensions`
-                                      CHANGE `weight_to` `weight_to` DECIMAL(5,3);');
-        Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'lce_dimensions`
-                                      CHANGE `weight_from` `weight_from` DECIMAL(5,3);');
+        Db::getInstance()->execute('
+            ALTER TABLE `' . _DB_PREFIX_ . 'lce_dimensions`
+            CHANGE `weight` `weight` DECIMAL(5,3);
+        ');
+        Db::getInstance()->execute('
+            ALTER TABLE `' . _DB_PREFIX_ . 'lce_dimensions`
+            CHANGE `weight_to` `weight_to` DECIMAL(5,3);
+        ');
+        Db::getInstance()->execute('
+            ALTER TABLE `' . _DB_PREFIX_ . 'lce_dimensions`
+            CHANGE `weight_from` `weight_from` DECIMAL(5,3);
+        ');
 
         // Executing standard module installation statements
         if (!parent::install()) {
@@ -190,10 +214,10 @@ class LowCostExpress extends CarrierModule
         // Register both controllers
         $tab = new Tab();
         $tab->class_name = 'AdminShipment';
-        $tab->id_parent = (int)Tab::getIdFromClassName('AdminParentShipping');
+        $tab->id_parent = (int) Tab::getIdFromClassName('AdminParentShipping');
         $tab->module = 'lowcostexpress';
         $tab->active = false; // Not displaying in menu
-        $languages = DB::getInstance()->executeS(
+        $languages = Db::getInstance()->executeS(
             'SELECT id_lang, iso_code FROM `' . _DB_PREFIX_ . 'lang`'
         );
         foreach ($languages as $value) {
@@ -204,11 +228,12 @@ class LowCostExpress extends CarrierModule
 
         $tab = new Tab();
         $tab->class_name = 'AdminParcel';
-        $tab->id_parent = (int)Tab::getIdFromClassName('AdminParentShipping');
+        $tab->id_parent = (int) Tab::getIdFromClassName('AdminParentShipping');
         $tab->module = 'lowcostexpress';
         $tab->active = false; // Not displaying in menu
-        $languages = DB::getInstance()->executeS(
-            'SELECT id_lang, iso_code FROM `' . _DB_PREFIX_ . 'lang`'
+        $languages = Db::getInstance()->executeS('
+            SELECT id_lang, iso_code 
+            FROM `' . _DB_PREFIX_ . 'lang`'
         );
         foreach ($languages as $value) {
             $tab->name[$value['id_lang']] = ($value['iso_code'] == 'fr') ?
@@ -244,23 +269,27 @@ class LowCostExpress extends CarrierModule
         } else {
             $this->registerHook('actionObjectProductInCartDeleteAfter');
         }
+        // Webhooks (order events)
+        $this->registerHook('actionValidateOrder');
+        $this->registerHook('actionOrderStatusPostUpdate');
 
         return true;
     }
 
     public function uninstall()
     {
-
         // Obtaining existing carriers linked to LCE products
-        $sql = 'SELECT c.*, cl.delay
-              FROM `'._DB_PREFIX_.'carrier` c
-              LEFT JOIN `'._DB_PREFIX_.'carrier_lang` cl
-                ON (c.`id_carrier` = cl.`id_carrier`
-                  AND cl.`id_lang` = '.(int) $this->context->language->id.Shop::addSqlRestrictionOnLang('cl').')
-              WHERE c.`deleted` = 0 AND c.`external_module_name` = "lowcostexpress"';
+        $sql = '
+            SELECT c.*, cl.delay
+            FROM `' . _DB_PREFIX_ . 'carrier` c
+            LEFT JOIN `' . _DB_PREFIX_ . 'carrier_lang` cl
+            ON (c.`id_carrier` = cl.`id_carrier`
+            AND cl.`id_lang` = ' . (int) $this->context->language->id . Shop::addSqlRestrictionOnLang('cl') . ')
+            WHERE c.`deleted` = 0 AND c.`external_module_name` = "lowcostexpress"
+        ';
 
         $carriers_res = Db::getInstance()->ExecuteS($sql);
-        $carriers = array();
+        $carriers = [];
         foreach ($carriers_res as $val) {
             $carriers[] = new Carrier((int) $val['id_carrier']);
         }
@@ -285,7 +314,6 @@ class LowCostExpress extends CarrierModule
         $this->unregisterHook('displayAfterCarrier');
         $this->unregisterHook('actionFrontControllerSetMedia');
 
-
         return parent::uninstall();
     }
 
@@ -298,30 +326,253 @@ class LowCostExpress extends CarrierModule
      */
     public function hookActionCarrierUpdate($params)
     {
+        // Only process LCE carriers to avoid polluting settings/services for native carriers
         $sql = 'SELECT `lce_product_code`
-                FROM '._DB_PREFIX_.'carrier WHERE (`id_carrier` = "'.(int)$params['id_carrier'].'")';
+                FROM ' . _DB_PREFIX_ . 'carrier
+                WHERE `id_carrier` = "' . (int) $params['id_carrier'] . '"
+                  AND `external_module_name` = "' . pSQL($this->name) . '"';
         $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+        if (!$row || empty($row['lce_product_code'])) {
+            return;
+        }
 
         $config_key = $this->_productConfigKey($row['lce_product_code']);
         Configuration::updateValue($config_key, $params['carrier']->id);
 
         $lce_service = LceService::findByCarrierId($params['id_carrier']);
-        $lce_service->id_carrier = $params['carrier']->id;
-        $lce_service->save();
+        if (Validate::isLoadedObject($lce_service)) {
+            $lce_service->id_carrier = $params['carrier']->id;
+            $lce_service->save();
+        }
     }
 
-    //===============
-    // CONFIGURATION
-    //===============
+    /*
+     * Dashboard synchronization helpers
+     */
+
+    /**
+     * Generate a UUIDv4
+     *
+     * @return string
+     */
+    public function generateUuidV4()
+    {
+        $data = random_bytes(16);
+        // Version 4
+        $data[6] = chr(ord($data[6]) & 0x0F | 0x40);
+        // Variant 10
+        $data[8] = chr(ord($data[8]) & 0x3F | 0x80);
+
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+    }
+
+    /**
+     * Generate a secure random key (512 bits = 64 bytes)
+     * @return string Base64 encoded key
+     */
+    public function generateSecureKey()
+    {
+        return base64_encode(random_bytes(64));
+    }
+
+    /**
+     * Hook: order validation (create)
+     */
+    public function hookActionValidateOrder($params)
+    {
+        if (empty($params['order']) || !$params['order'] instanceof Order) {
+            return;
+        }
+        /** @var Order $order */
+        $order = $params['order'];
+
+        if (!$this->shouldSendWebhooks()) {
+            return;
+        }
+
+        $state = isset($params['orderStatus']) && $params['orderStatus'] instanceof OrderState ? $params['orderStatus'] : null;
+        $this->sendOrderWebhook('order/create', $order, $state);
+    }
+
+    /**
+     * Hook: order status update (update/cancel)
+     */
+    public function hookActionOrderStatusPostUpdate($params)
+    {
+        if (empty($params['id_order'])) {
+            return;
+        }
+        $order = new Order((int) $params['id_order']);
+        if (!Validate::isLoadedObject($order)) {
+            return;
+        }
+        if (!$this->shouldSendWebhooks()) {
+            return;
+        }
+
+        $new_status = isset($params['newOrderStatus']) && $params['newOrderStatus'] instanceof OrderState ? $params['newOrderStatus'] : null;
+        $canceled_status_id = (int) Configuration::get('PS_OS_CANCELED');
+        $topic = ($new_status && (int) $new_status->id === $canceled_status_id) ? 'order/cancel' : 'order/update';
+
+        $this->sendOrderWebhook($topic, $order, $new_status);
+    }
+
+    /**
+     * Build and send an order webhook with minimal payload.
+     *
+     * @param string $topic
+     * @param Order $order
+     * @param OrderState|null $state
+     * @param bool $force
+     * @return bool
+     */
+    private function sendOrderWebhook($topic, Order $order, $state = null, $force = false)
+    {
+        $state_name = null;
+        if ($state instanceof OrderState) {
+            $state_name = isset($state->name[(int) $order->id_lang]) ? $state->name[(int) $order->id_lang] : $state->name[(int) Configuration::get('PS_LANG_DEFAULT')];
+        } else {
+            $state_id = (int) $order->current_state;
+            if ($state_id) {
+                $state_obj = new OrderState($state_id);
+                if (Validate::isLoadedObject($state_obj)) {
+                    $state_name = isset($state_obj->name[(int) $order->id_lang]) ? $state_obj->name[(int) $order->id_lang] : $state_obj->name[(int) Configuration::get('PS_LANG_DEFAULT')];
+                }
+            }
+        }
+
+        $payload = [
+            'order_id' => (int) $order->id,
+            'order_reference' => $order->reference,
+            'created_at' => $order->date_add,
+            'state' => $state_name ?: 'unknown',
+        ];
+
+        return $this->sendWebhook($topic, $payload, $force);
+    }
+
+    /**
+     * Check if webhooks should be sent based on dashboard_sync_behavior.
+     * @param bool $force Force sending even if behavior is on_demand (used for manual triggers)
+     * @return bool
+     */
+    public function shouldSendWebhooks($force = false)
+    {
+        $behavior = Configuration::get('MOD_LCE_DASHBOARD_SYNC_BEHAVIOR');
+        if ($behavior === 'never') {
+            return false;
+        }
+        if ($behavior === 'always') {
+            return true;
+        }
+        // on_demand
+        return (bool) $force;
+    }
+
+    /**
+     * Send a webhook to the MFB dashboard.
+     *
+     * @param string $topic
+     * @param array $payload
+     * @param bool $force Force sending even if behavior is on_demand
+     * @return bool
+     */
+    public function sendWebhook($topic, array $payload, $force = false)
+    {
+        if (!$this->shouldSendWebhooks($force)) {
+            return false;
+        }
+
+        $shop_uuid = Configuration::get('MOD_LCE_SHOP_UUID');
+        $signature_key = Configuration::get('MOD_LCE_WEBHOOKS_SIGNATURE_KEY');
+        if (empty($shop_uuid) || empty($signature_key)) {
+            Logger::addLog('[LCE] Webhook not sent: missing shop UUID or signature key', 3);
+            return false;
+        }
+
+        $body = json_encode($payload);
+        $signature = base64_encode(hash_hmac('sha256', $body, $signature_key, true));
+
+        $headers = [
+            'Content-Type: application/json',
+            'x-mfb-shop-id: ' . $shop_uuid,
+            'x-mfb-topic: ' . $topic,
+            'x-mfb-hmac-sha256: ' . $signature,
+            'x-mfb-triggered-at: ' . time(),
+            'x-mfb-module-version: ' . $this->version,
+        ];
+
+        $client_api_id = Configuration::get('MOD_LCE_API_LOGIN');
+        if (!empty($client_api_id)) {
+            $headers[] = 'x-mfb-client-api-id: ' . $client_api_id;
+        }
+
+        // Use custom webhook URL if set, otherwise use default.
+        // This allows testing with a local webhook receiver during development.
+        $webhook_url = Configuration::get('MOD_LCE_WEBHOOK_URL') ?: 'https://dashboard.myflyingbox.com/webhooks/prestashop';
+        
+        $ch = curl_init($webhook_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+
+        $response = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        if ($error || $http_code >= 400) {
+            Logger::addLog('[LCE] Webhook error (' . $topic . '): HTTP ' . $http_code . ' ' . $error . ' ' . $response, 3);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Auto-generate missing synchronization keys on first load
+     */
+    private function ensureSyncKeysExist()
+    {
+        // Generate shop UUID if not exists
+        if (!Configuration::get('MOD_LCE_SHOP_UUID')) {
+            Configuration::updateValue('MOD_LCE_SHOP_UUID', $this->generateUuidV4());
+        }
+
+        // Generate webhooks signature key if not exists
+        if (!Configuration::get('MOD_LCE_WEBHOOKS_SIGNATURE_KEY')) {
+            Configuration::updateValue('MOD_LCE_WEBHOOKS_SIGNATURE_KEY', $this->generateSecureKey());
+        }
+    }
 
     /*
      * Settings page of the module
      */
     public function getContent()
     {
+        // Ensure sync keys are generated on first config page load
+        $this->ensureSyncKeysExist();
+
         $message = '';
 
-        if (Tools::isSubmit('submit_'.$this->name)) {
+        // Handle JWT secret key generation/deletion
+        if (Tools::isSubmit('generate_jwt_secret')) {
+            $wasEmpty = empty(Configuration::get('MOD_LCE_API_JWT_SHARED_SECRET'));
+            Configuration::updateValue('MOD_LCE_API_JWT_SHARED_SECRET', $this->generateSecureKey());
+            if ($wasEmpty) {
+                $message .= $this->displayConfirmation($this->l('API authentication key has been generated successfully. Copy it to your MY FLYING BOX dashboard configuration.'));
+            } else {
+                $message .= $this->displayConfirmation($this->l('API authentication key has been regenerated. You must update it in your MY FLYING BOX dashboard configuration.'));
+            }
+        } elseif (Tools::isSubmit('delete_jwt_secret')) {
+            Configuration::updateValue('MOD_LCE_API_JWT_SHARED_SECRET', '');
+            $message .= $this->displayConfirmation($this->l('API authentication key has been deleted.'));
+        }
+
+        if (Tools::isSubmit('submit_' . $this->name)) {
             $message .= $this->_saveSettings();
         }
 
@@ -329,7 +580,7 @@ class LowCostExpress extends CarrierModule
             $message .= $this->displayWarning($this->l('You must set a value for all mandatory settings'));
         }
 
-        if (Tools::isSubmit('submit_'.$this->name.'_refresh_products')) {
+        if (Tools::isSubmit('submit_' . $this->name . '_refresh_products')) {
             $message .= $this->_refreshLceProducts();
         }
 
@@ -339,6 +590,7 @@ class LowCostExpress extends CarrierModule
         if (version_compare(_PS_VERSION_, '1.6.0') >= 0) {
             return $this->display(__FILE__, 'views/templates/admin/settings.bootstrap.tpl');
         }
+
         return $this->display(__FILE__, 'views/templates/admin/settings.tpl');
     }
 
@@ -361,7 +613,19 @@ class LowCostExpress extends CarrierModule
         $message = '';
         $record_error = false;
 
+        // Settings that should not be updated via form submission (readonly fields, managed separately)
+        $protected_settings = [
+            'MOD_LCE_SHOP_UUID',
+            'MOD_LCE_API_JWT_SHARED_SECRET',
+            'MOD_LCE_WEBHOOKS_SIGNATURE_KEY',
+        ];
+
         foreach (self::$settings as $setting) {
+            // Skip protected settings - they are managed separately or auto-generated
+            if (in_array($setting, $protected_settings)) {
+                continue;
+            }
+
             if (!Configuration::updateValue($setting, Tools::getValue($setting))) {
                 $record_error = true;
             }
@@ -380,6 +644,7 @@ class LowCostExpress extends CarrierModule
             $shipper_country = Configuration::get('MOD_LCE_DEFAULT_COUNTRY');
             $this->_refreshLceProducts($shipper_country);
         }
+
         return $message;
     }
 
@@ -396,7 +661,7 @@ class LowCostExpress extends CarrierModule
 
         $api = Lce\Lce::configure($login, $password, $env, '2'); // Now using API v2
         $api->application = 'prestashop-lce';
-        $api->application_version = $this->version.' (PS '._PS_VERSION_.')';
+        $api->application_version = $this->version . ' (PS ' . _PS_VERSION_ . ')';
 
         $throw_exceptions = false;
         $test = Lce\Lce::check($throw_exceptions);
@@ -409,10 +674,10 @@ class LowCostExpress extends CarrierModule
         $previous_dimension = '';
         for ($i = 1; $i <= 15; ++$i) {
             $dimension = new LceDimension($i);
-            $dimension->length = (int) Tools::getValue('dim'.$i.'_length');
-            $dimension->width = (int) Tools::getValue('dim'.$i.'_width');
-            $dimension->height = (int) Tools::getValue('dim'.$i.'_height');
-            $dimension->weight_to = (float) Tools::getValue('dim'.$i.'_weight');
+            $dimension->length = (int) Tools::getValue('dim' . $i . '_length');
+            $dimension->width = (int) Tools::getValue('dim' . $i . '_width');
+            $dimension->height = (int) Tools::getValue('dim' . $i . '_height');
+            $dimension->weight_to = (float) Tools::getValue('dim' . $i . '_weight');
             if ($i == 1) {
                 $dimension->weight_from = 0;
             } else {
@@ -439,9 +704,9 @@ class LowCostExpress extends CarrierModule
     {
         $length = Tools::strlen($product_code);
         if ($length > 28 && version_compare(_PS_VERSION_, '1.6.0') < 0) {
-            $config_key = md5('LCE_'.$product_code);
+            $config_key = md5('LCE_' . $product_code);
         } else {
-            $config_key = 'LCE_'.$product_code;
+            $config_key = 'LCE_' . $product_code;
         }
         return $config_key;
     }
@@ -458,19 +723,20 @@ class LowCostExpress extends CarrierModule
                 if (!$lce_service) {
                     $lce_service = new LceService();
                     $service_save_action = 'add';
-                    $lce_service->code          = $product->code;
-                    $lce_service->carrier_code  = $product->carrier_code;
-                    $lce_service->name          = $product->name;
-                    $lce_service->pickup_available   = $product->pick_up;
-                    $lce_service->dropoff_available  = $product->drop_off;
-                    $lce_service->relay_delivery     = $product->preset_delivery_location;
+                    $lce_service->code = $product->code;
+                    $lce_service->carrier_code = $product->carrier_code;
+                    $lce_service->name = $product->name;
+                    $lce_service->pickup_available = $product->pick_up;
+                    $lce_service->dropoff_available = $product->drop_off;
+                    $lce_service->relay_delivery = $product->preset_delivery_location;
                 } else {
-                    $lce_service->name          = $product->name;
+                    $lce_service->name = $product->name;
                     $service_save_action = 'save';
                 }
 
                 $product_code = trim($product->code);
                 $config_key = $this->_productConfigKey($product_code);
+                $carrier_exists = false;
 
                 if ($service_save_action == 'add' && !Configuration::get($config_key)) {
                     // We consider a service as non existing only if we have no existing LceService (new approach) and no
@@ -481,17 +747,17 @@ class LowCostExpress extends CarrierModule
                 } else {
                     // Attempting to get the carrier directly via SQL, by module,
                     // product code, and existing flag (deleted = 0)
-                    $sql = 'SELECT `id_carrier` FROM '._DB_PREFIX_.'carrier
+                    $sql = 'SELECT `id_carrier` FROM ' . _DB_PREFIX_ . 'carrier
                             WHERE (`external_module_name` = "lowcostexpress"
-                            AND `lce_product_code` = "'.pSQL($product_code).'" AND `deleted` = 0)';
+                            AND `lce_product_code` = "' . pSQL($product_code) . '" AND `deleted` = 0)';
                     if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql)) {
                         if ((int) $row['id_carrier'] > 0) {
                             $carrier_exists = true;
                             $lce_service->id_carrier = (int) $row['id_carrier'];
                             $lce_service->$service_save_action();
 
-                            // Set id_tax_rules_group in table carrier_tax_rules_group_shop 
-                            $carrier = new Carrier((int)$row['id_carrier']);
+                            // Set id_tax_rules_group in table carrier_tax_rules_group_shop
+                            $carrier = new Carrier((int) $row['id_carrier']);
                             $carrier->setTaxRulesGroup(1, true);
                             unset($carrier);
                         }
@@ -502,17 +768,14 @@ class LowCostExpress extends CarrierModule
 
                 // If the carrier is not yet registered, we add it
                 $service_from = $shipper_country == null ? Tools::getValue('shipper_country') : $shipper_country;
-                if (!$carrier_exists && !empty($product_code) &&
-                    in_array(Tools::strtoupper($service_from), $product->export_from)
-                ) {
+                if (!$carrier_exists && !empty($product_code) && in_array(Tools::strtoupper($service_from), $product->export_from)) {
                     $carrier = new Carrier();
-                    $carrier->name = $lce_service->carrierName().' '.$lce_service->name;
-                    $carrier->id_tax_rules_group = 1;
+                    $carrier->name = $lce_service->carrierName() . ' ' . $lce_service->name;
                     $carrier->url = $lce_service->getTrackingUrl();
                     $carrier->active = false;
-                    $carrier->deleted = 0;
+                    $carrier->deleted = false;
                     $carrier->shipping_handling = false;
-                    $carrier->range_behavior = 0;
+                    $carrier->range_behavior = false;
                     $carrier->is_module = false;
                     $carrier->shipping_external = true;
                     $carrier->external_module_name = 'lowcostexpress';
@@ -536,7 +799,6 @@ class LowCostExpress extends CarrierModule
                     }
 
                     if ($carrier->add()) {
-
                         // Set tax rules group to 1 for all shops for PS 1.7.0+
                         $carrier->setTaxRulesGroup(1, true);
 
@@ -544,36 +806,36 @@ class LowCostExpress extends CarrierModule
                         // This will be removed in the future, when the mechanisms based on LceService are fully
                         // used by all customers and there is no remaining bug.
                         $config_key = $this->_productConfigKey($product_code);
-                        Configuration::updateValue($config_key, (int) ($carrier->id));
+                        Configuration::updateValue($config_key, (int) $carrier->id);
 
                         $lce_service->id_carrier = $carrier->id;
                         $lce_service->$service_save_action();
 
                         // Setting the lce_product_code on carrier table
-                        Db::getInstance()->Execute('UPDATE '._DB_PREFIX_.'carrier
-                                                    SET lce_product_code = "'.trim(pSQL($product->code)).'"
+                        Db::getInstance()->Execute('UPDATE ' . _DB_PREFIX_ . 'carrier
+                                                    SET lce_product_code = "' . trim(pSQL($product->code)) . '"
                                                     WHERE `external_module_name` = "lowcostexpress"
-                                                      AND `id_carrier` = '.(int) $carrier->id);
+                                                      AND `id_carrier` = ' . (int) $carrier->id);
 
                         // Assign all groups to carrier
                         $groups = Group::getgroups(true);
                         foreach ($groups as $group) {
                             Db::getInstance()->Execute(
-                                'INSERT INTO '._DB_PREFIX_.'carrier_group
-                                VALUE (\''.(int) ($carrier->id).'\',\''.(int) ($group['id_group']).'\')'
+                                'INSERT INTO ' . _DB_PREFIX_ . 'carrier_group
+                                VALUE (\'' . (int) $carrier->id . '\', \'' . (int) $group['id_group'] . '\')'
                             );
                         }
 
                         $rangePrice = new RangePrice();
                         $rangePrice->id_carrier = $carrier->id;
-                        $rangePrice->delimiter1 = '0';
-                        $rangePrice->delimiter2 = '1000';
+                        $rangePrice->delimiter1 = 0.0;
+                        $rangePrice->delimiter2 = 1000.0;
                         $rangePrice->add();
 
                         $rangeWeight = new RangeWeight();
                         $rangeWeight->id_carrier = $carrier->id;
-                        $rangeWeight->delimiter1 = '0';
-                        $rangeWeight->delimiter2 = '1000';
+                        $rangeWeight->delimiter1 = 0.0;
+                        $rangeWeight->delimiter2 = 1000.0;
                         $rangeWeight->add();
 
                         // Assign all zones to carrier
@@ -581,35 +843,30 @@ class LowCostExpress extends CarrierModule
                         foreach ($zones as $zone) {
                             $carrier->addZone($zone['id_zone']);
                         }
-
                     }
                 }
 
                 // Copy logo
                 $logo_file_name = $lce_service->logoFileName();
-                if (!file_exists(dirname(__FILE__).'/views/img/carriers/'.$logo_file_name)) {
+                if (!file_exists(dirname(__FILE__) . '/views/img/carriers/' . $logo_file_name)) {
                     $logo_file_name = 'myflyingbox.png';
                 }
                 // Note: PS stores the logos as JPG files even if they are really PNG...
                 copy(
-                    dirname(__FILE__).'/views/img/carriers/'.$logo_file_name,
-                    _PS_SHIP_IMG_DIR_.'/'.$lce_service->id_carrier.'.jpg'
+                    dirname(__FILE__) . '/views/img/carriers/' . $logo_file_name,
+                    _PS_SHIP_IMG_DIR_ . '/' . $lce_service->id_carrier . '.jpg'
                 );
-
             }
         } catch (Exception $e) {
             $message = $this->displayError($this->purify($e->getMessage()));
         }
+
         return $message;
     }
 
-    private function _displayContent($message)
+    private function initDimensions()
     {
-
-        $services =LceService::findAll();
-
-        // Initializing dimensions
-        $dimensions = array();
+        $dimensions = [];
         $default_dimensions = LceDimension::$defaults;
         for ($i = 1; $i <= 15; ++$i) {
             $dimension = new LceDimension($i);
@@ -629,18 +886,26 @@ class LowCostExpress extends CarrierModule
             $dimensions[$i] = $dimension;
         }
 
+        return $dimensions;
+    }
+
+    private function _displayContent($message)
+    {
+        $services = LceService::findAll();
+
+        // Initializing dimensions
+        $dimensions = $this->initDimensions();
+
         // Determining whether we should display the getting started instructions or not
         $show_starting_instructions = LceShipment::totalConfirmed() == 0 ? true : false;
 
         $api_login = Configuration::get('MOD_LCE_API_LOGIN');
         $api_password = Configuration::get('MOD_LCE_API_PASSWORD');
-        $show_connection_error = ($api_login != '' &&
-                                  $api_password != '' &&
-                                  !$this->testApiConnection()) ? true : false;
+        $show_connection_error = ($api_login != '' && $api_password != '' && !$this->testApiConnection()) ? true : false;
 
         $countries = Country::getCountries($this->context->language->id);
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign([
             'message' => $message,
             'module_name' => $this->name,
             'dimensions' => $dimensions,
@@ -648,7 +913,7 @@ class LowCostExpress extends CarrierModule
             'countries' => $countries,
             'show_starting_instructions' => $show_starting_instructions,
             'show_connection_error' => $show_connection_error,
-            'mfb_base_dir' => _MODULE_DIR_.'/lowcostexpress/',
+            'mfb_base_dir' => _MODULE_DIR_ . '/lowcostexpress/',
             'MOD_LCE_API_LOGIN' => $api_login,
             'MOD_LCE_API_PASSWORD' => $api_password,
             'MOD_LCE_API_ENV' => Configuration::get('MOD_LCE_API_ENV'),
@@ -676,31 +941,34 @@ class LowCostExpress extends CarrierModule
             'MOD_LCE_MAX_VOL_WEIGHT' => Configuration::get('MOD_LCE_MAX_VOL_WEIGHT'),
             'MOD_LCE_FORCE_WEIGHT_DIMS_TABLE' => Configuration::get('MOD_LCE_FORCE_WEIGHT_DIMS_TABLE'),
             'MOD_LCE_GOOGLE_CLOUD_API_KEY' => Configuration::get('MOD_LCE_GOOGLE_CLOUD_API_KEY'),
-        ));
+            // Dashboard synchronization settings
+            'MOD_LCE_SHOP_UUID' => Configuration::get('MOD_LCE_SHOP_UUID'),
+            'MOD_LCE_API_JWT_SHARED_SECRET' => Configuration::get('MOD_LCE_API_JWT_SHARED_SECRET'),
+            'MOD_LCE_WEBHOOKS_SIGNATURE_KEY' => Configuration::get('MOD_LCE_WEBHOOKS_SIGNATURE_KEY'),
+            'MOD_LCE_DASHBOARD_SYNC_BEHAVIOR' => Configuration::get('MOD_LCE_DASHBOARD_SYNC_BEHAVIOR') ?: 'never',
+            'MOD_LCE_SYNC_HISTORY_MAX_PAST_DAYS' => Configuration::get('MOD_LCE_SYNC_HISTORY_MAX_PAST_DAYS') ?: 30,
+            'MOD_LCE_SYNC_ORDER_MAX_DURATION' => Configuration::get('MOD_LCE_SYNC_ORDER_MAX_DURATION') ?: 90,
+            'LCE_SHOP_BASE_URL' => $this->context->shop->getBaseURL(true),
+        ]);
     }
-
-    /*
-     * CARRIER-RELATED
-     */
 
     // Returns true if current carrier setup has any sort of manual pricing rule
     // defined. Can be either a carrier set as 'free', or any pricing rule with a price above 0.
     public function carrierHasStaticPricelist()
     {
-        $carrier = new Carrier((int)$this->id_carrier);
+        $carrier = new Carrier((int) $this->id_carrier);
         if ($carrier->is_free) {
             return true;
         }
 
         $sql = 'SELECT COUNT(*)
-                    FROM `'._DB_PREFIX_.'delivery` d
-                    WHERE d.`id_carrier` = '.(int)$carrier->id.'
+                    FROM `' . _DB_PREFIX_ . 'delivery` d
+                    WHERE d.`id_carrier` = ' . (int) $carrier->id . '
                         AND d.`price` > 0';
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 
-
-        if ((int)$result > 0) {
+        if ((int) $result > 0) {
             return true;
         } else {
             return false;
@@ -747,14 +1015,13 @@ class LowCostExpress extends CarrierModule
 
         // No quote found. Generating a new one.
         if (!$quote) {
-
             // We only try to get new quotes when we are in the order tunnel or trying to add an order from backoffice
             // Otherwise, Prestashop has a tendency to try to always get a shipping cost,
             // Which can significantly slow down user experience.
             $controller_name = $this->context->controller->php_self;
             $controller_class_name = get_class($this->context->controller);
-            if ($controller_class_name != 'AdminCartsController' && !in_array($controller_name, array('order-opc', 'order', 'orderopc'))) {
-              return false;
+            if ($controller_class_name != 'AdminCartsController' && !in_array($controller_name, ['order-opc', 'order', 'orderopc'])) {
+                return false;
             }
 
             $delivery_address = new Address((int) $cart->id_address_delivery);
@@ -762,23 +1029,23 @@ class LowCostExpress extends CarrierModule
 
             // We only proceed if we have a delivery address, otherwise it is quite pointless to request rates
             if (!empty($delivery_address->city)) {
-                $params = array(
-                    'shipper' => array(
+                $params = [
+                    'shipper' => [
                         'city' => Configuration::get('MOD_LCE_DEFAULT_CITY'),
                         'postal_code' => Configuration::get('MOD_LCE_DEFAULT_POSTAL_CODE'),
                         'country' => Configuration::get('MOD_LCE_DEFAULT_COUNTRY'),
-                    ),
-                    'recipient' => array(
+                    ],
+                    'recipient' => [
                         'city' => $delivery_address->city,
                         'postal_code' => $delivery_address->postcode,
                         'country' => $delivery_country->iso_code,
                         'is_a_company' => false,
-                    ),
+                    ],
                     'parcels' => LceQuote::parcelDataFromCart($cart),
-                    'offers_filters' => array(
-                        'with_product_codes' => LceQuote::getCarriersForCart($cart)
-                    )
-                );
+                    'offers_filters' => [
+                        'with_product_codes' => LceQuote::getCarriersForCart($cart),
+                    ],
+                ];
 
                 // Ajout des valeurs d'assurance pour l'assurance classique ou la garantie étendue
                 if (Configuration::get('MOD_LCE_DEFAULT_INSURE') || Configuration::get('MOD_LCE_DEFAULT_EXTENDED_WARRANTY')) {
@@ -809,13 +1076,20 @@ class LowCostExpress extends CarrierModule
                                 $offer->lce_product_code = $api_offer->product->code;
                                 $offer->base_price_in_cents = $api_offer->price->amount_in_cents;
                                 $offer->total_price_in_cents = $api_offer->total_price->amount_in_cents;
-                                $offer->extended_cover_available = (int)$api_offer->extended_cover_available;
-                                if ((int)$api_offer->extended_cover_available != 0) {
+                                $offer->extended_cover_available = (int) $api_offer->extended_cover_available;
+                                if ((int) $api_offer->extended_cover_available != 0) {
                                     $offer->price_with_extended_cover = $api_offer->price_with_extended_cover->amount_in_cents;
                                     $offer->total_price_with_extended_cover = $api_offer->total_price_with_extended_cover->amount_in_cents;
                                 }
                                 if ($api_offer->insurance_price) {
                                     $offer->insurance_price_in_cents = $api_offer->insurance_price->amount_in_cents;
+                                }
+                                // Electronic customs flags
+                                if (isset($api_offer->product->support_electronic_customs)) {
+                                    $offer->support_electronic_customs = (int) $api_offer->product->support_electronic_customs;
+                                }
+                                if (isset($api_offer->product->mandatory_electronic_customs)) {
+                                    $offer->mandatory_electronic_customs = (int) $api_offer->product->mandatory_electronic_customs;
                                 }
                                 $offer->currency = $api_offer->total_price->currency;
                                 $offer->add();
@@ -823,7 +1097,7 @@ class LowCostExpress extends CarrierModule
                         }
                     }
                 } catch (Exception $e) {
-                    Tools::error_log('MFB quote request exception: '.$e->getMessage());
+                    Tools::error_log('MFB quote request exception: ' . $e->getMessage());
                 }
             }
         }
@@ -839,13 +1113,9 @@ class LowCostExpress extends CarrierModule
                 $surcharge_amount = (int) Configuration::get('MOD_LCE_PRICE_SURCHARGE_STATIC');
                 $surcharge_percent = (int) Configuration::get('MOD_LCE_PRICE_SURCHARGE_PERCENT');
                 $price_taxation_rule = Configuration::get('MOD_LCE_PRICE_TAX_RULES');
-                
+
                 // Check if we should use the price with extended cover
-                if (Configuration::get('MOD_LCE_DEFAULT_EXTENDED_WARRANTY') && 
-                    $lce_offer->extended_cover_available && 
-                    $lce_offer->price_with_extended_cover > 0 && 
-                    $lce_offer->total_price_with_extended_cover > 0) {
-                    
+                if (Configuration::get('MOD_LCE_DEFAULT_EXTENDED_WARRANTY') && $lce_offer->extended_cover_available && $lce_offer->price_with_extended_cover > 0 && $lce_offer->total_price_with_extended_cover > 0) {
                     // Use the price with extended cover
                     if ($price_taxation_rule == 'before_taxes') {
                         $price = $lce_offer->price_with_extended_cover;
@@ -911,48 +1181,105 @@ class LowCostExpress extends CarrierModule
             return false;
         }
 
-        $smarty = $this->context->smarty;
-        $currentIndex = '';
+        $currentIndex = $this->context->link->getAdminLink(
+            'AdminOrders',
+            true,
+            [
+                'route' => 'admin_orders_view',
+                'orderId' => (int) $params['id_order'],
+            ],
+            [
+                'id_order' => (int) $params['id_order'],
+                'vieworder' => 1,
+            ]
+        );
 
-        $token = Tools::safeOutput(Tools::getValue('token'));
+        $manual_sync_message = '';
+        $manual_sync_error = '';
 
-        if ($currentIndex == '') {
-            $currentIndex = 'index.php?controller='.Tools::safeOutput(Tools::getValue('controller'));
-        }
-        $currentIndex .= '&id_order='.(int) ($params['id_order']);
+        $var = [];
 
         if (!Configuration::get('MOD_LCE_API_LOGIN') || !Configuration::get('MOD_LCE_API_PASSWORD')) {
-            $var = array(
+            $var = [
                 'error' => $this->l('You have not configured your LCE account'),
-            );
+            ];
         } else {
             try {
+                // Manual sync requested (on_demand)
+                if (Tools::isSubmit('lce_manual_sync') && (int) Tools::getValue('id_order') === (int) $params['id_order']) {
+                    $order = new Order((int) $params['id_order']);
+                    if (Validate::isLoadedObject($order)) {
+                        $sent = $this->sendOrderWebhook('order/sync_requested', $order, null, true);
+                        if ($sent) {
+                            $manual_sync_message = $this->l('Synchronization webhook has been sent to your MyFlyingBox dashboard.');
+                        } else {
+                            $manual_sync_error = $this->l('Synchronization webhook could not be sent. Please check configuration.');
+                        }
+                    }
+                }
+
                 // We get the list of shipments for this order
                 $shipments = LceShipment::findAllForOrder((int) $params['id_order']);
 
                 // Generating URLs to open the 'show' view of each shipment
-                $shipment_urls = array();
+                $shipment_urls = [];
                 foreach ($shipments as $s) {
-                    $shipment_urls[$s->id_shipment] = $this->context->link->getAdminLink('AdminShipment').
-                                                                    '&viewlce_shipments&id_shipment='.$s->id_shipment;
+                    $shipment_urls[$s->id_shipment] = $this->context->link->getAdminLink('AdminShipment') .
+                                                                    '&viewlce_shipments&id_shipment=' . $s->id_shipment;
                 }
 
-                $var = array(
+                // Offer flags (electronic customs) per shipment
+                $shipment_offer_flags = [];
+                foreach ($shipments as $s) {
+                    $flags = ['support' => null, 'mandatory' => null];
+                    if (!empty($s->api_offer_uuid)) {
+                        $offer = LceOffer::findByApiOfferUuid($s->api_offer_uuid);
+                        if ($offer && Validate::isLoadedObject($offer)) {
+                            $flags['support'] = (bool) $offer->support_electronic_customs;
+                            $flags['mandatory'] = (bool) $offer->mandatory_electronic_customs;
+                        }
+                    }
+                    $shipment_offer_flags[(int) $s->id_shipment] = $flags;
+                }
+
+                $sync_behavior = Configuration::get('MOD_LCE_DASHBOARD_SYNC_BEHAVIOR');
+                $sync_configured = Configuration::get('MOD_LCE_SHOP_UUID')
+                    && Configuration::get('MOD_LCE_WEBHOOKS_SIGNATURE_KEY')
+                    && Configuration::get('MOD_LCE_API_JWT_SHARED_SECRET') !== '';
+                $show_booking_origin = $sync_configured && $sync_behavior !== 'never';
+
+                $var = [
                     'shipments' => $shipments,
                     'shipment_urls' => $shipment_urls,
-                    'id_order' => (int) ($params['id_order']),
-                    'new_shipment_path' => $this->context->link->getAdminLink('AdminShipment').
-                            '&addlce_shipments&order_id='.(int) $params['id_order'],
-                    'new_return_path' => $this->context->link->getAdminLink('AdminShipment').
-                            '&addlce_shipments&order_id='.(int) $params['id_order'].'&is_return=1',
-                );
+                    'id_order' => (int) $params['id_order'],
+                    'new_shipment_path' => $this->context->link->getAdminLink('AdminShipment') .
+                            '&addlce_shipments&order_id=' . (int) $params['id_order'],
+                    'new_return_path' => $this->context->link->getAdminLink('AdminShipment') .
+                            '&addlce_shipments&order_id=' . (int) $params['id_order'] . '&is_return=1',
+                    'lang_iso_code' => $this->context->language->iso_code,
+                    'shipment_offer_flags' => $shipment_offer_flags,
+                    'sync_behavior' => $sync_behavior ?: 'never',
+                    'sync_configured' => (bool) $sync_configured,
+                    'show_booking_origin' => (bool) $show_booking_origin,
+                    'manual_sync_message' => $manual_sync_message,
+                    'manual_sync_error' => $manual_sync_error,
+                    'config_link' => $this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]),
+                    'dashboard_link' => 'https://dashboard.myflyingbox.com',
+                    'current_index' => $currentIndex,
+                ];
             } catch (Exception $e) {
-                Tools::error_log('MFB quote request exception: '.$e->getMessage());
+                Tools::error_log('MFB quote request exception: ' . $e->getMessage());
+                $var = [
+                    'error' => $this->l('An error occurred while loading shipments'),
+                ];
             }
         }
 
         // Making the variable available in the view
-        $smarty->assign('var', $var);
+        $this->context->smarty->assign([
+            'var' => $var,
+            'lang_iso_code' => $this->context->language->iso_code,
+        ]);
 
         // Rendering the partial view
         return $this->display(__FILE__, 'views/templates/admin/order/shipment_details.tpl');
@@ -960,7 +1287,7 @@ class LowCostExpress extends CarrierModule
 
     public function hookDisplayBackOfficeHeader($params)
     {
-        $this->context->controller->addCss($this->_path.'views/css/style.css');
+        $this->context->controller->addCss($this->_path . 'views/css/style.css');
     }
 
     /*
@@ -973,10 +1300,12 @@ class LowCostExpress extends CarrierModule
             return false;
         }
 
-        $smarty = $this->context->smarty;
+        $this->context->smarty->assign([
+            'parcel_num' => 0,
+            'shipments' => LceShipment::findAllForOrder((int) Tools::getValue('id_order')),
+            'lang_iso_code' => $this->context->language->iso_code,
+        ]);
 
-        $smarty->assign('parcel_num', 0);
-        $smarty->assign('shipments', LceShipment::findAllForOrder((int) Tools::getValue('id_order')));
         // Rendering the partial view
         return $this->display(__FILE__, 'views/templates/front/order/tracking_details.tpl');
     }
@@ -987,15 +1316,10 @@ class LowCostExpress extends CarrierModule
         $controller_name = $this->context->controller->php_self;
 
         // Asset load for order page
-        if (in_array($controller_name, array('order-opc', 'order', 'orderopc'))) {
-            $module_uri = _MODULE_DIR_.$this->name;
-            $this->context->controller->addCSS($module_uri.'/views/css/style.css', 'all');
-            $this->context->controller->addjQueryPlugin(array('scrollTo' ));
-            $this->context->controller->registerJavascript(
-                'module-lowcostexpress-jquery',
-                '/js/jquery/jquery-1.11.0.min.js',
-                array('position' => 'head', 'priority' => 1)
-            );
+        if (in_array($controller_name, ['order-opc', 'order', 'orderopc'])) {
+            $module_uri = _MODULE_DIR_ . $this->name;
+            $this->context->controller->addCSS($module_uri . '/views/css/style.css', 'all');
+            $this->context->controller->addjQueryPlugin(['scrollTo']);
 
             // Use the configured Google Maps API key
             $google_maps_api_key = Configuration::get('MOD_LCE_GOOGLE_CLOUD_API_KEY');
@@ -1005,19 +1329,19 @@ class LowCostExpress extends CarrierModule
             $this->context->controller->registerJavascript(
                 'module-lowcostexpress-gmaps',
                 'https://maps.google.com/maps/api/js?key=' . urlencode($google_maps_api_key),
-                array(
+                [
                   'server' => 'remote',
                   'priority' => 100,
-                )
+                ]
             );
 
             $this->context->controller->registerJavascript(
                 'module-lowcostexpress-delivery-locations',
                 '/modules/lowcostexpress/views/js/delivery_locations.js',
-                array(
+                [
                   'position' => 'head',
                   'priority' => 10,
-                )
+                ]
             );
         }
     }
@@ -1026,21 +1350,18 @@ class LowCostExpress extends CarrierModule
     {
         $address = new Address($params['cart']->id_address_delivery);
         $delivery_country = new Country((int) $address->id_country);
-        $this->context->smarty->assign(
-            array(
-              'module_uri' =>__PS_BASE_URI__.'modules/'.$this->name,
-              'customer_postal_code' => $address->postcode,
-              'customer_firstname' => $address->firstname,
-              'customer_lastname' => $address->lastname,
-              'cart_id' => $params['cart']->id,
-              'customer_full_address' => $address->address1.' '.$address->address2.' '
-                .$address->postcode.' '.$address->city,
-              'customer_address_street' => $address->address1.' '.$address->address2.' ',
-              'customer_city' => $address->city,
-              'customer_country' => $delivery_country->iso_code,
-              'carrier_ids' => join('-', LceService::getRelayDeliveryCarrierIds()),
-            )
-        );
+        $this->context->smarty->assign([
+            'module_uri' => __PS_BASE_URI__ . 'modules/' . $this->name,
+            'customer_postal_code' => $address->postcode,
+            'customer_firstname' => $address->firstname,
+            'customer_lastname' => $address->lastname,
+            'cart_id' => $params['cart']->id,
+            'customer_full_address' => $address->address1 . ' ' . $address->address2 . ' ' . $address->postcode . ' ' . $address->city,
+            'customer_address_street' => $address->address1 . ' ' . $address->address2 . ' ',
+            'customer_city' => $address->city,
+            'customer_country' => $delivery_country->iso_code,
+            'carrier_ids' => join('-', LceService::getRelayDeliveryCarrierIds()),
+        ]);
 
         return $this->context->smarty->fetch('module:lowcostexpress/views/templates/hooks/relay_delivery.tpl');
     }

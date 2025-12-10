@@ -1,27 +1,25 @@
-{*
-* 2016 MyFlyingBox
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Academic Free License (AFL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/afl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to contact@myflyingbox.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade your module to newer
-* versions in the future.
-*
-*  @author MyFlyingBox <contact@myflyingbox.com>
-*  @copyright	2016 MyFlyingBox
+{**
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to contact@myflyingbox.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade your module to newer
+ * versions in the future.
+ *
+ * @author    MyFlyingBox <contact@myflyingbox.com>
+ * @copyright 2016 MyFlyingBox
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*  @version		1.0
-*}
-
+ * @version   1.0
+ *
+ *}
 {block name="override_tpl"}
 
 <div class="panel">
@@ -63,7 +61,7 @@
               </div>
             
               <div class="panel-body">
-                {foreach $shipment->trackingStatus() item=events key=num}
+                {foreach $shipment->trackingStatus($lang_iso_code) item=events key=num}
                   <div class="col-md-6">
                     <table class="table">
                       <thead>
@@ -129,8 +127,8 @@
               <i class="material-icons">place</i> {l s='Pickup/shipper address' mod='lowcostexpress'}
             </div>
             <div class="panel-body">
-              {if $shipment->shipper_company_name!=''}
-                <p><b>{$shipment->shipper_company_name}</b></p>
+              {if $shipment->shipper_company_name != ''}
+                <p><b>{$shipment->shipper_company_name|escape:'html':'UTF-8'}</b></p>
               {/if}
               <p><b>{$shipment->shipper_name|escape:'htmlall':'UTF-8'}</b></p>
               <p>
@@ -300,6 +298,11 @@
                 </tbody>
               </table>
               {if $shipment->api_order_uuid eq false}
+                {if isset($offer_flags.mandatory) && $offer_flags.mandatory === true}
+                  <div class="alert alert-danger">
+                    {l s='Electronic customs are mandatory for this service. Please order the label from your MFB dashboard; booking from the module is blocked.' mod='lowcostexpress'}
+                  </div>
+                {else}
                 <form id="book-offer">
                     <input type="hidden" name="offer_uuid" value="{$offer->id|escape:'htmlall':'UTF-8'}">
 
@@ -364,6 +367,7 @@
                     <input type="submit" id="book_lce_offer" value="{l s='Confirm booking' mod='lowcostexpress'}" name="book_lce_offer" class="btn btn-primary">
                   </div>
                 </form>
+                {/if}
               {/if}
             {/if}
 

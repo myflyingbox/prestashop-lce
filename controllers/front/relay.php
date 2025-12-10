@@ -18,8 +18,6 @@
  * @author    MyFlyingBox <contact@myflyingbox.com>
  * @copyright 2016 MyFlyingBox
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
- * @version   1.0
- *
  */
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -50,7 +48,7 @@ class LowcostexpressRelayModuleFrontController extends ModuleFrontController
         $carrier_id = Tools::getValue('carrier_id');
         $lce_service = LceService::findByCarrierId($carrier_id);
 
-        $cart_id = (int)Tools::getValue('cart_id');
+        $cart_id = (int) Tools::getValue('cart_id');
         $cart = new Cart($cart_id);
 
         // Getting latest quote for this cart, regardless of any time constraint.
@@ -63,35 +61,35 @@ class LowcostexpressRelayModuleFrontController extends ModuleFrontController
         $offer = LceOffer::getForQuoteAndLceService($quote, $lce_service);
 
         $params = [
-            'city'   => Tools::getValue('city'),
+            'city' => Tools::getValue('city'),
             'street' => Tools::getValue('address'),
         ];
 
         $api_response = $offer->getDeliveryLocations($params);
 
         // Réponse JSON
-        die(json_encode($api_response));
+        exit(json_encode($api_response));
     }
 
     public function ajaxSaveRelay()
     {
         header('Content-type: text/plain');
 
-        if (!Tools::getIsset('relay_code')  || !Tools::getIsset('cart_id')) {
-            die('Parameter Error');
+        if (!Tools::getIsset('relay_code') || !Tools::getIsset('cart_id')) {
+            exit('Parameter Error');
         }
 
-        $cart = new Cart((int)Tools::getValue('cart_id'));
+        $cart = new Cart((int) Tools::getValue('cart_id'));
 
         // Making sure that no-one is trying to hijack a customer's cart
-        if ($cart->id_customer!=(int)Context::getContext()->customer->id) {
-            die('KO');
+        if ($cart->id_customer != (int) $this->context->customer->id) {
+            exit('KO');
         }
 
-        Db::getInstance()->execute(
-            'INSERT INTO `'._DB_PREFIX_.'lce_cart_selected_relay` VALUES ('
-            .(int)Tools::getValue('cart_id').', "'.pSQL(Tools::getValue('relay_code')).'")
-            ON DUPLICATE KEY UPDATE relay_code="'.pSQL(Tools::getValue('relay_code')).'"'
+        Db::getInstance()->execute('
+            INSERT INTO `' . _DB_PREFIX_ . 'lce_cart_selected_relay` 
+            VALUES (' . (int) Tools::getValue('cart_id') . ', "' . pSQL(Tools::getValue('relay_code')) . '")
+            ON DUPLICATE KEY UPDATE relay_code = "' . pSQL(Tools::getValue('relay_code')) . '"'
         );
 
         echo 'Success';
