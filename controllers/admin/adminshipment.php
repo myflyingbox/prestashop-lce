@@ -260,7 +260,18 @@ class AdminShipmentController extends ModuleAdminController
             'collection_dates' => $collection_dates,
             'relay_delivery_locations' => $relay_delivery_locations,
             'selected_relay_location' => $selected_relay_location,
-            'link_order' => $this->context->link->getAdminLink('AdminOrders', true, ['id_order' => $order->id, 'vieworder' => 1]),
+            'link_order' => $this->context->link->getAdminLink(
+                'AdminOrders',
+                true,
+                [
+                    'route' => 'admin_orders_view',
+                    'orderId' => (int) $order->id,
+                ],
+                [
+                    'id_order' => (int) $order->id,
+                    'vieworder' => 1,
+                ]
+            ),
             'link_edit_shipment' => $this->context->link->getAdminLink('AdminShipment') . '&updatelce_shipments&id_shipment=' . $shipment->id,
             'link_load_lce_offers' => $this->context->link->getAdminLink('AdminShipment') . '&ajax=1&liteDisplaying=1&action=getOffers&id_shipment=' . $shipment->id,
             'link_delete_package' => $this->context->link->getAdminLink('AdminParcel') . '&ajax=1&dellce_parcels&action=delete_parcel&id_parcel=',

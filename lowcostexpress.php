@@ -1181,10 +1181,18 @@ class LowCostExpress extends CarrierModule
             return false;
         }
 
-        $token = Tools::safeOutput(Tools::getValue('token'));
-
-        $currentIndex = 'index.php?controller=' . Tools::safeOutput(Tools::getValue('controller'));
-        $currentIndex .= '&id_order=' . (int) $params['id_order'];
+        $currentIndex = $this->context->link->getAdminLink(
+            'AdminOrders',
+            true,
+            [
+                'route' => 'admin_orders_view',
+                'orderId' => (int) $params['id_order'],
+            ],
+            [
+                'id_order' => (int) $params['id_order'],
+                'vieworder' => 1,
+            ]
+        );
 
         $manual_sync_message = '';
         $manual_sync_error = '';
@@ -1257,7 +1265,7 @@ class LowCostExpress extends CarrierModule
                     'manual_sync_error' => $manual_sync_error,
                     'config_link' => $this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]),
                     'dashboard_link' => 'https://dashboard.myflyingbox.com',
-                    'current_index' => $currentIndex . '&token=' . $token,
+                    'current_index' => $currentIndex,
                 ];
             } catch (Exception $e) {
                 Tools::error_log('MFB quote request exception: ' . $e->getMessage());
