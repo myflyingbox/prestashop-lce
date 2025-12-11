@@ -109,6 +109,10 @@ class ShipmentController extends ApiController
             $data = $data['shipment'];
         }
 
+        // if (_PS_MODE_DEV_) {
+        //     Logger::addLog('[MFB] Shipment API POST payload: ' . print_r($data, true), 1, null, 'ShipmentController', null, true);
+        // }
+
         $api_order_id = $this->extractApiOrderId($data);
         $id_order = isset($data['order_id']) ? (int) $data['order_id'] : 0;
 

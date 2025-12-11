@@ -399,6 +399,10 @@ class LowCostExpress extends CarrierModule
      */
     public function hookActionOrderStatusPostUpdate($params)
     {
+        if (_PS_MODE_DEV_) {
+            Logger::addLog('[MFB] hookActionOrderStatusPostUpdate called with params: ' . json_encode($params), 1);
+        }
+
         if (empty($params['id_order'])) {
             return;
         }
@@ -479,6 +483,11 @@ class LowCostExpress extends CarrierModule
      */
     public function sendWebhook($topic, array $payload, $force = false)
     {
+        // If Prestashop debug mode is on, log details.
+        if (_PS_MODE_DEV_) {
+            Logger::addLog('[MFB] Sending webhook (' . $topic . '): ' . json_encode($payload), 1);
+        }
+
         if (!$this->shouldSendWebhooks($force)) {
             return false;
         }
@@ -486,7 +495,7 @@ class LowCostExpress extends CarrierModule
         $shop_uuid = Configuration::get('MOD_LCE_SHOP_UUID');
         $signature_key = Configuration::get('MOD_LCE_WEBHOOKS_SIGNATURE_KEY');
         if (empty($shop_uuid) || empty($signature_key)) {
-            Logger::addLog('[LCE] Webhook not sent: missing shop UUID or signature key', 3);
+            Logger::addLog('[MFB] Webhook not sent: missing shop UUID or signature key', 3);
             return false;
         }
 
@@ -519,13 +528,35 @@ class LowCostExpress extends CarrierModule
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($ch, CURLOPT_TIMEOUT, 20);
 
+        // New options to handle redirects
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);  // Follow redirects
+        curl_setopt($ch, CURLOPT_POSTREDIR, 3);         // Preserve POST method on redirects
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 5);         // Limit redirects to prevent loops
+
+        // Optional: Enable verbose logging for detailed redirect info (logs to stderr)
+        // Uncomment the next lines for debugging; remove in production
+        // curl_setopt($ch, CURLOPT_VERBOSE, true);
+        // curl_setopt($ch, CURLOPT_STDERR, fopen('/path/to/curl_log.txt', 'w'));  // Log to a file
+
         $response = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $error = curl_error($ch);
+
+        // New: Capture and log redirect details
+        $redirect_count = curl_getinfo($ch, CURLINFO_REDIRECT_COUNT);
+        $effective_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL after redirects
+        if (_PS_MODE_DEV_ || $redirect_count > 0) {
+            Logger::addLog('[MFB] Webhook redirect details: Count=' . $redirect_count . ', Effective URL=' . $effective_url, 1);
+        }
+
         curl_close($ch);
 
+        if (_PS_MODE_DEV_) {
+            Logger::addLog('[MFB] Webhook response (' . $topic . '): HTTP ' . $http_code . ' ' . $error . ' ' . $response, 1);
+        }
+
         if ($error || $http_code >= 400) {
-            Logger::addLog('[LCE] Webhook error (' . $topic . '): HTTP ' . $http_code . ' ' . $error . ' ' . $response, 3);
+            Logger::addLog('[MFB] Webhook error (' . $topic . '): HTTP ' . $http_code . ' ' . $error . ' ' . $response, 3);
             return false;
         }
 
