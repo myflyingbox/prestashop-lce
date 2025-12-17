@@ -299,13 +299,13 @@
               </table>
               {if $shipment->api_order_uuid eq false}
                 {if isset($offer_flags.mandatory) && $offer_flags.mandatory === true}
-                  <div class="alert alert-danger">
-                    {l s='Electronic customs are mandatory for this service. Please order the label from your MFB dashboard; booking from the module is blocked.' mod='lowcostexpress'}
+                  <div style="margin-top: 20px;" class="alert alert-danger">
+                    {l s='Electronic customs is mandatory for this service but not supported by the module. You must order the label from your MFB dashboard, booking from the module is disabled.' mod='lowcostexpress'}
                   </div>
                 {else}
                   {if isset($offer_flags.support) && $offer_flags.support === true}
-                    <div class="alert alert-danger">
-                      {l s='Electronic customs is available for this service. We strongly recommend ordering the label from your MFB dashboard to limit the risk of customs clearance issues or surcharges.' mod='lowcostexpress'}
+                    <div style="margin-top: 20px;" class="alert alert-danger">
+                      {l s='Electronic customs is available for this service but not supported by the module. We strongly recommend ordering the label from your MFB dashboard to limit the risk of customs clearance issues or surcharges.' mod='lowcostexpress'}
                     </div>
                   {/if}
                 <form id="book-offer">
