@@ -148,11 +148,11 @@ class AdminShipmentController extends ModuleAdminController
                     $offer_flags['support'] = (bool) $stored_offer->support_electronic_customs;
                     $offer_flags['mandatory'] = (bool) $stored_offer->mandatory_electronic_customs;
                 } else {
-                    if (isset($api_offer->product->support_electronic_customs)) {
-                        $offer_flags['support'] = (bool) $api_offer->product->support_electronic_customs;
+                    if (isset($api_offer->support_electronic_customs)) {
+                        $offer_flags['support'] = (bool) $api_offer->support_electronic_customs;
                     }
-                    if (isset($api_offer->product->mandatory_electronic_customs)) {
-                        $offer_flags['mandatory'] = (bool) $api_offer->product->mandatory_electronic_customs;
+                    if (isset($api_offer->mandatory_electronic_customs)) {
+                        $offer_flags['mandatory'] = (bool) $api_offer->mandatory_electronic_customs;
                     }
                 }
             } catch (\Exception $e) {

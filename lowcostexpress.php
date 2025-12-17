@@ -1133,11 +1133,11 @@ class LowCostExpress extends CarrierModule
                                     $offer->insurance_price_in_cents = $api_offer->insurance_price->amount_in_cents;
                                 }
                                 // Electronic customs flags
-                                if (isset($api_offer->product->support_electronic_customs)) {
-                                    $offer->support_electronic_customs = (int) $api_offer->product->support_electronic_customs;
+                                if (isset($api_offer->support_electronic_customs)) {
+                                    $offer->support_electronic_customs = (int) $api_offer->support_electronic_customs;
                                 }
-                                if (isset($api_offer->product->mandatory_electronic_customs)) {
-                                    $offer->mandatory_electronic_customs = (int) $api_offer->product->mandatory_electronic_customs;
+                                if (isset($api_offer->mandatory_electronic_customs)) {
+                                    $offer->mandatory_electronic_customs = (int) $api_offer->mandatory_electronic_customs;
                                 }
                                 $offer->currency = $api_offer->total_price->currency;
                                 $offer->add();
