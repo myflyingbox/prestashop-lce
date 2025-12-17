@@ -137,12 +137,29 @@ class LowCostExpress extends CarrierModule
             $env = 'staging';
         }
 
-        $api = Lce\Lce::configure(
-            Configuration::get('MOD_LCE_API_LOGIN'),
-            Configuration::get('MOD_LCE_API_PASSWORD'),
-            $env,
-            '2'
-        );
+        // Allow usage of custom API endpoint for testing purposes
+        // Warning: this is only available when using a recent version of the LCE PHP library,
+        // that is only loaded when PHP 8 is used
+        $api_server = Configuration::get('MOD_LCE_CUSTOM_API_SERVER');
+
+        if (!empty($api_server)) {
+            $api = Lce\Lce::configure(
+                Configuration::get('MOD_LCE_API_LOGIN'),
+                Configuration::get('MOD_LCE_API_PASSWORD'),
+                $env,
+                '2',
+                $api_server
+            );
+        } else {
+            $api = Lce\Lce::configure(
+                Configuration::get('MOD_LCE_API_LOGIN'),
+                Configuration::get('MOD_LCE_API_PASSWORD'),
+                $env,
+                '2'
+            );
+        }
+
+
         $api->application = 'prestashop-lce';
         $api->application_version = $this->version . ' (PS ' . _PS_VERSION_ . ')';
     }
