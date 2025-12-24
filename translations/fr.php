@@ -1,7 +1,7 @@
 <?php
 
 global $_MODULE;
-$_MODULE = array();
+$_MODULE = [];
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_10d3eaef8e59a4d697778a759018f31b'] = 'MY FLYING BOX Expéditions Express';
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_d0efed8b696d877a10b08cc7036dbd45'] = 'Vos expéditions simplifiées avec les principaux transporteurs express (DHL, UPS, Chronopost, BPost...) à tarifs négociés ultra-compétitifs.';
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_bb8956c67b82c7444a80c6b2433dd8b4'] = 'Êtes-vous sûr de vouloir désinstaller ce module ?';

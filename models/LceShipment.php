@@ -1,6 +1,6 @@
 <?php
 /**
- * NOTICE OF LICENSE.
+ * NOTICE OF LICENSE
  *
  * This source file is subject to the Academic Free License (AFL 3.0)
  * that is bundled with this package in the file LICENSE.txt.
@@ -18,9 +18,10 @@
  * @author    MyFlyingBox <contact@myflyingbox.com>
  * @copyright 2016 MyFlyingBox
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
- * @version   1.0
- *
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 class LceShipment extends ObjectModel
 {
@@ -65,53 +66,53 @@ class LceShipment extends ObjectModel
         }
     }
 
-    public static $definition = array(
+    public static $definition = [
         'table' => 'lce_shipments',
         'primary' => 'id_shipment',
         'multilang' => false,
-        'fields' => array(
-            'order_id' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
-            'carrier_id' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
-            'lce_service_id' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
-            'api_quote_uuid' => array('type' => self::TYPE_STRING),
-            'api_offer_uuid' => array('type' => self::TYPE_STRING),
-            'api_order_uuid' => array('type' => self::TYPE_STRING),
-            'shipper_name' => array('type' => self::TYPE_STRING),
-            'shipper_company_name' => array('type' => self::TYPE_STRING),
-            'shipper_street' => array('type' => self::TYPE_STRING),
-            'shipper_city' => array('type' => self::TYPE_STRING),
-            'shipper_state' => array('type' => self::TYPE_STRING),
-            'shipper_postal_code' => array('type' => self::TYPE_STRING),
-            'shipper_country' => array('type' => self::TYPE_STRING),
-            'shipper_phone' => array('type' => self::TYPE_STRING),
-            'shipper_email' => array('type' => self::TYPE_STRING),
-            'recipient_is_a_company' => array('type' => self::TYPE_BOOL),
-            'recipient_name' => array('type' => self::TYPE_STRING),
-            'recipient_company_name' => array('type' => self::TYPE_STRING),
-            'recipient_street' => array('type' => self::TYPE_STRING),
-            'recipient_city' => array('type' => self::TYPE_STRING),
-            'recipient_state' => array('type' => self::TYPE_STRING),
-            'recipient_postal_code' => array('type' => self::TYPE_STRING),
-            'recipient_country' => array('type' => self::TYPE_STRING),
-            'recipient_phone' => array('type' => self::TYPE_STRING),
-            'recipient_email' => array('type' => self::TYPE_STRING),
-            'ad_valorem_insurance' => array('type' => self::TYPE_BOOL),
-            'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat'),
-            'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat'),
-            'date_booking' => array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat'),
-            'is_return' => array('type' => self::TYPE_BOOL),
-        ),
-        'associations' => array(
-            'order' => array('type' => self::HAS_ONE, 'field' => 'order_id', 'object' => 'Order'),
-            'carrier' => array('type' => self::HAS_ONE, 'field' => 'carrier_id', 'object' => 'Carrier'),
-        ),
-    );
+        'fields' => [
+            'order_id' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'carrier_id' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
+            'lce_service_id' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
+            'api_quote_uuid' => ['type' => self::TYPE_STRING],
+            'api_offer_uuid' => ['type' => self::TYPE_STRING],
+            'api_order_uuid' => ['type' => self::TYPE_STRING],
+            'shipper_name' => ['type' => self::TYPE_STRING],
+            'shipper_company_name' => ['type' => self::TYPE_STRING],
+            'shipper_street' => ['type' => self::TYPE_STRING],
+            'shipper_city' => ['type' => self::TYPE_STRING],
+            'shipper_state' => ['type' => self::TYPE_STRING],
+            'shipper_postal_code' => ['type' => self::TYPE_STRING],
+            'shipper_country' => ['type' => self::TYPE_STRING],
+            'shipper_phone' => ['type' => self::TYPE_STRING],
+            'shipper_email' => ['type' => self::TYPE_STRING],
+            'recipient_is_a_company' => ['type' => self::TYPE_BOOL],
+            'recipient_name' => ['type' => self::TYPE_STRING],
+            'recipient_company_name' => ['type' => self::TYPE_STRING],
+            'recipient_street' => ['type' => self::TYPE_STRING],
+            'recipient_city' => ['type' => self::TYPE_STRING],
+            'recipient_state' => ['type' => self::TYPE_STRING],
+            'recipient_postal_code' => ['type' => self::TYPE_STRING],
+            'recipient_country' => ['type' => self::TYPE_STRING],
+            'recipient_phone' => ['type' => self::TYPE_STRING],
+            'recipient_email' => ['type' => self::TYPE_STRING],
+            'ad_valorem_insurance' => ['type' => self::TYPE_BOOL],
+            'date_add' => ['type' => self::TYPE_DATE, 'validate' => 'isDateFormat'],
+            'date_upd' => ['type' => self::TYPE_DATE, 'validate' => 'isDateFormat'],
+            'date_booking' => ['type' => self::TYPE_DATE, 'validate' => 'isDateFormat'],
+            'is_return' => ['type' => self::TYPE_BOOL],
+        ],
+        'associations' => [
+            'order' => ['type' => self::HAS_ONE, 'field' => 'order_id', 'object' => 'Order'],
+            'carrier' => ['type' => self::HAS_ONE, 'field' => 'carrier_id', 'object' => 'Carrier'],
+        ],
+    ];
 
     public static function findAllForOrder($order_id)
     {
-        $sql = 'SELECT * FROM '._DB_PREFIX_.'lce_shipments WHERE (order_id = '.(int) $order_id.')';
-        $collection = array();
-        if ($rows = Db:: getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS($sql)) {
+        $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'lce_shipments WHERE (order_id = ' . (int) $order_id . ')';
+        $collection = [];
+        if ($rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS($sql)) {
             foreach ($rows as $row) {
                 $collection[] = new self((int) $row['id_shipment']);
             }
@@ -129,39 +130,41 @@ class LceShipment extends ObjectModel
         return $this->save();
     }
 
-    public function trackingStatus()
+    public function trackingStatus($lang_iso_code)
     {
-        $data = array();
+        $data = [];
 
         if ($this->api_order_uuid) {
-          try {
-            $order = Lce\Resource\Order::find($this->api_order_uuid);
-            $parcel_tracking = $order->tracking();
-            $lang_iso = Context::getContext()->language->iso_code;
+            try {
+                $order = Lce\Resource\Order::find($this->api_order_uuid);
+                $parcel_tracking = $order->tracking();
+                $lang_iso = $lang_iso_code;
 
-            foreach ($parcel_tracking as $parcel) {
-                $event_dates = array();
-                $events = array();
+                foreach ($parcel_tracking as $parcel) {
+                    $event_dates = [];
+                    $events = [];
 
-                foreach ($parcel->events as $event) {
-                    $event_dates[] = $event->happened_at;
-                    $label = $event->label->$lang_iso ? $event->label->$lang_iso : $event->label->en;
-                    $events[] = array('code' => $event->code,
-                                      'date' => $event->happened_at,
-                                      'label' => $label,
-                                      'location' => self::formatTrackingLocation($event->location), );
+                    foreach ($parcel->events as $event) {
+                        $event_dates[] = $event->happened_at;
+                        $label = $event->label->$lang_iso ? $event->label->$lang_iso : $event->label->en;
+                        $events[] = [
+                            'code' => $event->code,
+                            'date' => $event->happened_at,
+                            'label' => $label,
+                            'location' => self::formatTrackingLocation($event->location),
+                        ];
+                    }
+                    // Now we have all events for this parcel, neatly organized.
+                    array_multisort($event_dates, $events); // Sorting $events following $event_dates
+                    $data[$parcel->parcel_index] = $events;
                 }
-                // Now we have all events for this parcel, neatly organized.
-                array_multisort($event_dates, $events); // Sorting $events following $event_dates
-                $data[$parcel->parcel_index] = $events;
+            } catch (\Exception $e) {
+                // Not doing anything. But ideally it would be nice to properly handle
+                // errors related to API connection issues, instead of completely blocking
+                // the page with a 500 error!
+                // Now at least we prevent any blocking, but we do it silently, which is
+                // not ideal, although in the case of tracking data this is not a major issue.
             }
-          } catch (\Exception $e) {
-            // Not doing anything. But ideally it would be nice to properly handle
-            // errors related to API connection issues, instead of completely blocking
-            // the page with a 500 error!
-            // Now at least we prevent any blocking, but we do it silently, which is
-            // not ideal, although in the case of tracking data this is not a major issue.
-          }
         }
 
         return $data;
@@ -171,11 +174,11 @@ class LceShipment extends ObjectModel
      * Returns an array containing the latest tracking event for each
      * parcel of the shipment.
      */
-    public function currentTrackingStatus()
+    public function currentTrackingStatus($lang_iso_code)
     {
-        $parcels = $this->trackingStatus();
+        $parcels = $this->trackingStatus($lang_iso_code);
 
-        $data = array();
+        $data = [];
         // For each parcel, returning only the latest event
 
         foreach ($parcels as $key => $parcel) {
@@ -199,27 +202,27 @@ class LceShipment extends ObjectModel
         // We consider that state and postal codes are only used if a city is actually specified
         if (!empty($location->city)) {
             $city = '';
-            $city .= $location->postal_code;
             if (!empty($location->postal_code)) {
+                $city .= $location->postal_code;
                 $city .= ' ';
             }
 
             $city .= $location->city;
 
             if (!empty($location->state)) {
-                $city .= ', '.$location->state;
+                $city .= ', ' . $location->state;
             }
         }
         if (!empty($city)) {
             if (!empty($res)) {
-                $res .= ' ('.$city.')';
+                $res .= ' (' . $city . ')';
             } else {
                 $res .= $city;
             }
         }
 
         if (!empty($location->country)) {
-            $res .= ' - '.$location->country;
+            $res .= ' - ' . $location->country;
         }
 
         return $res;
@@ -229,9 +232,9 @@ class LceShipment extends ObjectModel
     // the characteristics of the cart passed as argument
     public function createParcelsFromOrder()
     {
-        $order = new Order((int)$this->order_id);
-        $parcels = array();
-        $articles = array();
+        $order = new Order((int) $this->order_id);
+        $parcels = [];
+        $articles = [];
         $ignore_dimensions = false;
         $missing_dimension = false;
         $missing_dimensions_details = '';
@@ -243,58 +246,46 @@ class LceShipment extends ObjectModel
         // If some articles have dimensions and other have no dimensions at all (no weight either), then we totally ignore them
         // The following loop initializes an array of articles with dimensions, that we can use later to determine final pack-list.
         foreach ($order->getOrderDetailList() as $order_detail) {
-            $product = new Product((int)$order_detail['product_id']);
-            $total_articles++;
+            $product = new Product((int) $order_detail['product_id']);
+            $total_articles = $total_articles + 1;
 
             $weight = $product->weight;
             // Some carriers check that length is long enough, but don't care much about other dimensions...
-            $dims = array(
-              (int)$product->depth,
-              (int)$product->width,
-              (int)$product->height
-            );
+            $dims = [
+                (int) $product->depth,
+                (int) $product->width,
+                (int) $product->height,
+            ];
             sort($dims);
             $length = $dims[2];
             $width = $dims[1];
             $height = $dims[0];
 
-
             if ($length <= 0 && $width <= 0 && $height <= 0 && $weight <= 0) {
                 // This product has no dimension at all, it will be ignored alltogether.
-                $ignored_articles++;
+                $ignored_articles = $ignored_articles + 1;
                 continue;
-            } else if (Configuration::get('MOD_LCE_FORCE_WEIGHT_DIMS_TABLE') ) {
+            } elseif (Configuration::get('MOD_LCE_FORCE_WEIGHT_DIMS_TABLE')) {
                 // Forcing use of weight only
                 $ignore_dimensions = true;
-            } else if ($length <= 0 || $width <= 0 || $height <= 0 || $weight <= 0) {
+            } elseif ($length <= 0 || $width <= 0 || $height <= 0 || $weight <= 0) {
                 // Some dimensions are missing, so whatever the situation for other products,
                 // we will not use real dimensions for parcel simulation, but fall back
                 // to standard weight/dimensions correspondance table.
                 $ignore_dimensions = true;
                 $missing_dimension = true;
-                $missing_dimensions_details .= "$length x $width x $height - $weight kg "; // Used for debug output below.
-            } else {
-                // We have all dimensions for this product.
-                // Some carriers do not accept any parcel below 1cm on any side (DHL). Forcing 1cm mini dimension.
-                if ($length < 1) {
-                    $length = 1;
-                }
-                if ($width < 1) {
-                    $width = 1;
-                }
-                if ($height < 1) {
-                    $height = 1;
-                }
+                $missing_dimensions_details .= $length . ' x ' . $width . ' x ' . $height . ' - ' . $weight . ' kg '; // Used for debug output below.
             }
+            // We have all dimensions for this product (all > 0)
             // The same product can be added multiple times. We save articles unit by unit.
-            for ($i=0; $i<$order_detail['product_quantity']; $i++) {
-                $articles[] = array(
-                  'length' => $length,
-                  'height' => $height,
-                  'width' => $width,
-                  'weight' => $weight,
-                  'value' => $order_detail['unit_price_tax_incl'],
-                );
+            for ($i = 0; $i < $order_detail['product_quantity']; $i = $i + 1) {
+                $articles[] = [
+                    'length' => $length,
+                    'height' => $height,
+                    'width' => $width,
+                    'weight' => $weight,
+                    'value' => $order_detail['unit_price_tax_incl'],
+                ];
             }
         }
 
@@ -305,80 +296,72 @@ class LceShipment extends ObjectModel
                 $weight = 0.1; // As ignored artices do not have weight, this will probably be the weight used.
             }
             $dimension = LceDimension::getForWeight($weight);
-            $parcels =  array(
-                array('length' => $dimension->length,
-                      'height' => $dimension->height,
-                      'width' => $dimension->width,
-                      'weight' => $weight,
-                      'value' => $order->getTotalProductsWithTaxes(),
-                ),
-            );
-        } else if ($ignore_dimensions) {
-            // if ($missing_dimension) {
-          	//    PrestaShopLogger::addLog("MFB LceQuote: falling back to weight/dimensions table do to missing dimensions ($missing_dimensions_details).", 1, null, 'Cart', (int)$cart->id, true);
-            // } else {
-          	//    PrestaShopLogger::addLog("MFB LceQuote: falling back to weight/dimensions as no article had dimensions set.", 1, null, 'Cart', (int)$cart->id, true);
-            // }
-
+            $parcels = [
+                [
+                    'length' => $dimension->length,
+                    'height' => $dimension->height,
+                    'width' => $dimension->width,
+                    'weight' => $weight,
+                    'value' => $order->getTotalProductsWithTaxes(),
+                ],
+            ];
+        } elseif ($ignore_dimensions) {
             // In this case, two possibilities:
             //  - if we have a maximum weight per package set in the config, we
             //    have to spread articles in as many packages as needed.
             //  - otherwise, just use the default strategy: total weight + corresponding dimension based on table
             $max_real_weight = Configuration::get('MOD_LCE_MAX_REAL_WEIGHT');
             if ($max_real_weight && $max_real_weight > 0) {
-              // We must now spread every article in virtual parcels, respecting
-              // the defined maximum real weight.
-              $parcels = array();
-              foreach($articles as $key => $article) {
-                  if (count($parcels) == 0 || bccomp($article['weight'], $max_real_weight, 3) > 0) {
-                      // If first article, initialize new parcel.
-                      // If article has a weight above the limit, it gets its own package.
-                      $parcels[] = array(
-                        'weight' => $article['weight'],
-                        'value' => $article['value']
-                      );
-                      continue;
-                  } else {
-                      foreach($parcels as &$parcel) {
-                          // Trying to fit the article in an existing parcel.
-                          $cumulated_weight = bcadd($parcel['weight'], $article['weight'], 3);
-                          $cumulated_value = bcadd($parcel['value'], $article['value'], 2);
-                          if ($cumulated_weight <= $max_real_weight) {
-                            $parcel['weight'] = $cumulated_weight;
-                            $parcel['value'] = $cumulated_value;
-                            unset($article); // Security, to avoid double treatment of the same article.
-                            break;
-                          }
-                      }
-                      unset($parcel); // Unsetting reference to last $parcel of the loop, to avoid any bad surprise later!
-
-                      // If we could not fit the article in any existing package,
-                      // we simply initialize a new one, and that's it.
-                      if (isset($article)) {
-                          $parcels[] = array(
+                // We must now spread every article in virtual parcels, respecting
+                // the defined maximum real weight.
+                $parcels = [];
+                foreach ($articles as $key => $article) {
+                    if (count($parcels) == 0 || bccomp($article['weight'], $max_real_weight, 3) > 0) {
+                        // If first article, initialize new parcel.
+                        // If article has a weight above the limit, it gets its own package.
+                        $parcels[] = [
                             'weight' => $article['weight'],
-                            'value' => $article['value']
-                          );
-                          continue;
-                      }
-                  }
-              }
-              // Article weight has been spread to relevant parcels. Now we must
-              // define parcel dimensions, based on weight.
-              foreach($parcels as &$parcel) {
-                  // First, ensuring the weight is not zero!
-                  if ($parcel['weight'] <= 0) {
-                      $parcel['weight'] = 0.1;
-                  }
-                  $dimension = LceDimension::getForWeight($parcel['weight']);
-                  $parcel['length'] = $dimension->length;
-                  $parcel['height'] = $dimension->height;
-                  $parcel['width'] = $dimension->width;
-              }
-              unset($parcel); // Unsetting reference to last $parcel of the loop, to avoid any bad surprise later!
+                            'value' => $article['value'],
+                        ];
+                        continue;
+                    } else {
+                        foreach ($parcels as &$parcel) {
+                            // Trying to fit the article in an existing parcel.
+                            $cumulated_weight = bcadd($parcel['weight'], $article['weight'], 3);
+                            $cumulated_value = bcadd($parcel['value'], $article['value'], 2);
+                            if ($cumulated_weight <= $max_real_weight) {
+                                $parcel['weight'] = $cumulated_weight;
+                                $parcel['value'] = $cumulated_value;
+                                unset($article); // Security, to avoid double treatment of the same article.
+                                break;
+                            }
+                        }
+                        unset($parcel); // Unsetting reference to last $parcel of the loop, to avoid any bad surprise later!
 
-              // Our parcels are now ready.
-
+                        // If we could not fit the article in any existing package,
+                        // we simply initialize a new one, and that's it.
+                        if (isset($article)) {
+                            $parcels[] = [
+                                'weight' => $article['weight'],
+                                'value' => $article['value'],
+                            ];
+                            continue;
+                        }
+                    }
+                }
+                // Article weight has been spread to relevant parcels. Now we must
+                // define parcel dimensions, based on weight.
+                foreach ($parcels as &$parcel) {
+                    // First, ensuring the weight is not zero!
+                    if ($parcel['weight'] <= 0) {
+                        $parcel['weight'] = 0.1;
+                    }
+                    $dimension = LceDimension::getForWeight($parcel['weight']);
+                    $parcel['length'] = $dimension->length;
+                    $parcel['height'] = $dimension->height;
+                    $parcel['width'] = $dimension->width;
+                }
+                unset($parcel); // Unsetting reference to last $parcel of the loop, to avoid any bad surprise later!
             } else {
                 // Simple case: no dimensions, and no maximum real weight.
                 // We just take the total weight and find the corresponding dimensions.
@@ -387,14 +370,15 @@ class LceShipment extends ObjectModel
                     $weight = 0.1;
                 }
                 $dimension = LceDimension::getForWeight($weight);
-                $parcels =  array(
-                    array('length' => $dimension->length,
-                          'height' => $dimension->height,
-                          'width' => $dimension->width,
-                          'weight' => $weight,
-                          'value' => $order->getTotalProductsWithTaxes(),
-                    ),
-                );
+                $parcels = [
+                    [
+                        'length' => $dimension->length,
+                        'height' => $dimension->height,
+                        'width' => $dimension->width,
+                        'weight' => $weight,
+                        'value' => $order->getTotalProductsWithTaxes(),
+                    ],
+                ];
             }
         } else {
             // We have dimensions for all articles, so this is a bit more complex.
@@ -406,67 +390,63 @@ class LceShipment extends ObjectModel
             $max_volumetric_weight = Configuration::get('MOD_LCE_MAX_VOL_WEIGHT');
 
             if ($max_real_weight && $max_real_weight > 0 || $max_volumetric_weight && $max_volumetric_weight > 0) {
-              // We must now spread every article in virtual parcels, respecting
-              // the defined maximum real weight and volumetric weight, based on dimensions.
-              $parcels = array();
-              foreach($articles as $key => $article) {
-                  $article_volumetric_weight = $article['length']*$article['width']*$article['height']/5000;
-                  if (count($parcels) == 0 ||
-                    $max_real_weight && $max_real_weight > 0 && bccomp($article['weight'], $max_real_weight, 3) >= 0 ||
-                     $max_volumetric_weight && $max_volumetric_weight > 0 && bccomp($article_volumetric_weight, $max_volumetric_weight, 3) >= 0) {
-                      // If first article, initialize new parcel.
-                      // If article has a weight above the limit, it gets its own package.
-                      $parcels[] = array(
-                          'length' => $article['length'],
-                          'width' => $article['width'],
-                          'height' => $article['height'],
-                          'weight' => $article['weight'],
-                          'value' => $article['value']
-                      );
-                      continue;
-                  } else {
-                      foreach($parcels as &$parcel) {
-                          // Trying to fit the article in an existing parcel.
-                          $cumulated_weight = bcadd($parcel['weight'], $article['weight'], 3);
-                          $cumulated_value = bcadd($parcel['value'], $article['value'], 2);
-                          $new_parcel_length = max($parcel['length'], $article['length']);
-                          $new_parcel_width = max($parcel['width'], $article['width']);
-                          $new_parcel_height = (int)$parcel['height'] + (int)$article['height'];
-                          $new_parcel_volumetric_weight = (int)$new_parcel_length*(int)$new_parcel_width*(int)$new_parcel_height/5000;
-
-                          if (
-                              (!$max_real_weight || $max_real_weight == 0 || bccomp($cumulated_weight, $max_real_weight, 3) <= 0) &&
-                              (!$max_volumetric_weight || $max_volumetric_weight == 0 || bccomp($new_parcel_volumetric_weight, $max_volumetric_weight, 3) <= 0)) {
-                            $parcel['weight'] = $cumulated_weight;
-                            $parcel['length'] = $new_parcel_length;
-                            $parcel['width'] = $new_parcel_width;
-                            $parcel['height'] = $new_parcel_height;
-                            $parcel['value'] = $cumulated_value;
-
-                            unset($article); // Security, to avoid double treatment of the same article.
-                            break;
-                          }
-                      }
-                      unset($parcel); // Unsetting reference to last $parcel of the loop, to avoid any bad surprise later!
-
-                      // If we could not fit the article in any existing package,
-                      // we simply initialize a new one, and that's it.
-                      if (isset($article)) {
-                          $parcels[] = array(
+                // We must now spread every article in virtual parcels, respecting
+                // the defined maximum real weight and volumetric weight, based on dimensions.
+                $parcels = [];
+                foreach ($articles as $key => $article) {
+                    $article_volumetric_weight = $article['length'] * $article['width'] * $article['height'] / 5000;
+                    if (count($parcels) == 0 || $max_real_weight && $max_real_weight > 0 && bccomp((string) $article['weight'], (string) $max_real_weight, 3) >= 0 || $max_volumetric_weight && $max_volumetric_weight > 0 && bccomp((string) $article_volumetric_weight, (string) $max_volumetric_weight, 3) >= 0) {
+                        // If first article, initialize new parcel.
+                        // If article has a weight above the limit, it gets its own package.
+                        $parcels[] = [
                             'length' => $article['length'],
                             'width' => $article['width'],
                             'height' => $article['height'],
                             'weight' => $article['weight'],
                             'value' => $article['value'],
-                          );
-                          continue;
-                      }
-                  }
-              }
+                        ];
+                        continue;
+                    } else {
+                        foreach ($parcels as &$parcel) {
+                            // Trying to fit the article in an existing parcel.
+                            $cumulated_weight = bcadd($parcel['weight'], $article['weight'], 3);
+                            $cumulated_value = bcadd($parcel['value'], $article['value'], 2);
+                            $new_parcel_length = max($parcel['length'], $article['length']);
+                            $new_parcel_width = max($parcel['width'], $article['width']);
+                            $new_parcel_height = (int) $parcel['height'] + (int) $article['height'];
+                            $new_parcel_volumetric_weight = (int) $new_parcel_length * (int) $new_parcel_width * (int) $new_parcel_height / 5000;
+
+                            if ((!$max_real_weight || $max_real_weight == 0 || bccomp($cumulated_weight, (string) $max_real_weight, 3) <= 0) && (!$max_volumetric_weight || $max_volumetric_weight == 0 || bccomp((string) $new_parcel_volumetric_weight, (string) $max_volumetric_weight, 3) <= 0)) {
+                                $parcel['weight'] = $cumulated_weight;
+                                $parcel['length'] = $new_parcel_length;
+                                $parcel['width'] = $new_parcel_width;
+                                $parcel['height'] = $new_parcel_height;
+                                $parcel['value'] = $cumulated_value;
+
+                                unset($article); // Security, to avoid double treatment of the same article.
+                                break;
+                            }
+                        }
+                        unset($parcel); // Unsetting reference to last $parcel of the loop, to avoid any bad surprise later!
+
+                        // If we could not fit the article in any existing package,
+                        // we simply initialize a new one, and that's it.
+                        if (isset($article)) {
+                            $parcels[] = [
+                                'length' => $article['length'],
+                                'width' => $article['width'],
+                                'height' => $article['height'],
+                                'weight' => $article['weight'],
+                                'value' => $article['value'],
+                            ];
+                            continue;
+                        }
+                    }
+                }
             } else {
-              // If we are here, it means we do not want to spread articles in parcels of specific characteristics.
-              // So we just have one parcel per article.
-              $parcels = $articles;
+                // If we are here, it means we do not want to spread articles in parcels of specific characteristics.
+                // So we just have one parcel per article.
+                $parcels = $articles;
             }
         }
 
@@ -495,6 +475,7 @@ class LceShipment extends ObjectModel
                 $parcel_added = true;
             }
         }
+
         // We return true if at least one parcel was added.
         return $parcel_added;
     }
@@ -519,7 +500,7 @@ class LceShipment extends ObjectModel
         $shipment->shipper_email = Configuration::get('MOD_LCE_DEFAULT_EMAIL');
         $shipment->ad_valorem_insurance = Configuration::get('MOD_LCE_DEFAULT_INSURE');
 
-        $shipment->recipient_name = $delivery_address->firstname.' '.$delivery_address->lastname;
+        $shipment->recipient_name = $delivery_address->firstname . ' ' . $delivery_address->lastname;
         if (!empty($delivery_address->company)) {
             $shipment->recipient_is_a_company = 1;
         }
@@ -528,7 +509,7 @@ class LceShipment extends ObjectModel
 
         $address_street = $delivery_address->address1;
         if ($delivery_address->address2) {
-            $address_street = $address_street."\n".$delivery_address->address2;
+            $address_street = $address_street . "\n" . $delivery_address->address2;
         }
         $shipment->recipient_street = $address_street;
         $shipment->recipient_city = $delivery_address->city;
@@ -574,13 +555,12 @@ class LceShipment extends ObjectModel
 
         $shipment->ad_valorem_insurance = Configuration::get('MOD_LCE_DEFAULT_INSURE');
 
-
-        $shipment->shipper_name = $delivery_address->firstname.' '.$delivery_address->lastname;
+        $shipment->shipper_name = $delivery_address->firstname . ' ' . $delivery_address->lastname;
         $shipment->shipper_company_name = $delivery_address->company;
 
         $address_street = $delivery_address->address1;
         if ($delivery_address->address2) {
-            $address_street = $address_street."\n".$delivery_address->address2;
+            $address_street = $address_street . "\n" . $delivery_address->address2;
         }
         $shipment->shipper_street = $address_street;
 
@@ -600,7 +580,7 @@ class LceShipment extends ObjectModel
 
         $shipment->shipper_phone = $shipper_phone;
         $shipment->shipper_email = $customer->email;
-        
+
         $shipment->recipient_is_a_company = 1;
         $shipment->recipient_name = Configuration::get('MOD_LCE_DEFAULT_SHIPPER_NAME');
         $shipment->recipient_company_name = Configuration::get('MOD_LCE_DEFAULT_SHIPPER_COMPANY');
@@ -611,7 +591,7 @@ class LceShipment extends ObjectModel
         $shipment->recipient_country = Configuration::get('MOD_LCE_DEFAULT_COUNTRY');
         $shipment->recipient_phone = Configuration::get('MOD_LCE_DEFAULT_PHONE');
         $shipment->recipient_email = Configuration::get('MOD_LCE_DEFAULT_EMAIL');
-        
+
         if ($shipment->validateFields(false) && $shipment->add()) {
             // Trying to create parcels
             $res_parcels = $shipment->createParcelsFromOrder();
@@ -628,25 +608,30 @@ class LceShipment extends ObjectModel
 
     public function autoselectOffer($order)
     {
-        $params = array(
-            'shipper' => array('city' => $this->shipper_city,
-                                'postal_code' => $this->shipper_postal_code,
-                                'country' => $this->shipper_country, ),
-            'recipient' => array('city' => $this->recipient_city,
-                                  'postal_code' => $this->recipient_postal_code,
-                                  'country' => $this->recipient_country,
-                                  'is_a_company' => $this->recipient_is_a_company, ),
-            'parcels' => array(),
-        );
+        $params = [
+            'shipper' => [
+                'city' => $this->shipper_city,
+                'postal_code' => $this->shipper_postal_code,
+                'country' => $this->shipper_country,
+            ],
+            'recipient' => [
+                'city' => $this->recipient_city,
+                'postal_code' => $this->recipient_postal_code,
+                'country' => $this->recipient_country,
+                'is_a_company' => $this->recipient_is_a_company,
+            ],
+            'parcels' => [],
+        ];
         $parcels = LceParcel::findAllForShipmentId($this->id);
         foreach ($parcels as $parcel) {
-            $params['parcels'][] = array('length' => $parcel->length,
-                                          'width' => $parcel->width,
-                                          'height' => $parcel->height,
-                                          'weight' => $parcel->weight,
-                                          'insured_value' => $parcel->value_to_insure,
-                                          'insured_currency' => $parcel->insured_value_currency
-                                        );
+            $params['parcels'][] = [
+                'length' => $parcel->length,
+                'width' => $parcel->width,
+                'height' => $parcel->height,
+                'weight' => $parcel->weight,
+                'insured_value' => $parcel->value_to_insure,
+                'insured_currency' => $parcel->insured_value_currency,
+            ];
         }
 
         try {
@@ -683,6 +668,7 @@ class LceShipment extends ObjectModel
                 }
             }
         } catch (\Exception $e) {
+            PrestaShopLogger::addLog('LCE Quote request error: ' . $e->getMessage(), 3);
         }
     }
 
@@ -692,9 +678,11 @@ class LceShipment extends ObjectModel
         return $order;
     }
 
-    // Rules for insurable value:
-    //  - the sum of parcels insurable value
-    //  - maximum of 2000 per shipment
+    /**
+     * Rules for insurable value:
+     * - the sum of parcels insurable value
+     * - maximum of 2000 per shipment
+     */
     public function insurableValue()
     {
         $parcels = $this->getParcels();
@@ -704,20 +692,25 @@ class LceShipment extends ObjectModel
         }
         $max_insurable = 2000;
         $insurable_value = min($counter, $max_insurable);
+
         return $insurable_value;
     }
 
     public function getParcels()
     {
         $parcels = LceParcel::findAllForShipmentId($this->id);
+
         return $parcels;
     }
 
     public static function totalConfirmed()
     {
-        $sql = 'SELECT COUNT(*) as total FROM '._DB_PREFIX_.'lce_shipments as s
-                WHERE s.`api_order_uuid` != ""';
+        $sql = '
+            SELECT COUNT(*) as total 
+            FROM ' . _DB_PREFIX_ . 'lce_shipments as s
+            WHERE s.`api_order_uuid` != ""';
         $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+
         return $row['total'];
     }
 }

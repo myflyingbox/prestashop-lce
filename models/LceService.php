@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/afl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to contact@expedierpascher.com so we can send you a copy immediately.
+ * to contact@myflyingbox.com so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
@@ -18,9 +18,10 @@
  * @author    MyFlyingBox <contact@myflyingbox.com>
  * @copyright 2016 MyFlyingBox
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
- * @version   1.0
- *
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 class LceService extends ObjectModel
 {
@@ -36,31 +37,33 @@ class LceService extends ObjectModel
     public $date_add;
     public $date_upd;
 
-    public static $definition = array(
+    public static $definition = [
         'table' => 'lce_services',
         'primary' => 'id_service',
         'multilang' => false,
-        'fields' => array(
-            'id_carrier' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
-            'carrier_code' => array('type' => self::TYPE_STRING),
-            'code' => array('type' => self::TYPE_STRING),
-            'name' => array('type' => self::TYPE_STRING),
-            'pickup_available' => array('type' => self::TYPE_BOOL),
-            'dropoff_available' => array('type' => self::TYPE_BOOL),
-            'relay_delivery' => array('type' => self::TYPE_BOOL),
-            'tracking_url' => array('type' => self::TYPE_STRING),
-            'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-            'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-        ),
-        'associations' => array(
-            'carrier' => array('type' => self::HAS_ONE, 'field' => 'id_carrier', 'object' => 'Carrier'),
-        ),
-    );
+        'fields' => [
+            'id_carrier' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'carrier_code' => ['type' => self::TYPE_STRING],
+            'code' => ['type' => self::TYPE_STRING],
+            'name' => ['type' => self::TYPE_STRING],
+            'pickup_available' => ['type' => self::TYPE_BOOL],
+            'dropoff_available' => ['type' => self::TYPE_BOOL],
+            'relay_delivery' => ['type' => self::TYPE_BOOL],
+            'tracking_url' => ['type' => self::TYPE_STRING],
+            'date_add' => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+            'date_upd' => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+        ],
+        'associations' => [
+            'carrier' => ['type' => self::HAS_ONE, 'field' => 'id_carrier', 'object' => 'Carrier'],
+        ],
+    ];
 
     public static function findByCarrierId($id_carrier)
     {
-        $sql = 'SELECT * FROM '._DB_PREFIX_.'lce_services as s
-                WHERE s.`id_carrier` = '.(int)$id_carrier;
+        $sql = '
+            SELECT * 
+            FROM ' . _DB_PREFIX_ . 'lce_services as s
+            WHERE s.`id_carrier` = ' . (int) $id_carrier;
         $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
         $service = new self((int) $row['id_service']);
 
@@ -69,8 +72,10 @@ class LceService extends ObjectModel
 
     public static function findByCode($service_code)
     {
-        $sql = 'SELECT * FROM '._DB_PREFIX_.'lce_services as s
-                WHERE s.`code` = "'.pSQL($service_code).'"';
+        $sql = '
+            SELECT * 
+            FROM ' . _DB_PREFIX_ . 'lce_services as s
+            WHERE s.`code` = "' . pSQL($service_code) . '"';
         $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
         if ($row) {
             $service = new self((int) $row['id_service']);
@@ -82,13 +87,14 @@ class LceService extends ObjectModel
 
     public static function findAll()
     {
-        $sql = 'SELECT * FROM '._DB_PREFIX_.'lce_services as s';
-        $collection = array();
-        if ($rows = Db:: getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS($sql)) {
+        $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'lce_services as s';
+        $collection = [];
+        if ($rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS($sql)) {
             foreach ($rows as $row) {
                 $collection[] = new self((int) $row['id_service']);
             }
         }
+
         return $collection;
     }
 
@@ -104,7 +110,7 @@ class LceService extends ObjectModel
     public function logoFileName()
     {
         if (!empty($this->carrier_code)) {
-            return $this->carrier_code.'.png';
+            return $this->carrier_code . '.png';
         } else {
             return 'myflyingbox.png';
         }
@@ -112,15 +118,15 @@ class LceService extends ObjectModel
 
     public function getCarrier()
     {
-        $carrier = new Carrier((int)$this->id_carrier);
+        $carrier = new Carrier((int) $this->id_carrier);
         return $carrier;
     }
 
     public static function getRelayDeliveryCarrierIds()
     {
-        $sql = 'SELECT * FROM '._DB_PREFIX_.'lce_services WHERE relay_delivery = 1';
-        $collection = array();
-        if ($rows = Db:: getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS($sql)) {
+        $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'lce_services WHERE relay_delivery = 1';
+        $collection = [];
+        if ($rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS($sql)) {
             foreach ($rows as $row) {
                 $collection[] = $row['id_carrier'];
             }
@@ -146,7 +152,7 @@ class LceService extends ObjectModel
 
     public static function totalCount()
     {
-        $sql = 'SELECT COUNT(*) as total FROM '._DB_PREFIX_.'lce_services';
+        $sql = 'SELECT COUNT(*) as total FROM ' . _DB_PREFIX_ . 'lce_services';
         $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
         return $row['total'];
     }

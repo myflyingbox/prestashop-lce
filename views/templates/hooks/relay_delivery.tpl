@@ -1,6 +1,4 @@
 {**
- * 2017 MyFlyingBox
- *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Academic Free License (AFL 3.0)
@@ -9,33 +7,33 @@
  * http://opensource.org/licenses/afl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
+ * to contact@myflyingbox.com so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * Do not edit or add to this file if you wish to upgrade your module to newer
+ * versions in the future.
  *
- * @author    MyFlyingBox <tech@myflyingbox.net>
- * @copyright 2017 MyFlyingBox
+ * @author    MyFlyingBox <contact@myflyingbox.com>
+ * @copyright 2016 MyFlyingBox
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ * @version   1.0
+ *
  *}
-
 <script type="text/javascript">
-var carrier_ids="{$carrier_ids|escape:'javascript':'UTF-8'}".split('-');
-var customer_full_address="{$customer_full_address|escape:'javascript':'UTF-8'}";
-var customer_address_street="{$customer_address_street|escape:'javascript':'UTF-8'}";
-var customer_city="{$customer_city|escape:'javascript':'UTF-8'}";
-var customer_country="{$customer_country|escape:'javascript':'UTF-8'}";
-var customer_postal_code="{$customer_postal_code|escape:'javascript':'UTF-8'}";
-var customer_lastname="{$customer_lastname|escape:'javascript':'UTF-8'}";
-var customer_firstname="{$customer_firstname|escape:'javascript':'UTF-8'}";
-var cart_id="{$cart_id|escape:'javascript':'UTF-8'}";
-var carrier_ids="{$carrier_ids|escape:'javascript':'UTF-8'}".split('-');
-var ajax_url_mfb="{$link->getModuleLink('lowcostexpress','relay',[])|unescape:'html'}";
-var oldCodePostal=null;
-var errormessage="{l s='No relay location has been selected ! Please select a location to continue.' mod='lowcostexpress'}";
+var carrier_ids = "{$carrier_ids|escape:'javascript':'UTF-8'}".split('-');
+var customer_full_address = "{$customer_full_address|escape:'javascript':'UTF-8'}";
+var customer_address_street = "{$customer_address_street|escape:'javascript':'UTF-8'}";
+var customer_city = "{$customer_city|escape:'javascript':'UTF-8'}";
+var customer_country = "{$customer_country|escape:'javascript':'UTF-8'}";
+var customer_postal_code = "{$customer_postal_code|escape:'javascript':'UTF-8'}";
+var customer_lastname = "{$customer_lastname|escape:'javascript':'UTF-8'}";
+var customer_firstname = "{$customer_firstname|escape:'javascript':'UTF-8'}";
+var cart_id = "{$cart_id|escape:'javascript':'UTF-8'}";
+var carrier_ids = "{$carrier_ids|escape:'javascript':'UTF-8'}".split('-');
+var ajax_url_mfb = "{$link->getModuleLink('lowcostexpress','relay',[])}";
+var oldCodePostal = null;
+var errormessage = "{l s='No relay location has been selected ! Please select a location to continue.' mod='lowcostexpress'}";
 
 {literal}
 function mfbWaitForjQuery(callback) {
