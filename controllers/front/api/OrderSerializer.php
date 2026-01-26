@@ -167,6 +167,8 @@ class OrderSerializer
                 'PS_OS_REFUND' => 'ps_os_refund',
                 'PS_OS_ERROR' => 'ps_os_error',
                 'PS_OS_OUTOFSTOCK' => 'ps_os_outofstock',
+                'PS_OS_OUTOFSTOCK_UNPAID' => 'ps_os_outofstock_unpaid',
+                'PS_OS_OUTOFSTOCK_PAID' => 'ps_os_outofstock_paid',
                 'PS_OS_BANKWIRE' => 'ps_os_bankwire',
             ];
 
