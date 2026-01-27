@@ -66,6 +66,11 @@
           <i class="material-icons">add</i> {l s='Add return' mod='lowcostexpress'}
         </a>
       {/if}
+      {if isset($var.dashboard_order_search_path)}
+        <a href="{$var.dashboard_order_search_path|escape:'htmlall':'UTF-8'}" class="btn btn-outline-primary" target='_blank'>
+          <i class="material-icons">open_in_new</i> {l s='Search on MFB dashboard' mod='lowcostexpress'}
+        </a>
+      {/if}
     </p>
 
     <table class="table" width="100%">

@@ -1,7 +1,7 @@
 <?php
 
 global $_MODULE;
-$_MODULE = [];
+$_MODULE = array();
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_10d3eaef8e59a4d697778a759018f31b'] = 'MY FLYING BOX Expéditions Express';
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_d0efed8b696d877a10b08cc7036dbd45'] = 'Vos expéditions simplifiées avec les principaux transporteurs express (DHL, UPS, Chronopost, BPost...) à tarifs négociés ultra-compétitifs.';
 $_MODULE['<{lowcostexpress}prestashop>lowcostexpress_bb8956c67b82c7444a80c6b2433dd8b4'] = 'Êtes-vous sûr de vouloir désinstaller ce module ?';
@@ -285,6 +285,7 @@ $_MODULE['<{lowcostexpress}prestashop>shipment_details_b04f2c8a90cfc485fc990dc8d
 $_MODULE['<{lowcostexpress}prestashop>shipment_details_ec9964f8874a324218e26bf4d1d508ea'] = 'Tableau de bord MFB';
 $_MODULE['<{lowcostexpress}prestashop>shipment_details_7a276a29ce350f4bbbd79d9f2aeb794c'] = 'Ajouter une expédition';
 $_MODULE['<{lowcostexpress}prestashop>shipment_details_98f419b34e827f3b8559004d304b6f1f'] = 'Ajouter un retour';
+$_MODULE['<{lowcostexpress}prestashop>shipment_details_b9f9da40f958267da85acfada08c601a'] = 'Voir sur le tableau de bord MFB';
 $_MODULE['<{lowcostexpress}prestashop>shipment_details_44749712dbec183e983dcd78a7736c41'] = 'Date';
 $_MODULE['<{lowcostexpress}prestashop>shipment_details_ec53a8c4f07baed5d8825072c89799be'] = 'Statut';
 $_MODULE['<{lowcostexpress}prestashop>shipment_details_3edf8ca26a1ec14dd6e91dd277ae1de6'] = 'Origine';

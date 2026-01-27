@@ -535,7 +535,7 @@ class LowCostExpress extends CarrierModule
 
         // Use custom webhook URL if set, otherwise use default.
         // This allows testing with a local webhook receiver during development.
-        $webhook_url = Configuration::get('MOD_LCE_WEBHOOK_URL') ?: 'https://dashboard.myflyingbox.com/webhooks/prestashop';
+        $webhook_url = Configuration::get('MOD_LCE_DASHBOARD_URL') ? Configuration::get('MOD_LCE_DASHBOARD_URL').'/webhooks/prestashop' : 'https://dashboard.myflyingbox.com/webhooks/prestashop';
         
         $ch = curl_init($webhook_url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -1296,6 +1296,19 @@ class LowCostExpress extends CarrierModule
                     && Configuration::get('MOD_LCE_API_JWT_SHARED_SECRET') !== '';
                 $show_booking_origin = $sync_configured && $sync_behavior !== 'never';
 
+                // Initialize a link to open the My Flying Box dashboard with a prefilled order reference in filters.
+                $dashboard_url = Configuration::get('MOD_LCE_DASHBOARD_URL') ? Configuration::get('MOD_LCE_DASHBOARD_URL') : 'https://dashboard.myflyingbox.com';
+
+                if ($sync_configured && $sync_behavior !== 'never') {
+                    $locale = ($this->context->language->iso_code === 'fr') ? 'fr' : 'en';
+                    $order = new Order((int) $params['id_order']);
+                    $order_reference = $order->reference;
+                    $dashboard_order_search_path = $dashboard_url . '/' . $locale . '/dashboard/ecommerce/orders?filters%5Bexternal_reference_search%5D=' . urlencode($order_reference);
+                } else {
+                    $dashboard_order_search_path = '';
+                }
+
+
                 $var = [
                     'shipments' => $shipments,
                     'shipment_urls' => $shipment_urls,
@@ -1312,7 +1325,8 @@ class LowCostExpress extends CarrierModule
                     'manual_sync_message' => $manual_sync_message,
                     'manual_sync_error' => $manual_sync_error,
                     'config_link' => $this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]),
-                    'dashboard_link' => 'https://dashboard.myflyingbox.com',
+                    'dashboard_link' => $dashboard_url,
+                    'dashboard_order_search_path' => $dashboard_order_search_path,
                     'current_index' => $currentIndex,
                 ];
             } catch (Exception $e) {
