@@ -179,6 +179,51 @@ class ShipmentController extends ApiController
 
         $currency = new Currency((int) $order->id_currency);
         $this->replaceParcels($shipment, $data['parcels'], $currency);
+       
+        // If configured and if we are effectively registering a new shipment, update order status to "Shipped"
+        if (Configuration::get('MOD_LCE_UPDATE_ORDER_STATUS') && $is_new) {
+
+            $tracking_number = $data['parcels'][0]['carrier_reference'] ?? '';
+            $lce_service = new LceService($shipment->lce_service_id);
+
+            // If Prestashop debug mode is on, log details.
+            if (_PS_MODE_DEV_) {
+                Logger::addLog('[MFB] Tracking number for shipment created from API: ' . $tracking_number, 1);
+                Logger::addLog('[MFB] Carrier ID for shipment created from API: ' . $lce_service->id_carrier, 1);
+            }
+
+            $history = new OrderHistory();
+            $history->id_order = (int) $shipment->order_id;
+            $history->id_order_state = _PS_OS_SHIPPING_;
+            $history->changeIdOrderState(_PS_OS_SHIPPING_, $shipment->order_id);
+
+            // Using standard Prestashop mechanisms to generate the tracking link
+            // See for instance AdminOrdersController in Prestashop 1.7 source code,
+            // inside the block dealing with state updates:
+            $carrier = new Carrier($lce_service->id_carrier, $order->id_lang);
+
+            // If we have a carrier, we'll try to get matching OrderCarrier entry to set the tracking number,
+            // unless it's already set.
+            $orderCarrierId = (int) $order->getIdOrderCarrier();
+            if ($orderCarrierId > 0) {
+                $order_carrier = new OrderCarrier($orderCarrierId);
+                if (empty($order_carrier->tracking_number) && (int) $order_carrier->id_carrier === (int) $lce_service->id_carrier) {
+                    // Set tracking number and update
+                    $order_carrier->tracking_number = $tracking_number;
+                    $order_carrier->update();
+                }
+            }
+
+            $templateVars = [];
+            if ($tracking_number) {
+                $templateVars = [
+                    '{followup}' => str_replace('@', $tracking_number, $carrier->url),
+                ];
+            }
+            $history->addWithemail(true, $templateVars);
+            // $history->save();
+        }
+
 
         $this->jsonResponse([
             'success' => true,

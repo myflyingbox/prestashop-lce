@@ -906,10 +906,25 @@ class AdminShipmentController extends ModuleAdminController
             // } elseif (Tools::isSubmit('submitState') && isset($order)) {
             $ps_order = $shipment->getOrder();
             $carrier = new Carrier($lce_service->id_carrier, $ps_order->id_lang);
+
+            $tracking_number = $order_api->parcels[0]->reference;
+
+            // If we have an OrderCarrier entry we will set the tracking number,
+            // unless it's already set.
+            $orderCarrierId = (int) $ps_order->getIdOrderCarrier();
+            if ($orderCarrierId > 0) {
+                $order_carrier = new OrderCarrier($orderCarrierId);
+                if (empty($order_carrier->tracking_number) && (int) $order_carrier->id_carrier === (int) $lce_service->id_carrier) {
+                    // Set tracking number and update
+                    $order_carrier->tracking_number = $tracking_number;
+                    $order_carrier->update();
+                }
+            }
+
             $templateVars = [];
-            if ($order_api->parcels[0]->reference) {
+            if ($tracking_number) {
                 $templateVars = [
-                    '{followup}' => str_replace('@', $order_api->parcels[0]->reference, $carrier->url),
+                    '{followup}' => str_replace('@', $tracking_number, $carrier->url),
                 ];
             }
             $history->addWithemail(true, $templateVars);
