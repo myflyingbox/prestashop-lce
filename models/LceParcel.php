@@ -18,9 +18,10 @@
  * @author    MyFlyingBox <contact@myflyingbox.com>
  * @copyright 2016 MyFlyingBox
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
- * @version   1.0
- *
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 class LceParcel extends ObjectModel
 {
@@ -42,38 +43,42 @@ class LceParcel extends ObjectModel
     public $date_add;
     public $date_upd;
 
-    public static $definition = array(
+    public static $definition = [
         'table' => 'lce_parcels',
         'primary' => 'id_parcel',
         'multilang' => false,
-        'fields' => array(
-            'id_shipment' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
-            'length' => array('type' => self::TYPE_INT, 'required' => true),
-            'width' => array('type' => self::TYPE_INT, 'required' => true),
-            'height' => array('type' => self::TYPE_INT, 'required' => true),
-            'weight' => array('type' => self::TYPE_FLOAT, 'required' => true),
-            'shipper_reference' => array('type' => self::TYPE_STRING),
-            'recipient_reference' => array('type' => self::TYPE_STRING),
-            'customer_reference' => array('type' => self::TYPE_STRING),
-            'value' => array('type' => self::TYPE_INT),
-            'currency' => array('type' => self::TYPE_STRING),
-            'value_to_insure' => array('type' => self::TYPE_FLOAT),
-            'insured_value_currency' => array('type' => self::TYPE_STRING),
-            'description' => array('type' => self::TYPE_STRING),
-            'country_of_origin' => array('type' => self::TYPE_STRING),
-            'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-            'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-        ),
-        'associations' => array(
-            'shipment' => array('type' => self::HAS_ONE, 'field' => 'id_shipment', 'object' => 'LceShipment'),
-        ),
-    );
+        'fields' => [
+            'id_shipment' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'length' => ['type' => self::TYPE_INT, 'required' => true],
+            'width' => ['type' => self::TYPE_INT, 'required' => true],
+            'height' => ['type' => self::TYPE_INT, 'required' => true],
+            'weight' => ['type' => self::TYPE_FLOAT, 'required' => true],
+            'shipper_reference' => ['type' => self::TYPE_STRING],
+            'recipient_reference' => ['type' => self::TYPE_STRING],
+            'customer_reference' => ['type' => self::TYPE_STRING],
+            'value' => ['type' => self::TYPE_INT],
+            'currency' => ['type' => self::TYPE_STRING],
+            'value_to_insure' => ['type' => self::TYPE_FLOAT],
+            'insured_value_currency' => ['type' => self::TYPE_STRING],
+            'description' => ['type' => self::TYPE_STRING],
+            'country_of_origin' => ['type' => self::TYPE_STRING],
+            'date_add' => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+            'date_upd' => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+        ],
+        'associations' => [
+            'shipment' => ['type' => self::HAS_ONE, 'field' => 'id_shipment', 'object' => 'LceShipment'],
+        ],
+    ];
 
     public static function findAllForShipmentId($id_shipment)
     {
-        $sql = 'SELECT * FROM '._DB_PREFIX_.'lce_parcels as p
-                WHERE p.`delete` = 0 AND p.`id_shipment` = '.(int)$id_shipment.' ORDER BY p.`id_parcel` ASC';
-        $collection = array();
+        $sql = '
+            SELECT * 
+            FROM ' . _DB_PREFIX_ . 'lce_parcels as p
+            WHERE p.`delete` = 0 AND p.`id_shipment` = ' . (int) $id_shipment . ' 
+            ORDER BY p.`id_parcel` ASC';
+
+        $collection = [];
         if ($rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS($sql)) {
             foreach ($rows as $row) {
                 $collection[] = new self((int) $row['id_parcel']);

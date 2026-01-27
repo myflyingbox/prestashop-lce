@@ -19,20 +19,12 @@
  * @copyright 2016 MyFlyingBox
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
+header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
 
-function upgrade_module_1_0_1($module)
-{
-    // This update was forgotten in the SQL fresh install script on 0.0.24 and 1.0.0.
-    Db::getInstance()->execute('
-        CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'lce_cart_selected_relay` (
-            `id_cart` int(10) NOT null,
-            `relay_code` varchar(10) NOT null,
-            PRIMARY KEY (`id_cart`)
-        ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;'
-    );
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 
-    return true;
-}
+header("Location: ../");
+exit;

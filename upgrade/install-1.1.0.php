@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/afl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to contact@expedierpascher.com so we can send you a copy immediately.
+ * to contact@myflyingbox.com so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
@@ -16,12 +16,9 @@
  * versions in the future.
  *
  * @author    MyFlyingBox <contact@myflyingbox.com>
- * @copyright 2017 MyFlyingBox
+ * @copyright 2016 MyFlyingBox
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
- * @version   1.0
- *
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -42,7 +39,7 @@ function upgrade_module_1_1_0($module)
 
     // Add fields for extended warranty
     Db::getInstance()->Execute('
-        ALTER TABLE `'._DB_PREFIX_.'lce_offers` 
+        ALTER TABLE `' . _DB_PREFIX_ . 'lce_offers` 
             ADD COLUMN `extended_cover_available` TINYINT(1) DEFAULT 0 AFTER `insurance_price_in_cents`,
             ADD COLUMN `price_with_extended_cover` INT(11) NOT NULL AFTER `extended_cover_available`,
             ADD COLUMN `total_price_with_extended_cover` INT(11) NOT NULL AFTER `price_with_extended_cover`;
@@ -50,7 +47,7 @@ function upgrade_module_1_1_0($module)
 
     // Add fields id_address
     Db::getInstance()->Execute('
-        ALTER TABLE `'._DB_PREFIX_.'lce_quotes` 
+        ALTER TABLE `' . _DB_PREFIX_ . 'lce_quotes` 
             ADD `id_address` INT(11) NOT NULL AFTER `id_cart`;');
 
     // Delete quote when products in cart are updated
@@ -60,7 +57,7 @@ function upgrade_module_1_1_0($module)
     } else {
         $module->registerHook('actionObjectProductInCartDeleteAfter');
     }
-    
+
     // Initialize the Google Maps API key with the previous hard-coded value to avoid breaking current installations
     // This is a temporary solution until the key is properly configured in the module settings.
     // This will ensure that existing users do not experience issues with the Google Maps functionality.
