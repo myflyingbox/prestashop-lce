@@ -107,7 +107,7 @@ class LowCostExpress extends CarrierModule
     {
         $this->name = 'lowcostexpress';
         $this->tab = 'shipping_logistics';
-        $this->version = '1.1.5';
+        $this->version = '1.2.0';
         $this->author = 'MY FLYING BOX SAS';
 
         parent::__construct();
@@ -704,10 +704,29 @@ class LowCostExpress extends CarrierModule
         if ($env != 'staging' && $env != 'production') {
             $env = 'staging';
         }
-        $login = Configuration::get('MOD_LCE_API_LOGIN');
-        $password = Configuration::get('MOD_LCE_API_PASSWORD');
 
-        $api = Lce\Lce::configure($login, $password, $env, '2'); // Now using API v2
+        // Allow usage of custom API endpoint for testing purposes
+        // Warning: this is only available when using a recent version of the LCE PHP library,
+        // that is only loaded when PHP 8 is used
+        $api_server = Configuration::get('MOD_LCE_CUSTOM_API_SERVER');
+
+        if (!empty($api_server)) {
+            $api = Lce\Lce::configure(
+                Configuration::get('MOD_LCE_API_LOGIN'),
+                Configuration::get('MOD_LCE_API_PASSWORD'),
+                $env,
+                '2',
+                $api_server
+            );
+        } else {
+            $api = Lce\Lce::configure(
+                Configuration::get('MOD_LCE_API_LOGIN'),
+                Configuration::get('MOD_LCE_API_PASSWORD'),
+                $env,
+                '2'
+            );
+        }
+
         $api->application = 'prestashop-lce';
         $api->application_version = $this->version . ' (PS ' . _PS_VERSION_ . ')';
 
